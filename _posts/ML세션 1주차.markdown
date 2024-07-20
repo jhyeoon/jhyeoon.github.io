@@ -45,8 +45,7 @@ sns.set : Seaborn의 기본 스타일을 설정 </br>
 color_codes=True : Seaborn에서 제공하는 기본 색상 팔레트가 Matplotlib의 색상 코드와 일치하도록
 
 `%matplotlib inline` </br>
-: Jupyter Notebook에서 Matplotlib 라이브러리를 사용할 때 그래프를 인라인(inline)으로 표시하기 위해 사용되는 매직 명령어 </br>
-- Jupyter Notebook의 셀 안에 그래프를 직접 삽입하여, 그래프를 별도의 창이 아닌 셀 안에서 바로 볼 수 있게
+: Jupyter Notebook에서 Matplotlib 라이브러리를 사용할 때 그래프를 인라인(inline)으로 표시하기 위해 사용되는 매직 명령어 -Jupyter Notebook의 셀 안에 그래프를 직접 삽입하여, 그래프를 별도의 창이 아닌 셀 안에서 바로 볼 수 있게
 
 </br>
 
@@ -83,7 +82,7 @@ df2.head()
 df.info()
 ```
 
-`df.info()`
+`df.info()` </br>
 : 데이터 프레임의 행 수, 각 열의 데이터 타입, 누락된 값의 개수 등 포함, 데이터 프레임의 구조와 데이터 타입 파악하는 명령어
 
 </br>
@@ -93,9 +92,9 @@ df.info()
 df.describe()
 ```
 
-`df.describe()`
+`df.describe()` </br>
 : 각 칼럼의 통계치를 파악하는 명령어
-- count: 유효한 값의 개수, mean: 평균값, std: 표준 편차, min: 최솟값, 25%: 1사분위수 (하위 25%), 50%: 중앙값 (하위 50%, 2사분위수), 75%: 3사분위수 (하위 75%), max:최댓값
+-count: 유효한 값의 개수, mean: 평균값, std: 표준 편차, min: 최솟값, 25%: 1사분위수 (하위 25%), 50%: 중앙값 (하위 50%, 2사분위수), 75%: 3사분위수 (하위 75%), max:최댓값
 
 </br>
 
@@ -111,7 +110,7 @@ print(skewness)
 
 `numeric_df.skew()`
 : numeric_df의 각 열의 왜도를 계산하는 명령어 </br>
-- 왜도: 0에 가까울수록 대칭적인 분포, 양의 값은 오른쪽 꼬리가 긴 분포, 음의 값은 왼쪽 꼬리가 긴 분포
+-왜도: 0에 가까울수록 대칭적인 분포, 양의 값은 오른쪽 꼬리가 긴 분포, 음의 값은 왼쪽 꼬리가 긴 분포
 
 </br>
 
@@ -136,12 +135,12 @@ sns.distplot(df['lead_time'])
 
 `plt.rcParams['figure.dpi'] = 300` </br>
 : Matplotlib의 설정을 변경하여 생성되는 모든 그래프의 해상도 설정
-- dpi(dots per inch): 그래프의 해상도 결정
-- 해상도를 300으로 설정 → 그래프가 더 높은 해상도로 렌더링되어 더 선명하게 보임
+-dpi(dots per inch): 그래프의 해상도 결정
+-해상도를 300으로 설정 → 그래프가 더 높은 해상도로 렌더링되어 더 선명하게 보임
 
 `sns.distplot(df['lead_time'])` </br>
 : Seaborn을 사용하여 ‘lead_time’ 열의 분포 시각화
-- 히스토그램과 커널 밀도 추정(KDE)을 함께 표시
+-히스토그램과 커널 밀도 추정(KDE)을 함께 표시
 
 ![alt text](image.png)
 
@@ -154,16 +153,16 @@ sns.stripplot(x="hotel", y="lead_time", data=df, size=1)
 ```
 
 `sns.violinplot(x="hotel", y="lead_time", data=df, inner=None, color=".8")`
-- sns.violinplot : seaborn의 violinplot
-- x="hotel" : 호텔별로 나눔
-- inner=None : violin plot 내부에 추가적인 요소(박스플롯, 개별 데이터 포인트 등)이 없음
-- color=".8" : 회색, 0(흰색), 1(검은색) 
+-sns.violinplot : seaborn의 violinplot
+-x="hotel" : 호텔별로 나눔
+-inner=None : violin plot 내부에 추가적인 요소(박스플롯, 개별 데이터 포인트 등)이 없음
+-color=".8" : 회색, 0(흰색), 1(검은색) 
 
 </br>
 
 `sns.stripplot(x="hotel", y="lead_time", data=df, size=1)`
-- sns.stripplot : seaborn의 stripplot
-- size=1 : 데이터 포인트의 크기가 1
+-sns.stripplot : seaborn의 stripplot
+-size=1 : 데이터 포인트의 크기가 1
 
 </br>
 

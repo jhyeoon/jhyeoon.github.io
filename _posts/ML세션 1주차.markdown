@@ -29,26 +29,26 @@ sns.set(color_codes=True)
 %matplotlib inline
 ```
 
-`import seaborn as sns` </br>
-seaborn : 데이터 시각화 라이브러리 </br>
+`import seaborn as sns` <br>
+seaborn : 데이터 시각화 라이브러리 <br>
 as sns : seaborn의 별칭
 
-`import matplotlib.pyplot as plt` </br>
-matplotlib : 다양한 종류의 그래프와 플롯을 만들 수 있게 해주는 라이브러리 </br>
+`import matplotlib.pyplot as plt` <br>
+matplotlib : 다양한 종류의 그래프와 플롯을 만들 수 있게 해주는 라이브러리 <br>
 pyplot : Matplotlib의 주요 인터페이스, 간단하고 직관적인 방법으로 그래프를 그릴 수 있는 모듈
 
-`import pandas as pd` </br>
+`import pandas as pd` <br>
 pandas : 데이터 조작과 분석을 위해 설계된 라이브러리, 데이터 프레임 구조를 사용
 
-`sns.set(color_codes=True)` </br>
-sns.set : Seaborn의 기본 스타일을 설정 </br>
+`sns.set(color_codes=True)` <br>
+sns.set : Seaborn의 기본 스타일을 설정 <br>
 color_codes=True : Seaborn에서 제공하는 기본 색상 팔레트가 Matplotlib의 색상 코드와 일치하도록
 
-`%matplotlib inline` </br>
-: Jupyter Notebook에서 Matplotlib 라이브러리를 사용할 때 그래프를 인라인(inline)으로 표시하기 위해 사용되는 매직 명령어 </br>
+`%matplotlib inline` <br>
+: Jupyter Notebook에서 Matplotlib 라이브러리를 사용할 때 그래프를 인라인(inline)으로 표시하기 위해 사용되는 매직 명령어 <br>
 -Jupyter Notebook의 셀 안에 그래프를 직접 삽입하여, 그래프를 별도의 창이 아닌 셀 안에서 바로 볼 수 있게
 
-</br>
+<br>
 
 ```python
 # 데이터 불러오기
@@ -59,45 +59,45 @@ df = pd.read_csv("datasets/hotel_bookings.csv")
 df.head()
 ```
 
-`df = pd.read_csv("datasets/hotel_bookings.csv")` </br>
+`df = pd.read_csv("datasets/hotel_bookings.csv")` <br>
 : Pandas 라이브러리를 사용하여 CSV 파일(hotel_bookings.csv)을 데이터 프레임(df)으로 불러오는 명령어
 
-`df.head()` </br>
-: 기본적으로 첫 데이터 프레임의 첫 5행을 반환하는 명령어 </br>
+`df.head()` <br>
+: 기본적으로 첫 데이터 프레임의 첫 5행을 반환하는 명령어 <br>
 -원하는 행 수를 인수로 지정할 수도 있음
 
-</br>
+<br>
 
 ```python
 df2 = df[['hotel', 'lead_time']]
 df2.head()
 ```
 
-`df2 = df[['hotel', 'lead_time']]` </br>
+`df2 = df[['hotel', 'lead_time']]` <br>
 : 원본 데이터 프레임 ‘df’에서 'hotel'과 'lead_time' 두 개의 열만 선택하여 새로운 데이터 프레임 ‘df2’를 생성하는 명령어
 
-</br>
+<br>
 
 ```python
 # 각 컬럼의 속성 및 결측치 확인
 df.info()
 ```
 
-`df.info()` </br>
+`df.info()` <br>
 : 데이터 프레임의 행 수, 각 열의 데이터 타입, 누락된 값의 개수 등 포함, 데이터 프레임의 구조와 데이터 타입 파악하는 명령어
 
-</br>
+<br>
 
 ```python
 # 각 컬럼의 통계치 확인
 df.describe()
 ```
 
-`df.describe()` </br>
-: 각 칼럼의 통계치를 파악하는 명령어 </br>
+`df.describe()` <br>
+: 각 칼럼의 통계치를 파악하는 명령어 <br>
 -count: 유효한 값의 개수, mean: 평균값, std: 표준 편차, min: 최솟값, 25%: 1사분위수 (하위 25%), 50%: 중앙값 (하위 50%, 2사분위수), 75%: 3사분위수 (하위 75%), max:최댓값
 
-</br>
+<br>
 
 ```python
 # 각 컬럼의 왜도 확인
@@ -106,14 +106,14 @@ skewness = numeric_df.skew()
 print(skewness)
 ```
 
-`df.select_dtypes(include=['number'])` </br>
+`df.select_dtypes(include=['number'])` <br>
 : df에서 숫자 데이터 타입을 가진 열만 선택
 
-`numeric_df.skew()` </br>
-: numeric_df의 각 열의 왜도를 계산하는 명령어 </br>
+`numeric_df.skew()` <br>
+: numeric_df의 각 열의 왜도를 계산하는 명령어 <br>
 -왜도: 0에 가까울수록 대칭적인 분포, 양의 값은 오른쪽 꼬리가 긴 분포, 음의 값은 왼쪽 꼬리가 긴 분포
 
-</br>
+<br>
 
 ```python
 # 각 컬럼의 첨도 확인
@@ -121,12 +121,12 @@ numeric_df = df.select_dtypes(include=['number'])
 print(numeric_df.kurtosis())
 ```
 
-`df.kurtosis()` </br>
+`df.kurtosis()` <br>
 : numeric_df의 각 열의 첨도를 계산하는 명령어, 양의 값으로 큰 수면 뾰족한 분포, 음의 값으로 작은 수면 평평한 분포
 
 ![alt text](image-1.png)
 
-</br>
+<br>
 
 ```python
 # 특정 변수 분포 시각화
@@ -134,18 +134,18 @@ plt.rcParams['figure.dpi'] = 300
 sns.distplot(df['lead_time'])
 ```
 
-`plt.rcParams['figure.dpi'] = 300` </br>
-: Matplotlib의 설정을 변경하여 생성되는 모든 그래프의 해상도 설정 </br>
--dpi(dots per inch): 그래프의 해상도 결정 </br>
+`plt.rcParams['figure.dpi'] = 300` <br>
+: Matplotlib의 설정을 변경하여 생성되는 모든 그래프의 해상도 설정 <br>
+-dpi(dots per inch): 그래프의 해상도 결정 <br>
 -해상도를 300으로 설정 → 그래프가 더 높은 해상도로 렌더링되어 더 선명하게 보임
 
-`sns.distplot(df['lead_time'])` </br>
-: Seaborn을 사용하여 ‘lead_time’ 열의 분포 시각화 </br>
+`sns.distplot(df['lead_time'])` <br>
+: Seaborn을 사용하여 ‘lead_time’ 열의 분포 시각화 <br>
 -히스토그램과 커널 밀도 추정(KDE)을 함께 표시
 
 ![alt text](image.png)
 
-</br>
+<br>
 
 ```python
 # 호텔 구분에 따른 lead_time 분포 차이 시각화
@@ -153,25 +153,743 @@ sns.violinplot(x="hotel", y="lead_time", data=df, inner=None, color=".8")
 sns.stripplot(x="hotel", y="lead_time", data=df, size=1)
 ```
 
-`sns.violinplot(x="hotel", y="lead_time", data=df, inner=None, color=".8")` </br>
--sns.violinplot : seaborn의 violinplot </br>
--x="hotel" : 호텔별로 나눔 </br>
--inner=None : violin plot 내부에 추가적인 요소(박스플롯, 개별 데이터 포인트 등)이 없음 </br>
+`sns.violinplot(x="hotel", y="lead_time", data=df, inner=None, color=".8")` <br>
+-sns.violinplot : seaborn의 violinplot <br>
+-x="hotel" : 호텔별로 나눔 <br>
+-inner=None : violin plot 내부에 추가적인 요소(박스플롯, 개별 데이터 포인트 등)이 없음 <br>
 -color=".8" : 회색, 0(흰색), 1(검은색) 
 
-</br>
+<br>
 
 `sns.stripplot(x="hotel", y="lead_time", data=df, size=1)`
--sns.stripplot : seaborn의 stripplot </br>
--size=1 : 데이터 포인트의 크기가 1 </br>
+-sns.stripplot : seaborn의 stripplot <br>
+-size=1 : 데이터 포인트의 크기가 1 <br>
 
-</br>
+<br>
 
 ![alt text](image-3.png)
 
 # 10.2 공분산과 상관성 분석
 
+데이터 탐색 과정에서 각 변수들의 특성 파악(평균, 왜도, 첨도, 결측치 등) <br>
+→ 변수 간의 관계 파악 (입력변수 X와 타깃변수 Y의 관계, 입력 변수 X 간의 관계)
 
+### 상관관계 파악하는 방법
+1. 공분산
+2. 상관계수 (가정: 데이터가 등간 or 비율 척도, 두 변수가 선형적 관계임)
 
+## 공분산
+- 분산(variance) <br>
+$Var(X) = E(X-E(X)^2) = E(X^2)-{E(X)}^2$ <br>
+variance 클수록 분포가 퍼져있음
+- 공분산(covariance) <br>
+    $Cov(X,Y)=E((X-E(X))(Y-E(Y)))=E(XY)-E(X)E(Y)$ <br>
+    ![alt text](image-5.png)
+    - 양의 상관관계: X_1이 커지면 X_2도 커짐
+    - 음의 상관관계: X_1이 작아지면 X_2도 작아짐
+    - 무 상관관계: X_1과 X_2는 선형적인 관계가 없음
+    - (-)1: X_1과 X_2는 완벽한 직선의 관계
 
+## (피어슨) 상관계수
+: 공분산의 한계점인 양(음)수로 (반)비례 관계는 알 수 있지만 값이 커질수록 상관성이 높은지는 판단할 수 없는 것 해결 ← 각 변수 간의 다른 척도기준이 그대로 반영되기 때문 
 
+![alt text](image-6.png)
+![alt text](image-7.png)
+![alt text](image-8.png)
+- 산점도의 기울기와 상관계수는 관련x
+- 분산의 관계성이 같음 → 기울기와 무관하게 상관계수는 같음
+- 상관계수가 높음 → X_2를 예상할 수 있는 정확도(설명력)이 높음
+- 상관분석은 두 변수의 선형관계만을 측정하므로
+    2차 방정식 그래프와 같은 모양일 경우 상관계수가 낮게 측정됨
+    → 두 변수 간 연관성이 존재해도 상관계수는 낮게 나올 수도
+    → 상관분석과 더불어 산점도 그래프를 확인해보아야 함
+
+    <br>
+
+    ![alt text](image-9.png)
+
+## 공분산과 상관성 실습
+
+```python
+# 필요한 패키지 설치
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+plt.rcParams['figure.dpi'] = 300
+```
+`import numpy as np` <br>
+: 수치 연산을 수행하는 데 사용되는 라이브러리
+
+<br>
+
+```python
+# 데이터 불러오기
+# https://www.kaggle.com/datasets/deepakkumar1987/correlation
+df = pd.read_csv("datasets/wine-quality.csv")
+
+# 데이터 샘플 확인
+df.head()
+```
+
+```python
+# 산점도 행렬 시각화
+sns.set(font_scale=1.1) ## 폰트 크기 설정
+sns.set_style('ticks') ## 축 눈금 설정
+sns.pairplot(df,
+             diag_kind='kde' # 상관계수가 1이면 분포로 표시
+            )
+plt.show()
+```
+![alt text](image-10.png)
+
+`sns.set(font_scale=1.1)` <br>
+: Seaborn 플롯의 폰트 크기를 1.1배로 조정
+
+`sns.set_style('ticks')` <br>
+: Seaborn 플롯의 스타일을 'ticks'로 설정 <br>
+-ticks: 플롯의 축에 작은 눈금을 추가하여 플롯의 시각적 세부 사항을 강화
+
+`sns.pairplot()` <br>
+: 주어진 df의 모든 숫자 열 쌍에 대해 산점도와 히스토그램 또는 커널 밀도 추정(KDE) 플롯을 생성하는 함수
+
+`diag_kind='kde'` <br>
+: 동일한 변수의 산점도를 분포로 표현 ← 동일한 변수는 일직선으로만 나오기 때문에 큰 의미가 없으므로 분포도로 변환
+
+<br>
+
+```python
+# 공분산 확인
+numeric_df = df.select_dtypes(include=['number'])
+
+# 공분산 행렬 출력
+print(numeric_df.cov())
+```
+```python
+# 상관계수 행렬 출력
+print(numeric_df.corr())
+```
+`df.corr(method='pearson')` <br>
+: 기본값이 피어슨이기 때문에 생략해도 됨
+
+<br>
+
+```python
+# 히트맵 시각화
+plt.figure(figsize=(12, 10))
+sns.heatmap(numeric_df.corr(), cmap='viridis', annot=True, linewidths=0.5)
+plt.title('Correlation Matrix')
+plt.show()
+```
+`plt.figure(figsize=(12, 10))` <br>
+: 그래프의 크기를 설정하는 명령어 <br>
+-그래프의 너비를 12인치, 높이를 10인치로 설정
+
+`sns.heatmap(numeric_df.corr(), cmap='viridis', annot=True, linewidths=0.5)` <br>
+-sns.heatmap(numeric_df.corr()): 상관계수 매트릭스의 히트맵으로 시각화하는 명령어 <br>
+-cmap = ‘viridis’ : 색상 팔레트 설정 → 노란색에 가까울수록 양의 상관관계, 보라색에 가까울수록 음의 상관관계 <br>
+-annot=True는 각 셀에 상관계수 값을 표시 <br>
+-linewidths=0.5는 셀 간의 경계선을 설정
+
+![alt text](image-11.png)
+
+<br>
+
+```python
+# clustermap 히트맵 시각화
+sns.clustermap(numeric_df.corr(), annot = True, cmap = 'RdYlBu_r', vmin = -1, vmax = 1)
+```
+`sns.clustermap(numeric_df.corr(), annot = True, cmap = 'RdYlBu_r', vmin = -1, vmax = 1)` <br>
+-sns.clustermap(numeric_df.corr()) : 상관 행렬의 계층적 클러스터링을 수행하고, 이를 히트맵으로 시각화하는 명령 <br>
+-vmin=-1, vmax=1 : 색상 막대의 범위를 설정
+
+![alt text](image-12.png)
+
+<br>
+
+```python
+# 중복 제거 히트맵 시각화
+
+# 매트릭스의 우측 상단을 모두 True인 1로, 하단을 False인 0으로 변환.
+np.triu(np.ones_like(numeric_df.corr()))
+
+# True/False mask 배열로 변환.
+mask = np.triu(np.ones_like(numeric_df.corr(), dtype=np.bool))
+
+#  히트맵 그래프 생성
+fig, ax = plt.subplots(figsize=(15, 10))
+sns.heatmap(df.corr(), 
+            mask=mask, 
+            vmin=-1, 
+            vmax = 1, 
+            annot=True, 
+            cmap="RdYlBu_r", 
+            cbar = True)
+ax.set_title('Wine Quality Correlation', pad = 15)
+```
+
+![alt text](image-13.png)
+
+# 10.3 시간 시각화
+
+## 연속형 시간 시각화
+
+- 시간 간격의 밀도가 높을 때
+- 선그래프
+- 데이터의 양이 너무 많거나 변동이 심하여 트렌드를 확인하는 것이 어려울 경우,
+→ 추세선 삽입 
+by 이동 평균 방법: 데이터의 연속적 그룹의 평균 구하기
+
+## 분절형 시간 시각화
+
+- 시간의 밀도가 낮을 때, 값들의 상대적 차이를 나타내는 것에 유리
+- 막대그래프
+- 누적 막대그래프
+: 한 시점에 2개 이상의 세부 항목이 존재할 때 사
+- 점 그래프
+
+## 시간 시각화 실습
+
+```python
+# 필요한 패키지 설치
+import matplotlib.pyplot as plt
+import pandas as pd
+import datetime
+plt.rcParams['figure.dpi'] = 300
+```
+
+```python
+# 데이터 불러오기
+# https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting
+df = pd.read_csv("datasets/superstore.csv")
+
+# 데이터 샘플 확인
+df.head()
+```
+
+```python
+# date 컬럼 날짜형식 변환
+df['Date2']= pd.to_datetime(df['Order Date'], infer_datetime_format=True) 
+# 날짜 오름차순 정렬
+df = df.sort_values(by='Date2')
+# 연도 컬럼 생성
+df['Year'] = df['Date2'].dt.year
+
+## 선 그래프 용 데이터셋 생성
+# 2018년 데이터만 필터링
+df_line=df[df.Year == 2018]
+
+# 2018년 일 별 매출액 가공
+df_line = df_line.groupby('Date2')['Sales'].sum().reset_index()
+
+df_line.head()
+```
+
+`df['Date2']= pd.to_datetime(df['Order Date'], infer_datetime_format=True)` <br>
+-pd.to_datetime : ‘Order Date’ 칼럼의 자료형이 원래 string인데 datetime 자료형으로 바꿔주고 칼럼 이름을 ‘Date2’라고 함 <br>
+-infer_datetime_format=True : 자동으로 년/월/일 추정하여 바꿔줌 <br>
+-format=’%d/%m/%y’ : 일/월/년으로 지정 <br>
+-df['Date2'] = pd.to_datetime(df['Order Date'], dayfirst=True, errors='coerce') : colab에서는 위의 코드 에러 뜸 → dayfirst=True로 제일 앞이 일로 지정
+
+`df = df.sort_values(by='Date2')` <br>
+: 날짜 오름차순 정렬
+
+`df['Year'] = df['Date2'].dt.year` <br>
+: ‘Date2’의 year를 ‘Year’칼럼으로 생성
+
+`df_line=df[df.Year == 2018]` <br>
+: 2018년의 데이터만 필터링
+
+`df_line = df_line.groupby('Date2')['Sales'].sum().reset_index()` <br>
+-df_line.groupby(’Date2’) : 같은 ‘Date2’끼리 묶음 <br>
+-[’Sales’].sum() : ‘Sales’를 sum함 <br>
+-reset_index() : df_line = df_line.groupby('Date2')['Sales'].sum()을 하면 인덱스가 자동으로 새로 생성되는데 원래의 인덱스로 다시 바꿔줌
+
+<br>
+
+```python
+# 30일 이동평균 생성
+df_line['Month'] = df_line['Sales'].rolling(window=30).mean()
+
+# 선 그래프 시각화
+ax = df_line.plot(x='Date2', y='Sales',linewidth = "0.5")
+df_line.plot(x='Date2', y='Month', color='#FF7F50', linewidth = "1", ax=ax)
+```
+​
+`df_line['Month'] = df_line['Sales'].rolling(window=30).mean()` <br>
+: 30개의 ‘Sales’데이터의 평균을 삽입하기 위해 새로운 칼럼 ‘Month’ 생성 → 추세선
+
+`ax = df_line.plot(x='Date2', y='Sales',linewidth = "0.5")` <br>
+: ax는 객체
+
+`df_line.plot(x='Date2', y='Month', color='#FF7F50', linewidth = "1", ax=ax)` <br>
+: 좌변의 ax는 plot 메서드 안에 있는 파라미터, 우변의 ax는 위에서 설정해 놓은 것
+
+![alt text](image-14.png)
+
+<br>
+
+```python
+# 연도 별 판매량 데이터 가공
+df_bar_1 = df.groupby('Year')['Sales'].sum().reset_index()
+
+df_bar_1.head()
+```
+
+`df_bar_1 = df.groupby('Year')['Sales'].sum().reset_index()` <br>
+: ‘Year’로 groupby 하고 ‘Sales’를 sum함
+
+<br>
+
+```python
+# 연도별 매출액 막대 그래프 시각화
+ax = df_bar_1.plot.bar(x='Year', y='Sales', rot=90, figsize=(10,5))
+```
+
+`ax = df_bar_1.plot.bar(x='Year', y='Sales', rot=90, figsize=(10,5))` <br>
+-df_bar_1.plot.bar :  막대그래프 <br>
+-rot=90 : x축의 라벨을 90도 회전 <br>
+-figsize=(10, 5) : 너비 10인치, 높이 5인 그래프
+
+![alt text](image-15.png)
+
+<br>
+
+```python
+#연도별, 고객 세그먼트 별 매출액 데이터 가공
+df_bar_2 = df.groupby(['Year', 'Segment'])['Sales'].sum().reset_index()
+
+# 고객 세그먼트를 컬럼으로 피벗
+df_bar_2_pv = df_bar_2.pivot(index='Year', columns='Segment', values='Sales').reset_index()
+df_bar_2_pv.head()
+```
+
+`df_bar_2 = df.groupby(['Year', 'Segment'])['Sales'].sum().reset_index()` <br>
+: 'Year', 'Segment'으로 groupby한 후 ‘Sales’ sum
+
+`df_bar_2_pv = df_bar_2.pivot(index='Year', columns='Segment', values='Sales').reset_index()` <br>
+-df_bar_2.pivot : df 재구조화 <br>
+-index='Year', columns='Segment', values='Sales’ : 행이 ‘Year’, 열이 ‘Segment’, 값이 ‘Sales’
+
+<br>
+
+```python
+# 연도 별 고객 세그먼트 별 매출액 누적 막대 그래프 시각화
+df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
+```
+
+`df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))` <br>
+-df_bar_2_pv.plot.bar(stacked=True) → 누적 막대 그래프 <br>
+-df_bar_2_pv.plot.bar(stacked=False) → 각 연도별로 그래프가 ‘Segment’의 개수만큼 나옴
+
+![alt text](image-16.png)
+
+# 10.4 비교 시각화
+
+## 히트맵 차트
+
+- 그룹과 비교 요소가 많을 때
+- 차트의 행은 그룹, 열은 요소
+
+1. 하나의 변수(그룹) x N개의 각 변수에 해당하는 값들(수치형)
+
+    <br>
+
+    ![alt text](image-17.png)
+
+    <br>
+
+2. 하나의 변수(그룹) x 하나의 변수(그룹/수준) x N개의 각 변수에 해당하는 값들(수치형)
+
+    <br>
+
+    ![alt text](image-18.png)
+
+## 방사형 차트
+
+- 게임에서 캐릭터가 하나의 그룹, 각 능력이 변수
+
+1. 하나의 차트에 하나의 그룹을 시각화
+![alt text](image-19.png)
+2. 하나의 차트에 모든 그룹을 한 번에 시각화
+![alt text](image-20.png)
+
+</br>
+
+## 평행 좌표 그래프
+
+- 그룹별 요소 비교 시각화
+
+1. 전략 캔버스
+
+    <br>
+    
+    ![alt text](image-21.png)
+
+    <br>
+
+2. 평행 좌표 그래프
+    - 효과적으로 표현하려면 변수별 값을 정규화
+    ← 가장 낮은 값 0%, 가장 높은 값 100%
+
+    <br>
+
+    ![alt text](image-22.png)
+
+## 비교 시각화 실습
+
+```python
+# 필요한 패키지 설치
+import matplotlib.pyplot as plt
+import pandas as pd
+import datetime
+import seaborn as sns
+import numpy as np
+from math import pi
+from pandas.plotting import parallel_coordinates
+plt.rcParams['figure.dpi'] = 300
+```
+
+```python
+# 데이터 불러오기
+# https://www.kaggle.com/datasets/umutalpaydn/nba-20202021-season-player-stats
+df = pd.read_csv("nba2021_advanced.csv")
+
+# 데이터 샘플 확인
+df.head()
+```
+
+```python
+# 히트맵 시각화 V1을 위한 데이터 전처리
+
+# 5개 팀만 필터링
+df1 = df[df['Tm'].isin(['ATL','BOS','BRK','CHI','CHO'])]
+
+# 6개 컬럼만 필터링 
+df1 = df1[['Tm', 'ORB%','TRB%','AST%','BLK%','USG%']]
+
+#  팀 별 요소 평균 전처리
+df1 = df1.groupby('Tm').mean()
+df1.head()
+```
+
+`df1 = df[df['Tm'].isin(['ATL','BOS','BRK','CHI','CHO'])]` <br>
+: ‘Tm’ 칼럼이 'ATL','BOS','BRK','CHI','CHO' 에 존재하는 행들을 ‘df1’이라는 새로운 df로 지정
+
+`df1 = df1[['Tm', 'ORB%','TRB%','AST%','BLK%','USG%']]` <br>
+: df1에서 칼럼 'Tm', 'ORB%','TRB%','AST%','BLK%','USG%’만 포함하는 새로운 df를 df1으로 저장
+
+![alt text](image-23.png) <br>
+→ df1
+
+<br>
+
+```python
+# 히트맵 시각화 V1
+
+fig = plt.figure(figsize=(8,8))
+fig.set_facecolor('white')
+plt.pcolor(df1.values)
+
+# x축 컬럼 설정
+plt.xticks(range(len(df1.columns)),df1.columns) 
+# y축 컬럼 설정
+plt.yticks(range(len(df1.index)), df1.index)
+# x축 레이블 설정
+plt.xlabel('Value', fontsize=14)
+# y축 레이블 설정
+plt.ylabel('Team', fontsize=14) 
+plt.colorbar()
+plt.show()
+```
+
+`fig.set_facecolor('white')` <br>
+: 배경색을 흰색으로
+
+`plt.pcolor(df1.values)` <br>
+: ‘.pcolor’ 함수를 이용하여 2차원 배열을 색으로 표현하며, ‘.values’로 ‘df1’의 값을 넘파이 배열로 반환
+
+`plt.xticks(range(len(df1.columns)), df1.columns)` <br>
+: x축에 len(df1.columns) 개수만큼의 tick mark에 df1.column 이름을 붙임
+
+`plt.xlabel('Value', fontsize=14)` <br>
+: x축에 ‘Value’를 label로 설정, 글꼴 크기 14
+
+`plt.colorbar()` <br>
+: color bar로 어떤 색상이 어떤 값을 나타내는지 시각적으로 보여줌
+
+<br>
+
+```python
+# 히트맵 시각화 V2를 위한 데이터 전처리
+
+# 5개 팀만 필터링
+df2 = df[df['Tm'].isin(['ATL','BOS','BRK','CHI','CHO'])]
+
+# 팀명, 연령, 참여 게임 수 컬럼만 필터링
+df2 = df2[['Tm','Age','G']]
+
+# 팀 - 연령 기준 평균으로 전처리
+df2 = df2.groupby(['Tm','Age']).mean().reset_index()
+
+# 테이블 피벗
+df2 = df2.pivot(index='Tm', columns='Age', values='G')
+df2.head()
+```
+
+`.reset_index()` <br>
+: df의 기존 인덱스가 열로 이동하며, 새로운 정수 인덱스가 생성 <br>
+-사용하는 경우: 기존 인덱스를 열로 변환할 때, df를 결합하거나 정렬할 때 인덱스가 필요 없을 때 <br>
+-사용하지 않는 경우: 특정 열이 인덱스로 유지되어야할 때, 현재 인덱스가 데이터를 식별하는 데 중요한 경우 <br>
+-groupby를 하면 해당 칼럼들이 인덱스가 됨 <br>
+-.reset_index()를 하면 다시 칼럼으로 바뀜 <br>
+
+`df2.pivot(index='Tm', columns='Age', values='G')` <br>
+-.povot() : df 재구조화 <br>
+-index='Tm', columns='Age', values='G’ : 행이 ‘Tm’, 열이 ‘Age’, 값이 ‘G’
+
+![alt text](image-24.png) <br> 
+→ df2
+
+<br>
+
+```python
+# 히트맵 시각화 V2
+
+fig = plt.figure(figsize=(8,8))
+fig.set_facecolor('white')
+ 
+plt.pcolor(df2.values)
+# x축 컬럼 설정
+plt.xticks(range(len(df2.columns)),df2.columns)
+# y축 컬럼 설정
+plt.yticks(range(len(df2.index)), df2.index)
+# x축 레이블 설정
+plt.xlabel('Age', fontsize=14)
+# y축 레이블 설정
+plt.ylabel('Team', fontsize=14) 
+plt.colorbar()
+plt.show()
+```
+
+```python
+# 방사형 차트를 위한 인덱스 초기화
+df3 = df1.reset_index()
+df3.head()
+```
+
+`df3 = df1.reset_index()` <br>
+: df1에서 ‘Tm’이 인덱스로 사용 → df3에서 ‘Tm’이 칼럼으로 사용
+
+![alt text](image-25.png) <br>
+→ df1
+![alt text](image-26.png) <br>
+→ df3
+
+<br>
+
+```python
+# 방사형 차트 - 하나씩 시각화
+
+labels = df3.columns[1:]
+num_labels = len(labels)
+
+# 등분점 생성 -> 각도 리스트 생성    
+angles = [x/float(num_labels)*(2*pi) for x in range(num_labels)] 
+angles += angles[:1] # 시작점 생성
+    
+my_palette = plt.cm.get_cmap("Set2", len(df3.index))
+ 
+fig = plt.figure(figsize=(15,20))
+fig.set_facecolor('white')
+
+# 데이터 리스트 생성
+for i, row in df3.iterrows():
+    color = my_palette(i)
+    data = df3.iloc[i].drop('Tm').tolist()
+    data += data[:1]
+    
+    ax = plt.subplot(3,2,i+1, polar=True)
+    # 시작점 설정
+    ax.set_theta_offset(pi / 2)
+    # 시계방향 설정
+    ax.set_theta_direction(-1) 
+    
+    # 각도 축 눈금 생성
+    plt.xticks(angles[:-1], labels, fontsize=13)
+    # 각 축과 눈금 사이 여백생성
+    ax.tick_params(axis='x', which='major', pad=15)
+    # 반지름 축 눈금 라벨 각도 0으로 설정
+    ax.set_rlabel_position(0)
+    # 반지름 축 눈금 설정
+    plt.yticks([0,5,10,15,20],['0','5','10','15','20'], fontsize=10) 
+    plt.ylim(0,20)
+    
+    # 방사형 차트 출력
+    ax.plot(angles, data, color=color, linewidth=2, linestyle='solid')
+    # 도형 안쪽 색상 설정
+    ax.fill(angles, data, color=color, alpha=0.4) 
+    # 각 차트의 제목 생성
+    plt.title(row.Tm, size=20, color=color,x=-0.2, y=1.2, ha='left') 
+# 차트 간 간격 설정
+plt.tight_layout(pad=3)
+plt.show()
+```
+
+`angles = [x/float(num_labels)*(2*pi) for x in range(num_labels)]` <br>
+: 리스트 컴프리헨션으로 각 라벨에 대한 각도들을 리스트로 생성 <br>
+```python
+angles = [ ]
+for x in range(num_labels):
+    angle = x / float(num_labels) * (2 * pi)
+    angles.append(angle)
+```
+보다 훨씬 간단함
+
+`angles += angles[:1]` <br>
+: 리스트의 맨 앞 요소를 맨 뒤에 추가함으로써 처음과 끝 연결 <br>
+→ 방사형 차트에서 각도가 완전한 원을 형성하도록 보장함
+
+`plt.cm.get_cmap("Set2", len(df3.index))` <br>
+-plt.cm.get_cmap : matplotlib의 컬러맵 함수 호출 <br>
+-Set2 :  사용할 컬러맵의 이름 <br>
+-len(df3.index) : 각 항목에 고유한 색상을 할당하기 위해 컬러맵에서 몇 가지 색상을 생성해야 하는지 결정
+
+`for i, row in df3.iterrows(): color = my_palette(i) data = df3.iloc[i].drop('Tm').tolist() data += data[:1]` <br>
+-.iterrows() : df3의 각 행을 (index, series(row의 데이터))의 튜플 형태로 반환 <br>
+-.iloc[i] : 행 번호를 기준으로 행을 선택하는 메서드 <br>
+-.drop(’Tm’) : ‘Tm’칼럼 제외 <br>
+-.tolist() : series를 list로 변환 <br>
+-data += data[:1] : 방사형 차트를 완전한 원형으로 만들기 위해 리스트의 맨 앞 값을 맨 뒤에 추가
+
+`plt.subplot(3,2,i+1, polar=True)` <br>
+: 하나의 figure에 3행 2열의 subplot 레이아웃 생성 <br>
+→ 총 6개의 서브플롯 공간 생성, i+1번째 위치에 방사형(polar) 플롯 추가 <br>
+-.subplot() : 하나의 그림(figure) 안에 여러 개의 플롯을 배열할 수 있도록 도와주는 함수
+
+`ax.set_theta_offset(pi / 2)` <br>
+: ax의 시작점을 pi/2 즉, 90도로 설정
+
+`ax.set_theta_direction(-1)` <br>
+: 각도가 시계 방향으로 증가하도록 변경 <br>
+-기본적으로 방사형 플롯의 각도는 시계 반대 방향으로 증가 (0(rad) → pi/2(rad) → pi(rad) → 3pi/2(rad))
+
+`plt.xticks(angles[:-1], labels, fontsize=13)` <br>
+: angles 리스트에서 마지막 각도를 제외한 리스트와 labels 리스트 대응시키고 label의 폰트 사이즈는 13으로 설정
+
+`ax.tick_params(axis='x', which='major', pad=15)` <br>
+: x축 - labels과 major 눈금의 끝인 ‘20’ 간의 간격이 15
+
+`ax.set_rlabel_position(0)` <br>
+: 시작 축과 눈금 라벨 간의 간격이 0
+
+`plt.yticks([0,5,10,15,20],['0','5','10','15','20'], fontsize=10)` <br>
+: y축의 눈금 위치와 레이블 설정 <br>
+-[0,5,10,15,20]은 y축의 눈금 위치, ['0','5','10','15','20']는 각 눈금 위치에 표시될 레이블 <br>
+-레이블 글꼴 크기는 10
+
+`plt.ylim(0,20)` <br>
+: y축의 최소 0 최대 20
+
+`ax.plot(angles, data, color=color, linewidth=2, linestyle='solid')` <br>
+: 방사형 차트에서 데이터를 플롯하는 메서드 (선)
+
+`ax.fill(angles, data, color=color, alpha=0.4)` <br>
+: 방사형 차트에서 데이터를 채우는 메서드 (선 내부)
+
+`plt.title(row.Tm, size=20, color=color,x=-0.2, y=1.2, ha='left')` <br>
+: 방사형 차트의 제목을 설정하는 메서드 <br>
+-row.Tm : ‘Tm’의 row값을 제목으로 <br>
+-x=-0.2, y=1.2 : 방사형 차트의 중심을 기준으로 좌우상하 위치 조정 <br>
+-ha='left': 제목의 수평 정렬 설정, 여기서는 왼쪽 정렬 <br>
+
+`plt.tight_layout(pad=3)` <br>
+-plt.tight_layout() : 모든 서브플롯 사이의 간격을 자동으로 조정하여 겹치지 않도록 <br>
+-pad=3 : 서브플롯 간의 패딩 설정
+
+<br>
+
+```python
+# 방사형 차트 - 한번에 시각화
+
+labels = df3.columns[1:]
+num_labels = len(labels)
+
+# 등분점 생성
+angles = [x/float(num_labels)*(2*pi) for x in range(num_labels)]
+# 시작점 생성
+angles += angles[:1] 
+    
+my_palette = plt.cm.get_cmap("Set2", len(df3.index))
+ 
+fig = plt.figure(figsize=(8,8))
+fig.set_facecolor('white')
+
+ax = fig.add_subplot(polar=True)
+for i, row in df3.iterrows():
+    color = my_palette(i)
+    data = df3.iloc[i].drop('Tm').tolist()
+    data += data[:1]
+    
+    # 시작점
+    ax.set_theta_offset(pi / 2) 
+    # 시계방향 설정
+    ax.set_theta_direction(-1) 
+    
+    # 각도 축 눈금 생성
+    plt.xticks(angles[:-1], labels, fontsize=13)
+    # 각 축과 눈금 사이 여백생성
+    ax.tick_params(axis='x', which='major', pad=15) 
+    # 반지름 축 눈금 라벨 각도 0으로 설정 
+    ax.set_rlabel_position(0) 
+    # 반지름 축 눈금 설정
+    plt.yticks([0,5,10,15,20],['0','5','10','15','20'], fontsize=10) 
+    plt.ylim(0,20)
+    
+    # 방사형 차트 출력
+    ax.plot(angles, data, color=color, linewidth=2, linestyle='solid', label=row.Tm) 
+    # 도형 안쪽 색상 설정
+    ax.fill(angles, data, color=color, alpha=0.4) 
+    
+plt.legend(loc=(0.9,0.9))
+plt.show()
+```
+
+`fig.add_subplot(polar=True)` <br>
+: 방사형 차트 하나에 여러 그래프 그리기
+
+`plt.legend(loc=(0.9,0.9))` <br>
+: 플롯에 범례(legend)를 추가
+-loc 매개변수는 범례의 위치를 지정, (0.9, 0.9)는 범례가 플롯의 오른쪽 상단 구석에 배치
+
+<br>
+
+```python
+# 팀 기준 평행 좌표 그래프 생성
+
+fig,axes = plt.subplots()
+plt.figure(figsize=(16,8)) # 그래프 크기 조정
+parallel_coordinates(df3,'Tm',ax=axes, colormap='winter',linewidth = "0.5")
+```
+
+### .subplot() vs .subplots()
+
+- 서브플롯 생성 방법:
+    - `plt.subplot`은 하나의 서브플롯을 추가할 때 사용
+    - `plt.subplots`는 여러 개의 서브플롯을 한 번에 생성하고, 배열로 반환하여 각 서브플롯을 쉽게 관리
+- 서브플롯 접근:
+    - `plt.subplot`을 사용하면 서브플롯을 개별적으로 생성하고, 각 서브플롯에 직접 접근하기 어려움
+    - `plt.subplots`를 사용하면 반환된 axes 배열을 통해 각 서브플롯에 쉽게 접근 가능
+- 유연성:
+    - `plt.subplots`는 서브플롯을 배열 형태로 관리, 코드의 유연성과 가독성 높음
+    - `plt.subplot`은 간단한 경우에 유용하지만, 서브플롯이 많아지면 관리가 어려움
+    
+<br>
+
+`fig,axes = plt.subplots()` <br>
+: Matplotlib에서 하나의 그림(figure)과 하나 이상의 서브플롯(subplots)을 생성하는 함수
+
+`parallel_coordinates(df3,'Tm',ax=axes, colormap='winter',linewidth = "0.5")` <br>
+: Pandas의 시각화 도구로, 데이터프레임의 다양한 범주형 데이터에 대한 평행 좌표 플롯을 생성 <br>
+-`'Tm'`: 범주형 데이터로 사용될 컬럼 <br>
+-`ax=ax`: 서브플롯을 지정

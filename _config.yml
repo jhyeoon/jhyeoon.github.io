@@ -21,9 +21,11 @@
 title: Jihyun's Arcive
 
 description: >- # this means to ignore newlines until "baseurl:"
-
+theme: jekyll-theme-chirpy
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://jhyeoon.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+paginate: 5
+paginate_path: "/page:num/"
 email_username: jihyun287672@gmail.com
 github_username:  jhyeoon
 

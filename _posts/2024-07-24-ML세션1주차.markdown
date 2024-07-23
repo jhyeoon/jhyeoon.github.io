@@ -124,7 +124,7 @@ print(numeric_df.kurtosis())
 `df.kurtosis()` <br>
 : numeric_df의 각 열의 첨도를 계산하는 명령어, 양의 값으로 큰 수면 뾰족한 분포, 음의 값으로 작은 수면 평평한 분포
 
-![alt text](image-1.png)
+#######################33
 
 <br>
 
@@ -143,7 +143,7 @@ sns.distplot(df['lead_time'])
 : Seaborn을 사용하여 ‘lead_time’ 열의 분포 시각화 <br>
 -히스토그램과 커널 밀도 추정(KDE)을 함께 표시
 
-![alt text](image.png)
+#######################
 
 <br>
 
@@ -167,7 +167,7 @@ sns.stripplot(x="hotel", y="lead_time", data=df, size=1)
 
 <br>
 
-![alt text](image-3.png)
+#########################
 
 # 10.2 공분산과 상관성 분석
 
@@ -184,7 +184,7 @@ $Var(X) = E(X-E(X)^2) = E(X^2)-{E(X)}^2$ <br>
 variance 클수록 분포가 퍼져있음
 - 공분산(covariance) <br>
     $Cov(X,Y)=E((X-E(X))(Y-E(Y)))=E(XY)-E(X)E(Y)$ <br>
-    ![alt text](image-5.png)
+    ######################
     - 양의 상관관계: X_1이 커지면 X_2도 커짐
     - 음의 상관관계: X_1이 작아지면 X_2도 작아짐
     - 무 상관관계: X_1과 X_2는 선형적인 관계가 없음
@@ -193,9 +193,9 @@ variance 클수록 분포가 퍼져있음
 ## (피어슨) 상관계수
 : 공분산의 한계점인 양(음)수로 (반)비례 관계는 알 수 있지만 값이 커질수록 상관성이 높은지는 판단할 수 없는 것 해결 ← 각 변수 간의 다른 척도기준이 그대로 반영되기 때문 
 
-![alt text](image-6.png)
-![alt text](image-7.png)
-![alt text](image-8.png)
+###############################
+##############################
+##############################
 - 산점도의 기울기와 상관계수는 관련x
 - 분산의 관계성이 같음 → 기울기와 무관하게 상관계수는 같음
 - 상관계수가 높음 → X_2를 예상할 수 있는 정확도(설명력)이 높음
@@ -206,7 +206,7 @@ variance 클수록 분포가 퍼져있음
 
     <br>
 
-    ![alt text](image-9.png)
+    ###########################33
 
 ## 공분산과 상관성 실습
 
@@ -241,7 +241,7 @@ sns.pairplot(df,
             )
 plt.show()
 ```
-![alt text](image-10.png)
+#####################################
 
 `sns.set(font_scale=1.1)` <br>
 : Seaborn 플롯의 폰트 크기를 1.1배로 조정
@@ -291,7 +291,7 @@ plt.show()
 -annot=True는 각 셀에 상관계수 값을 표시 <br>
 -linewidths=0.5는 셀 간의 경계선을 설정
 
-![alt text](image-11.png)
+################################
 
 <br>
 
@@ -303,7 +303,7 @@ sns.clustermap(numeric_df.corr(), annot = True, cmap = 'RdYlBu_r', vmin = -1, vm
 -sns.clustermap(numeric_df.corr()) : 상관 행렬의 계층적 클러스터링을 수행하고, 이를 히트맵으로 시각화하는 명령 <br>
 -vmin=-1, vmax=1 : 색상 막대의 범위를 설정
 
-![alt text](image-12.png)
+#################################
 
 <br>
 
@@ -328,7 +328,7 @@ sns.heatmap(df.corr(),
 ax.set_title('Wine Quality Correlation', pad = 15)
 ```
 
-![alt text](image-13.png)
+#############################
 
 # 10.3 시간 시각화
 
@@ -425,7 +425,7 @@ df_line.plot(x='Date2', y='Month', color='#FF7F50', linewidth = "1", ax=ax)
 `df_line.plot(x='Date2', y='Month', color='#FF7F50', linewidth = "1", ax=ax)` <br>
 : 좌변의 ax는 plot 메서드 안에 있는 파라미터, 우변의 ax는 위에서 설정해 놓은 것
 
-![alt text](image-14.png)
+############################3
 
 <br>
 
@@ -451,7 +451,7 @@ ax = df_bar_1.plot.bar(x='Year', y='Sales', rot=90, figsize=(10,5))
 -rot=90 : x축의 라벨을 90도 회전 <br>
 -figsize=(10, 5) : 너비 10인치, 높이 5인 그래프
 
-![alt text](image-15.png)
+############################
 
 <br>
 
@@ -482,7 +482,7 @@ df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
 -df_bar_2_pv.plot.bar(stacked=True) → 누적 막대 그래프 <br>
 -df_bar_2_pv.plot.bar(stacked=False) → 각 연도별로 그래프가 ‘Segment’의 개수만큼 나옴
 
-![alt text](image-16.png)
+####################################
 
 # 10.4 비교 시각화
 
@@ -495,7 +495,7 @@ df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
 
     <br>
 
-    ![alt text](image-17.png)
+    ##############################
 
     <br>
 
@@ -503,16 +503,16 @@ df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
 
     <br>
 
-    ![alt text](image-18.png)
+    ###############################
 
 ## 방사형 차트
 
 - 게임에서 캐릭터가 하나의 그룹, 각 능력이 변수
 
 1. 하나의 차트에 하나의 그룹을 시각화
-![alt text](image-19.png)
+##############################
 2. 하나의 차트에 모든 그룹을 한 번에 시각화
-![alt text](image-20.png)
+###############################
 
 </br>
 
@@ -524,7 +524,7 @@ df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
 
     <br>
     
-    ![alt text](image-21.png)
+    ##############################
 
     <br>
 
@@ -534,7 +534,7 @@ df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
 
     <br>
 
-    ![alt text](image-22.png)
+    ################################
 
 ## 비교 시각화 실습
 
@@ -579,7 +579,7 @@ df1.head()
 `df1 = df1[['Tm', 'ORB%','TRB%','AST%','BLK%','USG%']]` <br>
 : df1에서 칼럼 'Tm', 'ORB%','TRB%','AST%','BLK%','USG%’만 포함하는 새로운 df를 df1으로 저장
 
-![alt text](image-23.png) <br>
+################################# <br>
 → df1
 
 <br>
@@ -648,7 +648,7 @@ df2.head()
 -.povot() : df 재구조화 <br>
 -index='Tm', columns='Age', values='G’ : 행이 ‘Tm’, 열이 ‘Age’, 값이 ‘G’
 
-![alt text](image-24.png) <br> 
+############################## <br> 
 → df2
 
 <br>

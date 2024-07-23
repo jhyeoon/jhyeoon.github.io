@@ -681,9 +681,9 @@ df3.head()
 `df3 = df1.reset_index()` <br>
 : df1에서 ‘Tm’이 인덱스로 사용 → df3에서 ‘Tm’이 칼럼으로 사용
 
-![alt text](image-25.png) <br>
+#################### <br>
 → df1
-![alt text](image-26.png) <br>
+####################### <br>
 → df3
 
 <br>

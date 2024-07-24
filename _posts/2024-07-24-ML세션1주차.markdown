@@ -862,9 +862,9 @@ parallel_coordinates(df3,'Tm',ax=axes, colormap='winter',linewidth = "0.5")
 1. 질적 척도(명목형)
 
 : 전체를 100%로 하여 구성 요소들의 분포 정도를 면적으로 표현, 수치를 차트 위에 함께 표현하는 것이 좋음
-- 파이 차트
+- 파이 차트 <br>
 ![alt text](image-23.png)
-- 도넛 차트
+- 도넛 차트 <br>
 ![alt text](image-24.png)
 - 트리맵 차트
     - 구성요소가 복잡할 때 사용

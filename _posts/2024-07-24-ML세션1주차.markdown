@@ -893,3 +893,670 @@ parallel_coordinates(df3,'Tm',ax=axes, colormap='winter',linewidth = "0.5")
 : Pandas의 시각화 도구로, 데이터프레임의 다양한 범주형 데이터에 대한 평행 좌표 플롯을 생성 <br>
 -`'Tm'`: 범주형 데이터로 사용될 컬럼 <br>
 -`ax=ax`: 서브플롯을 지정
+
+# 10.5 분포 시각화
+
+1. 양적 척도(연속형)
+- 막대 그래프
+- 선 그래프
+- 히스토그램: 겹치지 않는 변수의 구간을 동일하게 나눠서 구간별 도수를 막대그래프로 표현
+    - bin : 각 구간
+    - density : 구간의 높이, 가로축의 단위 구간에 속한 값의 비율
+    - 처음에는 구간을 20개 정도로 세세하게 나눠서 분포를 살펴본 다음 정보의 손실이 커지기 전까지 구간의 개수 줄여감
+1. 질적 척도(명목형)
+
+: 전체를 100%로 하여 구성 요소들의 분포 정도를 면적으로 표현, 수치를 차트 위에 함께 표현하는 것이 좋음
+- 파이 차트
+
+- 도넛 차트
+
+- 트리맵 차트
+    - 구성요소가 복잡할 때 사용
+    - 하나의 큰 사각형을 구성요소의 비율에 따라 작은 사각형으로 쪼개어 분포 표현
+    - 사각형 안에 더 작은 사각형을 포함시켜서 위계구조 표현
+    - 단점: 구성요소들 간의 규모 차이가 크면 표현이 어려움
+
+- 와플 차트
+    - 일정한 네모난 조각들로 분포 표현
+    - 트리맵차트처럼 위계구조를 표현하지는x
+
+```python
+# 필요한 패키지 설치
+!pip install plotly
+!pip install pywaffle
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import numpy as np
+import plotly.express as px
+from pywaffle import Waffle
+plt.rcParams['figure.dpi'] = 300
+```
+
+`!pip install plotly`
+`!pip install pywaffle`
+: plotly와 ptwaffle 설치
+
+`import plotly.express as px`
+- plotly.express: Plotly 라이브러리의 고수준 인터페이스로, 데이터를 시각화하는데 필요한 많은 기본 설정을 간편하게 처리
+
+`from pywaffle import Waffle`
+- PyWaffle : Python에서 와플 차트를 생성하기 위한 라이브러리
+- Waffle : Matplotlib의 FigureClass로 사용되어 와플 차트를 생성하는 클래스
+
+<br>
+
+```python
+# 데이터 불러오기
+# https://www.kaggle.com/datasets/sewonghwang/six-countries-height-samples
+df = pd.read_csv("datasets/six_countries_height_samples.csv")
+
+# 데이터 샘플 확인
+df.head()
+```
+
+```python
+# 기본 히스토그램 시각화
+
+#  신장 컬럼만 필터링
+df1 = df[['height_cm']]
+
+# 10cm 단위로 히스토그램 시각화
+plt.hist(df1, bins=10, label='bins=10')
+plt.legend()
+plt.show()
+```
+
+`plt.hist(df1, bins=10, label='bins=10')`
+- plt.hist() : 히스토그램을 생성
+- bins=10 : 10cm 단위로 설정
+
+<br>
+
+# 남성 여성 히스토그램 시각화
+
+```python
+#  남성 여성 별도 데이터셋 생성
+df1_1 = df[df['sex'].isin(['man'])]
+df1_1 = df1_1[['height_cm']]
+df1_2 = df[df['sex'].isin(['woman'])]
+df1_2 = df1_2[['height_cm']]
+
+# 10cm 단위로 남성, 여성 신장 히스토그램 시각화
+plt.hist(df1_1, color = 'green', alpha = 0.2, bins = 10, label = 'MAN', density = True)
+plt.hist(df1_2, color = 'red', alpha = 0.2, bins = 10, label = 'WOMAN', density = True)
+plt.legend()
+plt.show()
+​
+plt.hist(df1_1, color = 'green', alpha = 0.2, bins = 10, label = 'MAN', density = True)
+- alpha = 0.2 : 투명도 설정
+- density = True : 히스토그램을 밀도(normalized) 히스토그램으로 생성
+```
+
+```python
+# 파이차트, 도넛차트 시각화를 위한 데이터 전처리
+
+df2 = df[['country','height_cm']]
+# 키 175 이상만 추출
+df2=df2[df.height_cm >= 175]
+df2 = df2.groupby('country').count().reset_index()
+
+df2.head(10)
+```
+​
+`df2=df2[df.height_cm >= 175]`
+: 키 175 이상만 추출
+
+<br>
+
+```python
+# 파이차트 시각화
+
+fig = plt.figure(figsize=(8,8)) ## 캔버스 생성
+fig.set_facecolor('white') ## 캔버스 배경색 설정
+ax = fig.add_subplot() # 프레임 생성
+
+# 파이차트 출력
+ax.pie(df2.height_cm, 
+       labels=df2.country, # 라벨 출력
+       startangle=0, # 시작점 degree 설정
+       counterclock=False, # 시계 방향
+       autopct=lambda p : '{:.1f}%'.format(p) # 퍼센자릿수 설정
+       )
+
+plt.legend() # 범례 표시
+plt.show()
+```
+
+​
+`ax.pie(df2.height_cm, labels=df2.country, startangle=0, counterclock=False, autopct=lambda p : '{:.1f}%'.format(p))`
+- ax.pie : 파이 차트 생성
+- startangle=0 : 시작점 degree가 0
+- counterclock=False : 시계 반대 방향
+- autopct=lambda p : '{:.1f}%'.format(p) : 각 조각의 비율을 소수점 첫째 자리까지 표시하는 람다 함수
+
+<br>
+
+```python
+# 도넛차트 시각화
+
+# 차트 형태 옵션 설정
+wedgeprops={'width': 0.7, 'edgecolor': 'w', 'linewidth': 5}
+
+plt.pie(df2.height_cm, labels=df2.country, autopct='%.1f%%', 
+        startangle=90, counterclock=False, wedgeprops=wedgeprops)
+plt.show()
+```
+
+`wedgeprops={'width': 0.7, 'edgecolor': 'w', 'linewidth': 5}`
+: 쐐기(wedge)의 속성을 설정, 너비를 0.7, 외곽선을 흰색(white), 외곽선의 두께 5
+
+`plt.pie(df2.height_cm, labels=df2.country, autopct='%.1f%%', startangle=90, counterclock=False, wedgeprops=wedgeprops)`
+- plt.pie() : 파이 차트 생성
+
+<br>
+
+```python
+# 트리맵 차트 시각화
+
+fig = px.treemap(df3,
+                 path=['sex','country'],
+                 values='height_cm',
+                 color='height_cm',
+                 color_continuous_scale='viridis')
+
+fig.show()
+```
+
+`px.treemap(df3, path=['sex','country'], values='height_cm', color='height_cm', color_continuous_scale='viridis')`
+- px.treemap() : 트리맵 생성
+- path=['sex','country'] : 계층적 경로를 설정, 최상위 계층은 sex, 그 다음 계층은 country
+-values='height_cm': 각 직사각형의 크기를 결정하는 값
+-color='height_cm': 각 직사각형의 색상을 결정하는 값
+-color_continuous_scale='viridis': 색상 스케일을 viridis로 설정
+
+<br>
+
+```python
+# 와플차트 시각화
+
+fig = plt.figure(
+    FigureClass=Waffle,
+    plots={
+        111: {
+            'values': df2['height_cm'],
+            'labels': ["{0} ({1})".format(n, v) for n, v in df2['country'].items()],
+            'legend': {'loc': 'upper left', 'bbox_to_anchor': (1.05, 1), 'fontsize': 8},
+            'title': {'label': 'Waffle chart test', 'loc': 'left'}
+        }
+    },
+    rows=10,
+    figsize=(10, 10) 
+)
+```
+
+`plots={111: {'values': df2['height_cm'],'labels': ["{0} ({1})".format(n, v) for n, v in df2['country'].items()], 'legend': {'loc': 'upper left', 'bbox_to_anchor': (1.05, 1), 'fontsize': 8},'title': {'label': 'Waffle chart test', 'loc': 'left'}`
+- 111 : 서브플롯의 위치를 나타내며, 단일 서브플롯을 생성
+- ‘values': df2['height_cm'] : 와플 차트의 각 블록의 크기를 나타내는 값
+- 'labels': ["{0} ({1})".format(n, v) for n, v in df2['country'].items()] : 각 블록에 표시될 레이블을 설정
+- 'bbox_to_anchor': (1.05, 1) : 범례를 플롯의 특정 위치로 이동시키는 데 사용, 1이 플롯의 끝을 말함
+
+<br>
+
+# 10.6 관계 시각화
+
+## 산점도(scatter plot)
+
+- 점들의 분포와 추세를 통해 두 변수 간의 관계 파악
+- 극단치를 제거하는 것이 좋음 ← 극단치로 인해 주요 분포 구간이 압축되어 시각화의 효율이 떨어져서
+- 데이터가 너무 많아서 점들이 겹쳐 정보를 제대로 확인할 수 x → 투명도를 주어 점들의 밀도 표현 or 빈도에 따른 농도나 색상을 다르게 표현
+- 버블 차트
+: 세 가지 요소의 상관관계 표현 가능 ← 버블의 크기를 통해 한가지 요소를 추가 가능
+( 버블에 색상이나 농도 요소를 추가하여 네 가지 요소도 표현 가능 but 차트 해석이 어려워짐)
+    - 원의 면적도 관찰해야하므로 관측치가 너무 많은 경우 정보 전달의 효율이 떨어짐
+    - 관측치 > 100개 → 데이터 축약 or 다른 시각화 방법 사용
+    - 해석 시, 원의 지름이 아닌 면적을 통해 크기 판단
+
+## 관계 시각화 실습
+
+```python
+# 필요한 패키지 설치
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+import numpy as np
+plt.rcParams['figure.dpi'] = 300
+```
+
+```python
+# 데이터 불러오기
+# https://www.kaggle.com/datasets/karthickveerakumar/startup-logistic-regression
+df = pd.read_csv("datasets/50_Startups.csv")
+
+# 데이터 샘플 확인
+df.head()
+```
+
+```python
+# 기본 산점도 시각화
+
+plt.scatter(df['R&D Spend'], df['Profit'], s = 50, alpha = 0.4)
+plt.show()
+```
+
+`plt.scatter(df['R&D Spend'], df['Profit'], s = 50, alpha = 0.4)`
+- plt.scatter : 산점도 생성
+- x축 : df['R&D Spend'], y축 : df['Profit']
+- s = 50 : 점의 크기 50
+
+<br>
+
+```python
+# 산점도에 회귀선 추가
+ax = sns.lmplot(x='R&D Spend', y='Profit', data= df)
+```
+​
+`sns.lmplot(x='R&D Spend', y='Profit', data= df)` <br>
+: Seaborn 라이브러리를 사용하여 산점도에 선형 회귀선을 추가
+
+<br>
+
+```python
+# 네 가지 요소의 정보를 포함한 산점도 시각화
+
+plt.scatter(df['R&D Spend'], df['Profit'], s=df['Marketing Spend']*0.001, 
+            c=df['Administration'], alpha=0.5, cmap='Spectral')
+plt.colorbar()
+plt.show()
+```
+
+`s=df['Marketing Spend']*0.001` <br>
+: 점의 크기를 Marketing Spend*0.001로 설정
+
+`c=df['Administration']` <br>
+: 점의 색상을 Administration으로 설정
+
+`cmap='Spectral'` <br>
+: 색상 맵을 'Spectral'
+
+<br>
+
+# 10.7 공간 시각화
+
+: 위치 정보인 위도와 경도 데이터를 지도에 매핑하여 시각적으로 표현
+
+- 일반적인 시각화 방법처럼 단순 이미지로 표현되는 것이 아닌, 지도를 확대하거나 위치를 옮기는 인터랙티브한 활용 가능
+- 거시적 → 미시적, 스토리라인을 잡고 시각화 적용하는 것이 좋음
+
+- 도트맵
+    
+    : 지리적 위치에 동일한 크기의 작은 점을 찍어서 해당 지역의 데이터 분포나 패턴을 표현하는 기법
+    
+    - 장점 : 시각적으로 데이터의 개요를 파악 쉬움
+    단점 : 정확한 값 전달 x → 축소 시 수치 표현하고, 확대 시 점으로 표시하는 기법 사용
+- 버블맵
+    
+    : 버블 차트를 지도에 옮긴 것
+    
+    - 장점: 데이터의 값이 원의 크기로 표현 → 코로플레스맵보다 비율을 비교한 데 효과적
+    단점: 지나치게 큰 버블은 다른 버블과 겹칠 수 있음
+- 코로플레스맵
+    
+    : 단계 구분도, 데이터 값의 크기에 따라 색상의 음영을 달리하여 해당 지역에 대한 값을 시각화하는 기법
+    
+    - 장점 : 여러 색상 혼합 가능, 투명도, 명도, 채도 등 다양하게 표현 가능
+    단점 : 정확한 수치를 인지하고 비교하는 것 어려움
+    - 큰 지역이 작은 지역들에 비해 강조되는 인상을 줄 수 있음 유의해야 함
+- 커넥션맵, 링크맵
+    
+    : 지도에 찍힌 점들을 곡선 또는 직선으로 연결하여 지리적 관계 표현, 연속적 연결을 통해 지도에 경로 표현 가능
+    
+    - 연결선의 분포나 집중도를 통해 지리적 관계의 패턴을 파악하기 위해 사용
+- 플로우맵
+    
+    : 커넥션맵과 유사하게 선을 표현하지만 시작점과 도착점이 함께 표현
+    
+- 카토그램
+    
+    : 각 지역의 면적을 데이터 값에 비례하도록 변형시켜 시각화
+    
+
+## 공간 시각화 실습
+
+```python
+# 필요한 패키지 설치
+!pip install folium
+import folium
+from folium import Marker
+from folium import plugins
+from folium import GeoJson
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import plotly.graph_objects as go
+
+plt.rcParams['figure.dpi'] = 300
+```
+
+`!pip install folium` <br>
+: Folium 라이브러리를 설치하는 명령
+-  Folium은 Leaflet.js를 기반으로 하는 파이썬용 지도 시각화 라이브러리
+
+`import folium` <br>
+: Folium 라이브러리를 가져옴
+
+`from folium import Marker` <br>
+`from folium import plugins` <br>
+`from folium import GeoJson` <br>
+: Folium 라이브러리에서 Marker, plugins, GeoJson 모듈 가져옴
+
+`import plotly.graph_objects as go` <br>
+: Plotly 라이브러리의 graph_objects 모듈을 go라는 이름으로 가져옴
+
+<br>
+
+```python
+# 서울 스타벅스 지점 데이터 불러오기
+# https://www.kaggle.com/datasets/sewonghwang/starbucks-seoul
+df=pd.read_csv("datasets/Starbucks_Seoul.csv")
+
+# 지역 구분을 위한 json 파일 불러오기
+geo="datasets/Seoul_Gu.json, encoding=cpg949" 
+
+# 데이터 샘플 확인
+df.head()
+```
+
+```python
+# 기본 지도 시각화 (서울의 위도, 경도 입력)
+
+m = folium.Map(location=[37.541, 126.986], zoom_start=12)
+m
+```
+
+`folium.Map(location=[37.541, 126.986], zoom_start=12)`
+: Folium을 사용하여 서울의 위도와 경도(37.541, 126.986)를 중심으로 기본 지도를 시각화, 초기 줌 레벨을 12로 설정
+
+<br>
+
+```python
+# 지도 형태 변경
+m = folium.Map(location=[37.541, 126.986], tiles='Stamen Toner', zoom_start=12)
+
+# 원하는 좌표에 반경(radius) 표시 (남산)
+folium.CircleMarker([37.5538, 126.9810],radius=50, 
+                    popup='Laurelhurst Park', color='#3246cc', 
+                    fill_color='#3246cc').add_to(m)
+
+# 원하는 좌표에 포인트 표시 (남산)
+folium.Marker([37.5538, 126.9810], popup='The Waterfront').add_to(m)
+    
+m
+```
+
+`tiles='Stamen Toner'` <br>
+: 지도의 스타일을 'Stamen Toner'로 설정
+
+`folium.CircleMarker([37.5538, 126.9810], radius=50, popup='Laurelhurst Park', color='#3246cc', fill_color='#3246cc').add_to(m)`
+- folium.CircleMarker : 반경 표시
+- [37.5538, 126.9810] : 위도와 경도
+- radius=50 : 반경의 크기를 50으로 설정
+- popup='Laurelhurst Park' : 반경을 클릭했을 때 나타날 팝업 메시지를 설정
+- color='#3246cc’ : 반경의 테두리 색상을 설정
+- fill_color='#3246cc' : 반경의 채우기 색상을 설정
+- .add_to(m) : 객체를 지도에 추가
+
+`folium.Marker([37.5538, 126.9810], popup='The Waterfront').add_to(m)`
+- folium.Marker : 포인트 표시
+
+<br>
+
+```python
+# 서울 지도에 스타벅스 지점 수 시각화
+
+m = folium.Map([37.541, 126.986], zoom_start=12 ,width="%100", height="%100")
+locations = list(zip(df.latitude, df.longitude))
+cluster = plugins.MarkerCluster(locations=locations,                     
+               popups=df["name"].tolist())  
+m.add_child(cluster)
+m
+```
+
+`width="%100", height="%100` <br>
+: 지도의 너비와 높이를 각각 100%로 설정
+
+`list(zip(df.latitude, df.longitude))` <br>
+: df의 latitude 열과 longitude 열의 값들을 병렬로 결합하여 (위도, 경도) 튜플을 생성한 후, 리스트로 변환
+
+`plugins.MarkerCluster(locations=locations, popups=df["name"].tolist())` <br>
+: Folium 라이브러리의 MarkerCluster 플러그인을 사용하여 지도에 마커 클러스터를 추가
+- 각 스타벅스 지점의 이름으로 구성되어 있는 리스트
+
+`m.add_child(cluster)` <br>
+: m(Folium 지도 객체)에 cluster(MarkerCluster 객체)를 추가
+
+<br>
+
+```python
+# 서울 지도에 스타벅스 지점수 도드맵 시각화
+
+m = folium.Map(location=[37.541, 126.986], zoom_start=12, width="%100", height="%100")
+locations = list(zip(df.latitude, df.longitude))
+for i in range(len(locations)):
+    folium.CircleMarker(location=locations[i],radius=1).add_to(m)
+m
+```
+
+`for i in range(len(locations)):`
+`folium.CircleMarker(location=locations[i],radius=1).add_to(m)`
+- folium.CircleMarker : 지도에 원형 마커를 추가
+
+<br>
+
+```python
+# 서울 구 별 스타벅스 지점 수 집계 및 중심점 산출
+df_m = df.groupby('gu_name').agg({'latitude':'mean',
+                                  'longitude':'mean',
+                                  'name':'count'}).reset_index()
+df_m.head()
+```
+
+`.agg({'latitude':'mean', 'longitude':'mean', 'name':'count'})` <br>
+- .agg :  pandas의 DataFrame과 Series에서 사용할 수 있는 집계(aggregation) 메서드, 평균(mean), 합계(sum), 최대값(max), 최소값(min) 등을 계산 가능
+
+<br>
+
+```python
+# 서울 구 별 스타벅스 지점 수 버블맵 시각화
+
+# 기본 지도 생성
+m = folium.Map(location=[37.541, 126.986], tiles='Cartodb Positron', 
+               zoom_start=11, width="%100", 
+               height="%100")
+
+# 구별 구분선, 색상 설정
+folium.Choropleth(
+    geo_data=geo, # 앞에서 불러온 json 파일 적용
+    fill_color="gray"
+    ).add_to(m)
+
+# 버블맵 삽입
+locations = list(zip(df_m.latitude, df_m.longitude))
+for i in range(len(locations)):
+    row = df_m.iloc[i]
+    folium.CircleMarker(location=locations[i],
+                        radius= float(row.name/2), # 버블 크기 설정
+                        fill_color="blue"
+                       ).add_to(m)
+m
+
+# radius에 카운팅을 넣어줌
+# 만약 원이 커서 겹치면 float(row.name/1)의 분모값을 조정
+```
+
+`folium.Choropleth(geo_data=geo, fill_color="gray").add_to(m)` <br>
+: Choropleth 지도를 생성하는 데 사용, 지리적 구역을 색으로 구분하여 시각적으로 표현, fill_color="gray"로 설정하여 경계의 색을 회색으로 설정
+
+`for i in range(len(locations))` <br>
+: locations 리스트의 길이만큼 루프를 돌면서 각 위치에 대해 마커를 생성 <br>
+`row = df_m.iloc[i]` <br>
+: df_m 데이터프레임의 i번째 행을 가져옴 <br>
+`folium.CircleMarker(location=locations[i]…)` <br>
+: locations[i] 위치에 원형 마커를 생성<br>
+`radius= float(row.name/2)` <br>
+: 마커의 반지름을 해당 구의 스타벅스 지점 수에 비례하도록 설정
+
+<br>
+
+```python
+# 미국 실업률 정보의 코로플레스맵 시각화를 위한 데이터, json 불러오기
+# https://www.kaggle.com/datasets/sewonghwang/us-unemployment
+df2 =pd.read_csv("datasets/us_states_unemployment.csv")
+
+# 주 별 경계 json 파일 불러오기
+us_geo = 'datasets/folium_us-states.json'
+
+df2.head()
+
+```
+
+```python
+# 미국 주별 실업률 코로플레스맵 시각화
+
+# 미국 지도 시각화
+m = folium.Map(location=[40,-98], zoom_start=3, tiles="Cartodb Positron")
+
+# 지도에 주 경계선, 실업률 데이터 연동
+m.choropleth(geo_data = us_geo, # json 데이터
+               data = df2, # 실업률 데이터
+               columns = ['State','Unemployment'], # 연동할 컬럼 설정
+               key_on = 'feature.id', # json과 실업률 데이터를 연결할 키값 설정
+               fill_color='YlGn',
+               legend_name='실업률')
+
+m
+```
+
+`columns = ['State','Unemployment']` <br>
+: df2에서 연동할 칼럼 지정
+
+`key_on = 'feature.id'` <br>
+: json파일과 df를 연결하는 키를 id로 설정
+
+<br>
+
+```python
+# 서울과 각국의 수도 간의 커넥션맵 시각화
+
+# 서울과 도쿄, 워싱턴, 마닐라, 파리, 모스크바 위경도 입력
+source_to_dest = zip([37.541,37.541,37.541,37.541,37.541], #서울 위도
+                     [35.6804, 38.9072, 14.5995, 48.8566,55.7558], #나머지 위도
+                     [126.986,126.986,126.986,126.986,126.986], #서울 경도
+                     [139.7690, -77.0369, 120.9842, 2.3522,37.6173]) #나머지 경도
+
+fig = go.Figure()
+
+## for 문을 활용하여 위경도 입력
+for a, b, c, d in source_to_dest:
+    fig.add_trace(go.Scattergeo(
+                        lat = [a, b],
+                        lon = [c, d],
+                        mode = 'lines',
+                        line = dict(width = 1, color="red"),
+                        opacity = 0.5 # 선 투명도
+                        ))
+
+fig.update_layout(
+                margin={"t":0,"b":0,"l":0, "r":0, "pad":0},
+                showlegend=False,
+                geo = dict(
+                showcountries=True) # 국가 경계선
+                )
+
+fig.show()
+```
+
+`fig = go.Figure()` <br>
+: 빈 Figure 객체를 생성, 시각화를 위한 기본 구조를 제공하지만 초기에는 아무런 데이터나 시각적 요소가 포함되지 않은 상태
+
+`fig.add_trace(go.Scattergeo(lat = [a, b], lon = [c, d], mode = 'lines', line = dict(width = 1, color="red"), opacity = 0.5))`
+- .add_trace(go.Scattergeo()) : 각 도시와 서울을 연결하는 경로를 `Figure` 객체에 추가하는 메서드
+
+`fig.update_layout(margin={"t":0,"b":0,"l":0, "r":0, "pad":0}, showlegend=False, geo = dict(showcountries=True))`
+- .update_layout : Plotly 시각화의 레이아웃을 업데이트하는 메서드
+- showlegend=False : 범례 숨김
+- geo = dict(showcountries=True : 국가 경계선을 표시함)
+
+<br>
+
+# 10.8 박스 플롯
+
+: 네모 상장 모양에 최댓값과 최솟값을 나타내는 선이 결합된 모양의 데이터 시각화 방법
+
+- 두 변수의 값을 비교할 때 효과적
+
+## 박스 플롯 실습
+
+```python
+# 필요한 패키지 설치
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+plt.rcParams['figure.dpi'] = 300
+```
+
+```python
+# 데이터 불러오기
+# https://www.kaggle.com/datasets/karthickveerakumar/startup-logistic-regression
+df = pd.read_csv("datasets/50_Startups.csv")
+
+# 데이터 샘플 확인
+df.head()
+```
+
+```python
+# Profit 변수로 기본 가로 세로 박스 플롯 시각화
+
+# 세로 박스 플롯
+plt.figure(figsize = (8, 6))
+sns.boxplot(y = 'Profit', data = df)
+plt.show()
+
+# 가로 박스 플롯
+plt.figure(figsize = (8, 2))
+sns.boxplot(x = 'Profit', data = df)
+plt.show()
+```
+
+```python
+# State 구분에 따른 Profit 박스 플롯 시각화
+
+plt.figure(figsize=(8,5))
+sns.boxplot(x="State", y="Profit", data=df)
+plt.show()
+```
+
+```python
+# 평균, 데이터 포인트 포함한 박스 플롯 시각화
+sns.boxplot(x="State", y="Profit", 
+            showmeans=True, 
+            boxprops={'facecolor':'None'}, 
+            data=df)
+
+sns.stripplot(x='State', y='Profit', 
+              data=df, 
+              jitter=True, 
+              marker='o', 
+              alpha=0.5,
+              color='black')
+
+plt.show()
+```
+
+`jitter=True`
+: 데이터 포인트를 약간 무작위로 분산시켜 포인트들이 겹치지 않도록 
+
+`marker='o'`
+: 데이터 포인트를 원형(marker 'o')으로 표시

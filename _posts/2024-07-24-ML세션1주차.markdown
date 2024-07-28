@@ -1493,7 +1493,7 @@ sns.boxplot(x = 'Profit', data = df)
 plt.show()
 ```
 ![image-34](https://github.com/user-attachments/assets/35aef1a6-33cb-4d3f-a944-7e3cfd693ecf)
-![image-35](https://sneaky-nannyberry-29f.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F258f3682-a939-4bee-a173-5c458ee8abb1%2F2df8ca09-ce5a-413f-bb8c-409a9743246b%2FUntitled.png?table=block&id=96be028e-ecd2-4841-bf4a-1ad468fb5e3e&spaceId=258f3682-a939-4bee-a173-5c458ee8abb1&width=670&userId=&cache=v2)
+![image-35](https://github.com/user-attachments/assets/59eca9f8-1b66-4671-94f0-56b90d9c8035)
 ```python
 # State 구분에 따른 Profit 박스 플롯 시각화
 
@@ -1501,7 +1501,7 @@ plt.figure(figsize=(8,5))
 sns.boxplot(x="State", y="Profit", data=df)
 plt.show()
 ```
-![image-36](https://sneaky-nannyberry-29f.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F258f3682-a939-4bee-a173-5c458ee8abb1%2Fa761ae00-f57b-4921-93ce-ed92b73f8d1f%2FUntitled.png?table=block&id=414a637c-b9cb-4d64-8163-e66ce86d35a4&spaceId=258f3682-a939-4bee-a173-5c458ee8abb1&width=670&userId=&cache=v2)
+![image-36](https://github.com/user-attachments/assets/c514192b-5b14-4cbf-93c6-a6a2da37dd8d)
 
 ```python
 # 평균, 데이터 포인트 포함한 박스 플롯 시각화
@@ -1519,7 +1519,7 @@ sns.stripplot(x='State', y='Profit',
 
 plt.show()
 ```
-![image-37](https://sneaky-nannyberry-29f.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F258f3682-a939-4bee-a173-5c458ee8abb1%2Fbd5aa416-a301-45fc-848b-727eabb5f366%2FUntitled.png?table=block&id=fed7277e-f1cd-454a-a1f0-a70aadda7cb5&spaceId=258f3682-a939-4bee-a173-5c458ee8abb1&width=580&userId=&cache=v2)
+![image-37](https://github.com/user-attachments/assets/f0f548b6-1ea4-4c1e-899c-fa37d233bbdc)
 `jitter=True`
 : 데이터 포인트를 약간 무작위로 분산시켜 포인트들이 겹치지 않도록 
 

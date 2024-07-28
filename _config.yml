@@ -96,9 +96,9 @@ theme_mode: # [light | dark]
 cdn:
 
 # the avatar on sidebar, support local or CORS resources
-<div>
-  avatar: /assets/gitpages_profile.jpg
-</div>
+
+avatar: <img src"/assets/gitpages_profile.jpg"></center>
+
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.

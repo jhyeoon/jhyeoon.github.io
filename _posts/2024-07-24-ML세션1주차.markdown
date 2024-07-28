@@ -140,7 +140,7 @@ sns.distplot(df['lead_time'])
 `sns.distplot(df['lead_time'])` <br>
 : Seaborn을 사용하여 ‘lead_time’ 열의 분포 시각화 <br>
 -히스토그램과 커널 밀도 추정(KDE)을 함께 표시
-![alt text](image-1.png)
+![image-1](https://github.com/user-attachments/assets/632e3210-e5c1-4811-ac64-4337f73b0c59)
 <br>
 
 ```python
@@ -160,7 +160,7 @@ sns.stripplot(x="hotel", y="lead_time", data=df, size=1)
 `sns.stripplot(x="hotel", y="lead_time", data=df, size=1)`
 -sns.stripplot : seaborn의 stripplot <br>
 -size=1 : 데이터 포인트의 크기가 1 <br>
-![alt text](image-2.png)
+![image-2](https://github.com/user-attachments/assets/54d180d5-0a68-42de-b77b-43aa31294ff2)
 <br>
 
 # 10.2 공분산과 상관성 분석
@@ -178,17 +178,16 @@ $Var(X) = E(X-E(X)^2) = E(X^2)-{E(X)}^2$ <br>
 variance 클수록 분포가 퍼져있음
 - 공분산(covariance) <br>
     $Cov(X,Y)=E((X-E(X))(Y-E(Y)))=E(XY)-E(X)E(Y)$ <br>
-    ![alt text](image-3.png)
-    - 양의 상관관계: X_1이 커지면 X_2도 커짐
+    ![image-3](https://github.com/user-attachments/assets/648a2977-390e-4924-aaba-45f45819ba47)    - 양의 상관관계: X_1이 커지면 X_2도 커짐
     - 음의 상관관계: X_1이 작아지면 X_2도 작아짐
     - 무 상관관계: X_1과 X_2는 선형적인 관계가 없음
     - (-)1: X_1과 X_2는 완벽한 직선의 관계
 
 ## (피어슨) 상관계수
 : 공분산의 한계점인 양(음)수로 (반)비례 관계는 알 수 있지만 값이 커질수록 상관성이 높은지는 판단할 수 없는 것 해결 ← 각 변수 간의 다른 척도기준이 그대로 반영되기 때문 
-![alt text](image-4.png)
-![alt text](image-5.png)
-![alt text](image-6.png)
+![image-4](https://github.com/user-attachments/assets/214d1444-4596-4749-8f01-b5171b07ae36)
+![image-5](https://github.com/user-attachments/assets/662bf0c3-2cbe-4951-951e-b03ba69d13dc)
+![image-6](https://github.com/user-attachments/assets/933216d4-5a8b-4d31-a1fb-844217c8a6d8)
 - 산점도의 기울기와 상관계수는 관련x
 - 분산의 관계성이 같음 → 기울기와 무관하게 상관계수는 같음
 - 상관계수가 높음 → X_2를 예상할 수 있는 정확도(설명력)이 높음
@@ -196,7 +195,7 @@ variance 클수록 분포가 퍼져있음
     2차 방정식 그래프와 같은 모양일 경우 상관계수가 낮게 측정됨
     → 두 변수 간 연관성이 존재해도 상관계수는 낮게 나올 수도
     → 상관분석과 더불어 산점도 그래프를 확인해보아야 함
-    ![alt text](image-7.png)
+    ![image-7](https://github.com/user-attachments/assets/1d7bd6a2-751c-4f8a-b0a5-8c3bdde51df2)    
     <br>
 
 ## 공분산과 상관성 실습
@@ -232,7 +231,7 @@ sns.pairplot(df,
             )
 plt.show()
 ```
-![alt text](image-8.png)
+![image-8](https://github.com/user-attachments/assets/bd552527-5008-43ae-830e-1804a1ea76f3)
 `sns.set(font_scale=1.1)` <br>
 : Seaborn 플롯의 폰트 크기를 1.1배로 조정
 
@@ -290,7 +289,7 @@ sns.clustermap(numeric_df.corr(), annot = True, cmap = 'RdYlBu_r', vmin = -1, vm
 `sns.clustermap(numeric_df.corr(), annot = True, cmap = 'RdYlBu_r', vmin = -1, vmax = 1)` <br>
 -sns.clustermap(numeric_df.corr()) : 상관 행렬의 계층적 클러스터링을 수행하고, 이를 히트맵으로 시각화하는 명령 <br>
 -vmin=-1, vmax=1 : 색상 막대의 범위를 설정
-![alt text](image-9.png)
+![image-9](https://github.com/user-attachments/assets/c550a47f-a5b0-42f6-b293-46562eac4723)
 <br>
 
 ```python
@@ -313,7 +312,7 @@ sns.heatmap(df.corr(),
             cbar = True)
 ax.set_title('Wine Quality Correlation', pad = 15)
 ```
-![alt text](image-10.png)
+![image-10](https://github.com/user-attachments/assets/d8082aea-b0bb-4b30-95a7-c6f628f8a54b)
 
 # 10.3 시간 시각화
 
@@ -409,7 +408,7 @@ df_line.plot(x='Date2', y='Month', color='#FF7F50', linewidth = "1", ax=ax)
 
 `df_line.plot(x='Date2', y='Month', color='#FF7F50', linewidth = "1", ax=ax)` <br>
 : 좌변의 ax는 plot 메서드 안에 있는 파라미터, 우변의 ax는 위에서 설정해 놓은 것
-![alt text](image-11.png)
+![image-11](https://github.com/user-attachments/assets/5e754a02-d0bc-4397-ba6f-9d44ae686608)
 
 <br>
 
@@ -434,7 +433,7 @@ ax = df_bar_1.plot.bar(x='Year', y='Sales', rot=90, figsize=(10,5))
 -df_bar_1.plot.bar :  막대그래프 <br>
 -rot=90 : x축의 라벨을 90도 회전 <br>
 -figsize=(10, 5) : 너비 10인치, 높이 5인 그래프
-![alt text](image-12.png)
+![image-12](https://github.com/user-attachments/assets/79cf4b6b-9e1b-441c-bec5-1997a6804be7)
 
 <br>
 
@@ -464,7 +463,7 @@ df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
 `df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))` <br>
 -df_bar_2_pv.plot.bar(stacked=True) → 누적 막대 그래프 <br>
 -df_bar_2_pv.plot.bar(stacked=False) → 각 연도별로 그래프가 ‘Segment’의 개수만큼 나옴
-![alt text](image-13.png)
+![image-13](https://github.com/user-attachments/assets/6414c9df-ea9a-4b9f-8de2-756743b656fa)
 
 # 10.4 비교 시각화
 
@@ -474,32 +473,32 @@ df_bar_2_pv.plot.bar(x='Year', stacked=True, figsize=(10,7))
 - 차트의 행은 그룹, 열은 요소
 
 1. 하나의 변수(그룹) x N개의 각 변수에 해당하는 값들(수치형)
-![alt text](image-14.png)
+![image-14](https://github.com/user-attachments/assets/fdfb20ed-4416-4f6d-992e-d9f78a82048a)
 
 2. 하나의 변수(그룹) x 하나의 변수(그룹/수준) x N개의 각 변수에 해당하는 값들(수치형)
-![alt text](image-15.png)
+![image-15](https://github.com/user-attachments/assets/eddb4243-d8b5-45cc-b5be-4be4cdd599fa)
 
 ## 방사형 차트
 
 - 게임에서 캐릭터가 하나의 그룹, 각 능력이 변수
 
 1. 하나의 차트에 하나의 그룹을 시각화
-![alt text](image-16.png)
+![image-16](https://github.com/user-attachments/assets/077f4cfe-78c9-4d77-b6ce-2d4ae2ab1868)
 
 2. 하나의 차트에 모든 그룹을 한 번에 시각화
-![alt text](image-17.png)
+![image-17](https://github.com/user-attachments/assets/7bc025de-5b31-4186-a6d6-4cf3f1ff60ba)
 
 ## 평행 좌표 그래프
 
 - 그룹별 요소 비교 시각화
 
 1. 전략 캔버스
-![alt text](image-18.png)
+![image-18](https://github.com/user-attachments/assets/79a6afb7-6b60-4b06-82d5-4125f14d4491)
 
 2. 평행 좌표 그래프
     - 효과적으로 표현하려면 변수별 값을 정규화
     ← 가장 낮은 값 0%, 가장 높은 값 100%
-![alt text](image-19.png)
+![image-19](https://github.com/user-attachments/assets/f5a79ea4-3817-41c0-9f8c-626ee3b65060)
 
 ## 비교 시각화 실습
 
@@ -609,7 +608,7 @@ df2.head()
 `df2.pivot(index='Tm', columns='Age', values='G')` <br>
 -.povot() : df 재구조화 <br>
 -index='Tm', columns='Age', values='G’ : 행이 ‘Tm’, 열이 ‘Age’, 값이 ‘G’
-![alt text](image-20.png)
+![image-20](https://github.com/user-attachments/assets/f4db0d6d-5960-49b2-9d39-cd288dfd32a5)
 
 <br>
 
@@ -640,8 +639,8 @@ df3.head()
 
 `df3 = df1.reset_index()` <br>
 : df1에서 ‘Tm’이 인덱스로 사용 → df3에서 ‘Tm’이 칼럼으로 사용
-![alt text](image-21.png) → df1
-![alt text](image-22.png) → df3
+![image-21](https://github.com/user-attachments/assets/2c0816ee-782b-4314-9237-88ec8a0c9a0a) → df1
+![image-22](https://github.com/user-attachments/assets/b197b710-eedc-4421-bd1c-b413520d9c57) → df3
 <br>
 
 ```python
@@ -863,19 +862,19 @@ parallel_coordinates(df3,'Tm',ax=axes, colormap='winter',linewidth = "0.5")
 
 : 전체를 100%로 하여 구성 요소들의 분포 정도를 면적으로 표현, 수치를 차트 위에 함께 표현하는 것이 좋음
 - 파이 차트 <br>
-![alt text](image-23.png)
+![image-23](https://github.com/user-attachments/assets/d3c9ea03-b47b-41f0-8e7b-878152741c79)
 - 도넛 차트 <br>
-![alt text](image-24.png)
+![image-24](https://github.com/user-attachments/assets/2275b550-5f7d-48a8-8f67-7c4cc7082e84)
 - 트리맵 차트
     - 구성요소가 복잡할 때 사용
     - 하나의 큰 사각형을 구성요소의 비율에 따라 작은 사각형으로 쪼개어 분포 표현
     - 사각형 안에 더 작은 사각형을 포함시켜서 위계구조 표현
     - 단점: 구성요소들 간의 규모 차이가 크면 표현이 어려움
-    ![alt text](image-25.png)
+    ![image-25](https://github.com/user-attachments/assets/ba910a86-0593-4991-b3ab-4704eab224f9)
 - 와플 차트
     - 일정한 네모난 조각들로 분포 표현
     - 트리맵차트처럼 위계구조를 표현하지는x
-    ![alt text](image-26.png)
+    ![image-26](https://github.com/user-attachments/assets/2356fa73-ab0f-4fcf-82ee-0d4e53ceaa2d)
 
 ```python
 # 필요한 패키지 설치
@@ -927,7 +926,7 @@ plt.show()
 `plt.hist(df1, bins=10, label='bins=10')`
 - plt.hist() : 히스토그램을 생성
 - bins=10 : 10cm 단위로 설정
-![alt text](image-27.png)
+![image-27](https://github.com/user-attachments/assets/36553c37-5cd6-49f7-b904-172fc410a63b)
 
 <br>
 
@@ -951,7 +950,7 @@ plt.show()
 - alpha = 0.2 : 투명도 설정
 - density = True : 히스토그램을 밀도(normalized) 히스토그램으로 생성
 
-![alt text](image-28.png)
+![image-28](https://github.com/user-attachments/assets/2ac5dc70-a6d4-475f-87fb-c99f152fb2ea)
 
 ```python
 # 파이차트, 도넛차트 시각화를 위한 데이터 전처리
@@ -1109,7 +1108,7 @@ plt.show()
 - plt.scatter : 산점도 생성
 - x축 : df['R&D Spend'], y축 : df['Profit']
 - s = 50 : 점의 크기 50
-![alt text](image-29.png)
+![image-29](https://github.com/user-attachments/assets/c75210c3-efdb-4f60-80c7-e6b572d5cf78)
 
 <br>
 
@@ -1120,7 +1119,7 @@ ax = sns.lmplot(x='R&D Spend', y='Profit', data= df)
 ​
 `sns.lmplot(x='R&D Spend', y='Profit', data= df)` <br>
 : Seaborn 라이브러리를 사용하여 산점도에 선형 회귀선을 추가
-![alt text](image-30.png)
+![image-30](https://github.com/user-attachments/assets/f00fdfda-696b-442d-a31e-96c117ab305c)
 
 <br>
 
@@ -1141,7 +1140,7 @@ plt.show()
 
 `cmap='Spectral'` <br>
 : 색상 맵을 'Spectral'
-![alt text](image-31.png)
+![image-31](https://github.com/user-attachments/assets/6ebb88a8-764c-4947-b32e-8106ad212968)
 
 <br>
 
@@ -1183,7 +1182,7 @@ plt.show()
 - 카토그램
     
     : 각 지역의 면적을 데이터 값에 비례하도록 변형시켜 시각화
-    ![alt text](image-32.png)
+    ![image-32](https://github.com/user-attachments/assets/4aa4f67c-2968-41eb-a6d1-2d82b9b6438d)
 
 ## 공간 시각화 실습
 
@@ -1458,7 +1457,7 @@ fig.show()
 : 네모 상장 모양에 최댓값과 최솟값을 나타내는 선이 결합된 모양의 데이터 시각화 방법
 
 - 두 변수의 값을 비교할 때 효과적
-![alt text](image-33.png)
+![image-33](https://github.com/user-attachments/assets/0f9c3c11-ef41-4a60-b143-91f3a04fad49)
 
 ## 박스 플롯 실습
 
@@ -1493,9 +1492,8 @@ plt.figure(figsize = (8, 2))
 sns.boxplot(x = 'Profit', data = df)
 plt.show()
 ```
-![alt text](image-34.png)
-![alt text](image-35.png)
-
+![image-34](https://github.com/user-attachments/assets/35aef1a6-33cb-4d3f-a944-7e3cfd693ecf)
+![image-35](https://sneaky-nannyberry-29f.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F258f3682-a939-4bee-a173-5c458ee8abb1%2F2df8ca09-ce5a-413f-bb8c-409a9743246b%2FUntitled.png?table=block&id=96be028e-ecd2-4841-bf4a-1ad468fb5e3e&spaceId=258f3682-a939-4bee-a173-5c458ee8abb1&width=670&userId=&cache=v2)
 ```python
 # State 구분에 따른 Profit 박스 플롯 시각화
 
@@ -1503,7 +1501,7 @@ plt.figure(figsize=(8,5))
 sns.boxplot(x="State", y="Profit", data=df)
 plt.show()
 ```
-![alt text](image-36.png)
+![image-36](https://sneaky-nannyberry-29f.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F258f3682-a939-4bee-a173-5c458ee8abb1%2Fa761ae00-f57b-4921-93ce-ed92b73f8d1f%2FUntitled.png?table=block&id=414a637c-b9cb-4d64-8163-e66ce86d35a4&spaceId=258f3682-a939-4bee-a173-5c458ee8abb1&width=670&userId=&cache=v2)
 
 ```python
 # 평균, 데이터 포인트 포함한 박스 플롯 시각화
@@ -1521,7 +1519,7 @@ sns.stripplot(x='State', y='Profit',
 
 plt.show()
 ```
-![alt text](image-37.png)
+![image-37](https://sneaky-nannyberry-29f.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F258f3682-a939-4bee-a173-5c458ee8abb1%2Fbd5aa416-a301-45fc-848b-727eabb5f366%2FUntitled.png?table=block&id=fed7277e-f1cd-454a-a1f0-a70aadda7cb5&spaceId=258f3682-a939-4bee-a173-5c458ee8abb1&width=580&userId=&cache=v2)
 `jitter=True`
 : 데이터 포인트를 약간 무작위로 분산시켜 포인트들이 겹치지 않도록 
 

@@ -1,9 +1,12 @@
 ---
 layout: post
-title:  "ML세션 1주차-데이터 분석가가 반드시 알아야할 모든 것 2부 10장"
+title:  "ML세션 1주차"
 date:   2024-07-19 20:47:24 +0900
 categories: jekyll update
 ---
+
+**데이터 분석가가 반드시 알아야할 모든 것 2부 10장**
+
 # 10.1 탐색적 데이터 분석(EDA)
 
 - Exploratory Data Analysis

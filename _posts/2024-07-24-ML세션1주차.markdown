@@ -123,7 +123,7 @@ print(numeric_df.kurtosis())
 
 `df.kurtosis()` <br>
 : numeric_df의 각 열의 첨도를 계산하는 명령어, 양의 값으로 큰 수면 뾰족한 분포, 음의 값으로 작은 수면 평평한 분포
-![alt text](image.png)
+![image.png](https://github.com/user-attachments/assets/4fe22d52-ccc3-4bbd-84c0-ca862d314372)
 <br>
 
 ```python

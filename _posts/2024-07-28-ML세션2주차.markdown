@@ -42,13 +42,147 @@ categories: jekyll update
 
 - 노트북: 코랩 파일
 - 주피터: 대화식 프로그래밍 환경
-- 텍스트 셀
+- 텍스트 셀 <br>
     <img width="395" alt="image" src="https://github.com/user-attachments/assets/0c188f69-347e-4752-8f5a-3299b776d359">
     <img width="385" alt="image" src="https://github.com/user-attachments/assets/a5404de3-6ec3-4ac1-ba57-939aeb923c55">
 
 ## 1-3 마켓과 머신러닝
 
-###
+### 생선 분류 문제
+
+- 머신러닝은 분류 기준을 스스로 찾아냄
+
+```python
+# 도미 데이터 준비하기
+bream_length = [25.4, 26.3, 26.5, 29.0, 29.0, 29.7, 29.7, 30.0, 30.0, 30.7, 31.0, 31.0, 31.5, 32.0, 32.0, 32.0, 33.0, 33.0, 33.5, 33.5, 34.0, 34.0, 34.5, 35.0, 35.0, 35.0, 35.0, 36.0, 36.0, 37.0, 38.5, 38.5, 39.5, 41.0, 41.0]
+bream_weight = [242.0, 290.0, 340.0, 363.0, 430.0, 450.0, 500.0, 390.0, 450.0, 500.0, 475.0, 500.0, 500.0, 340.0, 600.0, 600.0, 700.0, 700.0, 610.0, 650.0, 575.0, 685.0, 620.0, 680.0, 700.0, 725.0, 720.0, 714.0, 850.0, 1000.0, 920.0, 955.0, 925.0, 975.0, 950.0]
+```
+-**특성(feature)**: length, weight
+
+```python
+# 산점도 그리기
+import matplotlib.pyplot as plt
+
+plt.scatter(bream_length, bream_weight)
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+`plt.xlabel('length')` <br>
+: x축에 'length' 표시 <br>
+
+<img width="431" alt="image" src="https://github.com/user-attachments/assets/359a6656-17f6-4723-bb86-2e3e57fbf59f"> <br>
+-> 선형적(linear): 산점도 그래프가 일직선에 가까운 형태로 나타남
+
+```python
+# 빙어 데이터 준비하기
+smelt_length = [9.8, 10.5, 10.6, 11.0, 11.2, 11.3, 11.8, 11.8, 12.0, 12.2, 12.4, 13.0, 14.3, 15.0]
+smelt_weight = [6.7, 7.5, 7.0, 9.7, 9.8, 8.7, 10.0, 9.9, 9.8, 12.2, 13.4, 12.2, 19.7, 19.9]
+```
+
+```python
+# 산점도 그리기
+plt.scatter(bream_length, bream_weight)
+plt.scatter(smelt_length, smelt_weight)
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+<img width="431" alt="image" src="https://github.com/user-attachments/assets/a82b0b09-9099-4e21-9da9-4e796a9d2d7a"> <br>
+->빙어 데이터도 도미 데이터처럼 선형적, 하지만 weight가 length의 영향을 덜 받음
+
+### 첫번째 머신러닝 프로그램
+
+**k-최근접 이웃 알고리즘(KNN)**
+
+```python
+# 도미와 빙어 데이터 합치기
+length = bream_length+smelt_length
+weight = bream_weight+smelt_weight
+```
+
+```python
+# 데이터를 2차원 리스트로 만들기
+fish_data = [[l, w] for l, w in zip(length, weight)]
+
+print(fish_data)
+```
+-**2차원 리스트**: 머신러닝 패키지인 사이킷런을 사용하려면 각 특성의 리스트를 세로 방향으로 늘어뜨린 2차원 리스트(리스트의 리스트)를 만들어야함
+
+`zip()` <br>
+: 나열된 리스트에서 원소를 하나씩 꺼내줌
+
+<img width="118" alt="image" src="https://github.com/user-attachments/assets/3568f8be-4c22-416b-8cf1-bfb0d01864d8">
+
+<br>
+
+```python
+# 정답 데이터 만들기
+fish_target = [1]*35 + [0]*14
+print(fish_target)
+```
+-보통 찾으려는 대상을 1로 놓음 (여기서는 도미가 1)
+
+```python
+# KNeighborsClassifier 클래스의 객체 만들기
+from sklearn.neighbors import KNeighborsClassifier
+kn = KNeighborsClassifier()
+```
+`KNeighborsClassifier` <br>
+: k-최근접 이웃 알고리즘을 구현한 클래스
+
+```python
+# kn 훈련시키기
+kn.fit(fish_data, fish_target)
+```
+`.fit()` <br>
+: kn 객체에 fish_data와 fish_target을 전달하여 도미를 찾기 위한 기준을 학습시킴 -> 훈련
+
+```python
+# kn 평가하기(정확도)
+kn.score(fish_data, fish_target)
+```
+`.score()` <br>
+: 0과 1 사이의 값 반환, 1은 모든 데이터를 정확히 맞혔다는 것 의미
+
+```python
+# 새로운 데이터
+plt.scatter(bream_length, bream_weight)
+plt.scatter(smelt_length, smelt_weight)
+plt.scatter(30, 600, marker='^')
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+-KNN은 어떤 데이터에 대한 답을 구할 때 주위의 다른 데이터를 보고 다수를 차지하는 것을 정답으로 사용
+
+<img width="278" alt="image" src="https://github.com/user-attachments/assets/38ef0a42-2c7d-4492-a7af-1904dd806bde">
+
+삼각형으로 표시된 새로운 데이터는 도미라고 판단 <br>
+<- 주변에 도미 데이터가 많기 때문에(가장 가까운 직선거리에 어떤 데이터가 있는지)
+
+```python
+# 새로운 데이터의 정답 예측하기
+kn.predict([[30, 600]])
+```
+`.predict()` <br>
+: 새로운 데이터의 정답 예측 <br>
+-fit 메서드처럼 리스트의 리스트를 전달해야함 <br>
+-이 예시에서는 array([1])을 반환하므로 해당 데이터는 도미
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -11,7 +11,7 @@ categories: jekyll update
 
 ## 1-1 인공지능과 머신러닝, 딥러닝
 
-### 인공지능이란
+### 인공지능
 
 : 사람처럼 학습히고 추론할 수 있는 기능을 가진 컴퓨터 시스템을 만드는 기술
 1. 인공일반지능(강인공지능)
@@ -19,7 +19,7 @@ categories: jekyll update
 2. 약인공지능
 - 특정 분야에서 사람의 일을 도와주는 보조 역할만 가능한 컴퓨터 시스템
 
-### 머신러닝이란
+### 머신러닝
 
 : 규칙을 일일이 프로그래밍하지 않아도 자동으로 데이터에서 규칙을 학습하는 알고리즘을 연구하는 분야
 - 인공지능의 하위 분야 중 '지능'을 구현하기 위한 소프트웨어 담당
@@ -28,7 +28,7 @@ categories: jekyll update
     - 파이썬 API 사용
     - 검증된 알고리즘만 포함되어있으므로 안정적이고 성능이 검증됨
 
-### 딥러닝이란
+### 딥러닝
 
 : 머신러닝 알고리즘 중 인공 신경망을 기반으로 한 방법들을 통칭함
 - 딥러닝 라이브러리 텐서플로(TensorFlow) by 구글
@@ -50,7 +50,7 @@ categories: jekyll update
 
 - 머신러닝은 분류 기준을 스스로 찾아냄
 
-### k-최근접 이웃 알고리즘(K-NN)###
+### k-최근접 이웃 알고리즘(K-NN)
 
 ```python
 # 도미와 빙어 데이터 합치기
@@ -64,13 +64,12 @@ fish_data = [[l, w] for l, w in zip(length, weight)]
 
 print(fish_data)
 ```
-- 2차원 리스트
+- **2차원 리스트**
 : 머신러닝 패키지인 사이킷런을 사용하려면 각 특성의 리스트를 세로 방향으로 늘어뜨린 2차원 리스트(리스트의 리스트)를 만들어야함
 
 - `zip()` <br>
 : 나열된 리스트에서 원소를 하나씩 꺼내줌
-
-    <img width="118" alt="image" src="https://github.com/user-attachments/assets/3568f8be-4c22-416b-8cf1-bfb0d01864d8">
+![image](https://github.com/user-attachments/assets/3568f8be-4c22-416b-8cf1-bfb0d01864d8)
 
 <br>
 
@@ -88,9 +87,9 @@ kn = KNeighborsClassifier()
 ```
 - `KNeighborsClassifier` <br>
 : k-최근접 이웃 분류 모델을 만드는 사이킷런 클래스
-    - n_neighbors 매개변수: 이웃의 개수 지정, 기본값 5
-    - p 매개변수: 거리 재는 방법 지정, 기본값 2(1이면 맨해튼 거리, 2이면 유클리디안 거리)
-    - n_jobs 매개변수: 사용할 CPU 코어 지정, 기본값 1(-1이면 모든 CPU 코어 사용, 이웃 간의 거리 계산 속도를 높일 수 있지만 fit() 메서드에는 영향x)
+    - **n_neighbors** 매개변수: 이웃의 개수 지정, 기본값 5
+    - **p** 매개변수: 거리 재는 방법 지정, 기본값 2 (1이면 맨해튼 거리, 2이면 유클리디안 거리)
+    - **n_jobs** 매개변수: 사용할 CPU 코어 지정, 기본값 1 (-1이면 모든 CPU 코어 사용, 이웃 간의 거리 계산 속도를 높일 수 있지만 fit() 메서드에는 영향x)
 
 ```python
 # kn 모델 훈련시키기
@@ -117,9 +116,7 @@ plt.ylabel('weight')
 plt.show()
 ```
 - KNN은 어떤 데이터에 대한 답을 구할 때 주위의 다른 데이터를 보고 다수를 차지하는 것을 정답으로 사용
-
-    <img width="278" alt="image" src="https://github.com/user-attachments/assets/38ef0a42-2c7d-4492-a7af-1904dd806bde">
-
+![image](https://github.com/user-attachments/assets/38ef0a42-2c7d-4492-a7af-1904dd806bde)
     삼각형으로 표시된 새로운 데이터는 도미라고 판단 <br>
     <- 주변에 도미 데이터가 많기 때문에(가장 가까운 직선거리에 어떤 데이터가 있는지)
 
@@ -165,9 +162,11 @@ kn49.score(fish_data, fish_target)
 
 ## 2-1 훈련 세트와 테스트 세트
 
-- 머신러닝 알고리즘
-    - 지도 학습 알고리즘
-    - 비지도 학습 알고리즘
+### 머신러닝 알고리즘
+- 지도 학습 알고리즘(supervised learning)
+    - 훈련 데이터: 입력(input) + 타깃(target)
+        -  입력
+- 비지도 학습 알고리즘(unsupervised learning)
 
 
 

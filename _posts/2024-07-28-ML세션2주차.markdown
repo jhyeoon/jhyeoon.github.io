@@ -67,7 +67,7 @@ print(fish_data)
 - **2차원 리스트**
 : 머신러닝 패키지인 사이킷런을 사용하려면 각 특성의 리스트를 세로 방향으로 늘어뜨린 2차원 리스트(리스트의 리스트)를 만들어야함
 
-- `zip()` <br>
+- **zip()**
 : 나열된 리스트에서 원소를 하나씩 꺼내줌
 ![image](https://github.com/user-attachments/assets/3568f8be-4c22-416b-8cf1-bfb0d01864d8)
 
@@ -85,7 +85,7 @@ print(fish_target)
 from sklearn.neighbors import KNeighborsClassifier
 kn = KNeighborsClassifier()
 ```
-- `KNeighborsClassifier` <br>
+- **KNeighborsClassifier()**
 : k-최근접 이웃 분류 모델을 만드는 사이킷런 클래스
     - **n_neighbors** 매개변수: 이웃의 개수 지정, 기본값 5
     - **p** 매개변수: 거리 재는 방법 지정, 기본값 2 (1이면 맨해튼 거리, 2이면 유클리디안 거리)
@@ -95,14 +95,14 @@ kn = KNeighborsClassifier()
 # kn 모델 훈련시키기
 kn.fit(fish_data, fish_target)
 ```
-- `.fit()` <br>
+- **.fit()**
 : kn 객체에 fish_data와 fish_target을 전달하여 도미를 찾기 위한 기준을 학습시킴 -> 훈련
 
 ```python
 # kn 모델 성능 평가하기(정확도)
 kn.score(fish_data, fish_target)
 ```
-- `.score()` <br>
+- **.score()**
 : 0과 1 사이의 값 반환, 1은 모든 데이터를 정확히 맞혔다는 것 의미
     - 정확도 = (정확히 맞친 개수)/(전체 데이터 개수)
 
@@ -124,7 +124,7 @@ plt.show()
 # 새로운 데이터의 정답 예측하기
 kn.predict([[30, 600]])
 ```
-- `.predict()` <br>
+- **.predict()**
 : 새로운 데이터의 정답 예측 <br>
     - fit 메서드처럼 리스트의 리스트를 전달해야함 <br>
     - 이 예시에서는 array([1])을 반환하므로 해당 데이터는 도미
@@ -134,10 +134,10 @@ kn.predict([[30, 600]])
 print(kn._fit_X)
 print(kn._y)
 ```
-- `._fit_X` <br>
+- **._fit_X**
 : KNN 모델이 학습한 입력 데이터(특징 행렬, feature matrix)
 
-- `_y`
+- **_y**
 : KNN 모델이 학습한 출력 데이터(레이블, target vector)
 
 - KNN의 특징

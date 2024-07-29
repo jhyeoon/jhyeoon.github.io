@@ -93,7 +93,7 @@ plt.show()
 
 ### 첫번째 머신러닝 프로그램
 
-**k-최근접 이웃 알고리즘(KNN)**
+**k-최근접 이웃 알고리즘(K-NN)**
 
 ```python
 # 도미와 빙어 데이터 합치기
@@ -169,6 +169,38 @@ kn.predict([[30, 600]])
 : 새로운 데이터의 정답 예측 <br>
 -fit 메서드처럼 리스트의 리스트를 전달해야함 <br>
 -이 예시에서는 array([1])을 반환하므로 해당 데이터는 도미
+
+```python
+# KNN 모델의 내부 속성 확인하기
+print(kn._fit_X)
+print(kn._y)
+```
+`._fit_X`
+: KNN 모델이 학습한 입력 데이터(특징 행렬, feature matrix)
+`_y`
+: KNN 모델이 학습한 출력 데이터(레이블, target vector)
+
+- KNN에서의 "훈련"은 단순히 학습 데이터를 저장하는 과정으로 학습 데이터 자체가 모델의 일부로 저장되지만 
+- 훈련이 되는 모델에서는 학습 데이터를 직접 저장하기보다는 학습된 매개변수나 모델 구조를 저장함
+
+```python
+# 참고 데이터 개수 49개로 지정하기
+kn49 = KNeighborsClassifier(n_neighbors=49)
+```
+`n_neighbors='49'`
+: 기본값은 5개인데 49개로 바꿀 경우, 도미가 35개로 다수를 차지하므로 어떤 데이터를 넣어도 무조건 도미로 예측하게 됨
+
+```python
+# 
+kn49.fit(fish_data, fish_target)
+kn49.score(fish_data, fish_target)
+```
+
+
+
+
+
+
 
 
 

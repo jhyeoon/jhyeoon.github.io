@@ -278,6 +278,7 @@ kn.fit(train_input, train_target)
 kn.score(test_input, test_target)
 ```
 >> 정확도 1.0
+
 ```python
 # 테스트 세트의 예측 결과 확인
 kn.predict(test_input)
@@ -285,7 +286,7 @@ kn.predict(test_input)
 test_target
 ```
 >> 둘 다 array([0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0])로 일치
-- array()
+- **array()** <br>
 :넘파이 배열을 의미함
 
 ## 2-2 데이터 전처리

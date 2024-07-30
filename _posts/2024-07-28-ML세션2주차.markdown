@@ -157,7 +157,7 @@ kn49 = KNeighborsClassifier(n_neighbors=49)
 kn49.fit(fish_data, fish_target)
 kn49.score(fish_data, fish_target)
 ```
->>> 0.7142857142857143 = (도미 개수/전체 개수)
+>> 0.7142857142857143 = (도미 개수/전체 개수)
 
 # Ch.2 데이터 다루기
 
@@ -167,7 +167,7 @@ kn49.score(fish_data, fish_target)
 
 - 지도 학습 알고리즘
     - 타깃이 있고 정답을 맞히는 것 학습
-    - 훈련 데이터: 입력(데이터) + 타깃(정답)
+    - 훈련 데이터: 입력(데이터) + 타깃(정답) <br>
         ex) 입력: 생선의 길이와 무게, 타깃: 도미 여부, 특성: 길이와 무게
 
 - 비지도 학습 알고리즘
@@ -225,7 +225,8 @@ target_arr = np.array(fish_target)
 print(input_arr.shape)
 ```
 ![image](https://github.com/user-attachments/assets/2b87c264-4a1b-47fa-980f-0a69e38d9eca)
->>> (49, 2)
+>> (49, 2)
+
 ```python
 # 인덱스 생성 후 무작위로 샘플 고르기
 np.random.seed(42) 
@@ -270,8 +271,22 @@ plt.show()
 - 주황색: 테스트 세트
 
     -> 잘 섞여 있음
-
-
+```python
+# 훈련 세트로 모델 훈련시키기
+kn.fit(train_input, train_target)
+# 테스트 세트로 모델 성능 평가하기
+kn.score(test_input, test_target)
+```
+>> 정확도 1.0
+```python
+# 테스트 세트의 예측 결과 확인
+kn.predict(test_input)
+# 테스트 세트의 실제 타깃 확인
+test_target
+```
+>> 둘 다 array([0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0])로 일치
+- array()
+:넘파이 배열을 의미함
 
 ## 2-2 데이터 전처리
 

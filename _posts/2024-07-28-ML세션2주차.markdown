@@ -64,12 +64,13 @@ fish_data = [[l, w] for l, w in zip(length, weight)]
 
 print(fish_data)
 ```
-- **2차원 리스트**
+- **2차원 리스트** <br>
 : 머신러닝 패키지인 사이킷런을 사용하려면 각 특성의 리스트를 세로 방향으로 늘어뜨린 2차원 리스트(리스트의 리스트)를 만들어야함
 
-- **zip()**
+- **zip()** <br>
 : 나열된 리스트에서 원소를 하나씩 꺼내줌
-![image](https://github.com/user-attachments/assets/3568f8be-4c22-416b-8cf1-bfb0d01864d8)
+
+    ![image](https://github.com/user-attachments/assets/3568f8be-4c22-416b-8cf1-bfb0d01864d8)
 
 <br>
 
@@ -85,7 +86,7 @@ print(fish_target)
 from sklearn.neighbors import KNeighborsClassifier
 kn = KNeighborsClassifier()
 ```
-- **KNeighborsClassifier()**
+- **KNeighborsClassifier()** <br>
 : k-최근접 이웃 분류 모델을 만드는 사이킷런 클래스
     - **n_neighbors** 매개변수: 이웃의 개수 지정, 기본값 5
     - **p** 매개변수: 거리 재는 방법 지정, 기본값 2 (1이면 맨해튼 거리, 2이면 유클리디안 거리)
@@ -95,14 +96,14 @@ kn = KNeighborsClassifier()
 # kn 모델 훈련시키기
 kn.fit(fish_data, fish_target)
 ```
-- **.fit()**
+- **.fit()** <br>
 : kn 객체에 fish_data와 fish_target을 전달하여 도미를 찾기 위한 기준을 학습시킴 -> 훈련
 
 ```python
 # kn 모델 성능 평가하기(정확도)
 kn.score(fish_data, fish_target)
 ```
-- **.score()**
+- **.score()** <br>
 : 0과 1 사이의 값 반환, 1은 모든 데이터를 정확히 맞혔다는 것 의미
     - 정확도 = (정확히 맞친 개수)/(전체 데이터 개수)
 
@@ -116,7 +117,7 @@ plt.ylabel('weight')
 plt.show()
 ```
 - KNN은 어떤 데이터에 대한 답을 구할 때 주위의 다른 데이터를 보고 다수를 차지하는 것을 정답으로 사용
-![image](https://github.com/user-attachments/assets/38ef0a42-2c7d-4492-a7af-1904dd806bde)
+![image](https://github.com/user-attachments/assets/38ef0a42-2c7d-4492-a7af-1904dd806bde) <br>
     삼각형으로 표시된 새로운 데이터는 도미라고 판단 <br>
     <- 주변에 도미 데이터가 많기 때문에(가장 가까운 직선거리에 어떤 데이터가 있는지)
 
@@ -134,10 +135,10 @@ kn.predict([[30, 600]])
 print(kn._fit_X)
 print(kn._y)
 ```
-- **._fit_X**
+- **._fit_X** <br>
 : KNN 모델이 학습한 입력 데이터(특징 행렬, feature matrix)
 
-- **_y**
+- **_y** <br>
 : KNN 모델이 학습한 출력 데이터(레이블, target vector)
 
 - KNN의 특징
@@ -162,11 +163,161 @@ kn49.score(fish_data, fish_target)
 
 ## 2-1 훈련 세트와 테스트 세트
 
-### 머신러닝 알고리즘
-- 지도 학습 알고리즘(supervised learning)
-    - 훈련 데이터: 입력(input) + 타깃(target)
-        -  입력
-- 비지도 학습 알고리즘(unsupervised learning)
+### 머신러닝 알고리즘의 종류
+
+- 지도 학습 알고리즘
+    - 타깃이 있고 정답을 맞히는 것 학습
+    - 훈련 데이터: 입력(데이터) + 타깃(정답)
+        ex) 입력: 생선의 길이와 무게, 타깃: 도미 여부, 특성: 길이와 무게
+
+- 비지도 학습 알고리즘
+    - 타깃이 없고 데이터를 파악하거나 변형
+
+### 훈련 세트와 테스트 세트
+
+- **훈련 세트**
+: 훈련에 사용되는 데이터
+
+- **테스트 세트**
+: 평가에 사용하는 데이터
+
+- **샘플**
+: 하나의 생선 데이터
+![image](https://github.com/user-attachments/assets/06f1c61f-e666-4d63-890b-550473ef5df5)
+
+- **슬라이싱**
+```python
+# 훈련 세트로 입력값 중 0-34번째 인덱스까지 사용
+train_input = fish_data[:35]
+# 훈련 세트로 타깃값 중 0-34번째 인덱스까지 사용
+train_target = fish_target[:35]
+# 테스트 세트로 입력값 중 35번째부터 마지막 인덱스까지 사용
+test_input = fish_data[35:]
+# 테스트 세트로 타깃값 중 35번째부터 마지막 인덱스까지 사용
+test_target = fish_target[35:]
+```
+
+### 샘플링 편향
+: 훈련 세트와 테스트 세트에 샘플이 골고루 섞여 있지 않음
+
+- 위의 코드처럼 훈련 세트와 테스트 세트를 나누면 정확도가 0.0이 나옴
+- 훈련 세트에 빙어가 하나도 없이 훈련하면 빙어를 올바르게 분류할 수 없기 때문
+    - 훈련 세트에 도미만 있기 떄문에 테스트 세트가 무엇이든 무조건 도미로 분류
+    - 테스트 세트에 빙어만 있기 때문에 정확도 0.0
+- 도미와 빙어가 골고루 섞여야 함
+![image](https://github.com/user-attachments/assets/d34877f0-aed4-4354-a696-ee51a8744749)
+![image](https://github.com/user-attachments/assets/48a112eb-d5ae-428f-8850-1b96645274a6)
+
+### 넘파이
+
+: 파이썬의 대표적인 배열 라이브러리로 고차원 배열을 쉽게 만들 수 있음
+![image](https://github.com/user-attachments/assets/ab3afebe-a339-4933-ad4d-a51757c08301)
+
+```python
+# 파이썬 리스트를 넘파이 배열로 바꾸기
+input_arr = np.array(fish_data)
+target_arr = np.array(fish_target)
+```
+```python
+# (샘플 수, 특성 수) 출력하기
+print(input_arr.shape)
+```
+```python
+# 인덱스 생성 후 랜덤하게 섞기
+np.random.seed(42) 
+index = np.arange(49)
+np.random.shuffle(index)
+```
+- **seed()**
+: 넘파이에서 난수를 생성하기 위한 정수 초깃값 지정
+    - 초깃값이 같으면 동일한 난수를 뽑을 수 있음
+- **arrange()**
+: 일정한 간격의 정수 또는 실수 배열 생성
+    - 기본 간격은 1
+    - ex) `np.arrange(1, 3, 0.2)` >>> [1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.4, 2.6, 2.8]
+- **shuffle()**
+: 주어진 배열을 랜덤하게 섞음
+    - 다차원 배열일 경우 첫 번째 축에 대해서만 섞음
+
+## 2-2 데이터 전처리
+
+### 넘파이로 데이터 준비하기
+
+```python
+# 입력 데이터 만들기
+import numpy as np
+fish_data = np.column_stack((fish_length, fish_weight))
+```
+![image](https://github.com/user-attachments/assets/08dca6e9-a313-4907-aefb-07860a218ab7)
+
+```python
+# 타깃 데이터 만들기
+fish_target = np.concatenate((np.ones(35), np.zeros(14)))
+```
+![image](https://github.com/user-attachments/assets/f45bf078-0404-459e-a41e-7f87c72a4138)
+
+![image](https://github.com/user-attachments/assets/06c8cf1e-6df5-45bf-a702-a8ff67fa254a)
+
+### 사이킷런으로 훈련 세트와 테스트 세트 나누기
+
+```python
+from sklearn.model_selection import train_test_split
+train_input, test_input, train_target, test_target = train_test_split(fish_data, fish_target, random_state=42)
+```
+![image](https://github.com/user-attachments/assets/220e938d-aeff-4ed1-aa36-f2255b5e65ad)
+
+### 수상한 도미 한 마리
+
+```python
+
+from sklearn.neighbors import KNeighborsClassifier
+
+kn = KNeighborsClassifier()
+kn.fit(train_input, train_target)
+kn.score(test_input, test_target)
+```
+```python
+
+print(kn.predict([[25, 150]]))
+```
+- 도미 데이터를 넣었는데 빙어로 예측함
+```python
+import matplotlib.pyplot as plt
+plt.scatter(train_input[:,0], train_input[:,1])
+plt.scatter(25, 150, marker='^')
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/bcadf946-efba-4fe3-a8a1-201456f6fecf)
+
+```python
+distances, indexes = kn.kneighbors([[25, 150]])
+```
+```python
+plt.scatter(train_input[:,0], train_input[:,1])
+plt.scatter(25, 150, marker='^')
+plt.scatter(train_input[indexes,0], train_input[indexes,1], marker='D')
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/69d07e67-6de4-4bc4-a36e-0d0d106fccdb)
+
+### 기준을 맞춰라
+
+![image](https://github.com/user-attachments/assets/c673a154-4e1f-4b1e-b3dc-8a559216c4d8)
+
+```python
+plt.scatter(train_input[:,0], train_input[:,1])
+plt.scatter(25, 150, marker='^')
+plt.scatter(train_input[indexes,0], train_input[indexes,1], marker='D')
+plt.xlim((0, 1000))
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+![image](https://github.com/user-attachments/assets/0bcb762d-e379-4f41-89a8-ef3fcb779fed)
 
 
 

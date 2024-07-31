@@ -166,12 +166,14 @@ kn49.score(fish_data, fish_target)
 ### 머신러닝 알고리즘의 종류
 
 - 지도 학습 알고리즘
-    - 타깃이 있고 정답을 맞히는 것 학습
-    - 훈련 데이터: 입력(데이터) + 타깃(정답) <br>
-        ex) 입력: 생선의 길이와 무게, 타깃: 도미 여부, 특성: 길이와 무게
+    -입력과 타깃을 전달하여 모델을 훈련한 다음, 새로운 데이터를 예측하는 데 활용
+    - 훈련 데이터: 입력 + 타깃 <br>
+        - ex) 입력: 생선의 길이와 무게, 타깃: 도미 여부
+        - 특성: 길이와 무게
+        - 훈련 세트와 테스트 세트로 분류
 
 - 비지도 학습 알고리즘
-    - 타깃이 없고 데이터를 파악하거나 변형
+    - 타깃이 없으며, 무엇을 예측하는 것이 아니라 입력에서 어떤 특징을 찾는 데 활용
 
 ### 훈련 세트와 테스트 세트
 
@@ -180,6 +182,8 @@ kn49.score(fish_data, fish_target)
 
 - **테스트 세트**
 : 평가에 사용하는 데이터
+    - 전체 데이터에서 20-30%
+    - 데이터가 크다면 1%도 충분
 
 - **샘플**
 : 하나의 생선 데이터
@@ -298,15 +302,18 @@ test_target
 import numpy as np
 fish_data = np.column_stack((fish_length, fish_weight))
 ```
-![image](https://github.com/user-attachments/assets/08dca6e9-a313-4907-aefb-07860a218ab7)
+- **column_stack()**
+:전달받은 리스트를 일렬로 세운 다음 차례대로 나란히 연결
+    - 연결할 리스트는 파이썬 튜플로 전달
+![image](https://github.com/user-attachments/assets/c481ca6d-befd-48db-b8f4-9f4c6f15b112)
 
 ```python
 # 타깃 데이터 만들기
 fish_target = np.concatenate((np.ones(35), np.zeros(14)))
 ```
-![image](https://github.com/user-attachments/assets/f45bf078-0404-459e-a41e-7f87c72a4138)
-
-![image](https://github.com/user-attachments/assets/06c8cf1e-6df5-45bf-a702-a8ff67fa254a)
+- **concatenate()**
+:첫 번째 차원을 따라 배열을 연결
+![image](https://github.com/user-attachments/assets/ac28bbb9-365c-4243-aa00-1bb0a9c478f8)
 
 ### 사이킷런으로 훈련 세트와 테스트 세트 나누기
 
@@ -314,6 +321,8 @@ fish_target = np.concatenate((np.ones(35), np.zeros(14)))
 from sklearn.model_selection import train_test_split
 train_input, test_input, train_target, test_target = train_test_split(fish_data, fish_target, random_state=42)
 ```
+- **train_test_split()**
+:훈련 데이터를 훈련 세트와 테스트 세트로 나누는 함수
 ![image](https://github.com/user-attachments/assets/220e938d-aeff-4ed1-aa36-f2255b5e65ad)
 
 ### 수상한 도미 한 마리

@@ -157,7 +157,7 @@ kn49 = KNeighborsClassifier(n_neighbors=49)
 kn49.fit(fish_data, fish_target)
 kn49.score(fish_data, fish_target)
 ```
->> 0.7142857142857143 = (도미 개수/전체 개수)
+> 0.7142857142857143 = (도미 개수/전체 개수)
 
 # Ch.2 데이터 다루기
 
@@ -187,7 +187,8 @@ kn49.score(fish_data, fish_target)
 
 - **샘플**
 : 하나의 생선 데이터
-![image](https://github.com/user-attachments/assets/06f1c61f-e666-4d63-890b-550473ef5df5)
+
+    ![image](https://github.com/user-attachments/assets/06f1c61f-e666-4d63-890b-550473ef5df5)
 
 - **슬라이싱**
 ```python
@@ -228,8 +229,12 @@ target_arr = np.array(fish_target)
 # (샘플 수, 특성 수) 출력하기
 print(input_arr.shape)
 ```
-![image](https://github.com/user-attachments/assets/2b87c264-4a1b-47fa-980f-0a69e38d9eca)
->> (49, 2)
+> (49, 2)
+- **shape** <br>
+:(샘플 수, 특성 수) 출력
+
+    ![image](https://github.com/user-attachments/assets/2b87c264-4a1b-47fa-980f-0a69e38d9eca)
+
 
 ```python
 # 인덱스 생성 후 무작위로 샘플 고르기
@@ -243,7 +248,8 @@ np.random.shuffle(index)
 - **arange()**
 : 일정한 간격의 정수 또는 실수 배열 생성
     - 기본 간격은 1
-    - ex) `np.arange(1, 3, 0.2)` >>> [1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.4, 2.6, 2.8]
+    - ex) `np.arange(1, 3, 0.2)` <br>
+        > [1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.4, 2.6, 2.8]
 - **shuffle()**
 : 주어진 배열을 랜덤하게 섞음
     - 다차원 배열일 경우 첫 번째 축에 대해서만 섞음
@@ -270,18 +276,23 @@ plt.xlabel('length')
 plt.ylabel('weight')
 plt.show()
 ```
+- **plt.scatter** <br>
+:산점도 그리기
+    - `train_input[:, 0]`-> x축: train_input 배열의 모든 행에서 첫 번째 열의 데이터(생선의 길이)
+    - `train_input[:, 1]`-> y축: train_input 배열의 모든 행에서 두 번째 열의 데이터(생선의 무게)
 ![image](https://github.com/user-attachments/assets/e4cc8fc9-398f-4041-a0f0-08daa0b1f633)
 - 파란색: 훈련 세트
 - 주황색: 테스트 세트
 
     -> 잘 섞여 있음
+
 ```python
 # 훈련 세트로 모델 훈련시키기
 kn.fit(train_input, train_target)
 # 테스트 세트로 모델 성능 평가하기
 kn.score(test_input, test_target)
 ```
->> 정확도 1.0
+> 정확도 1.0
 
 ```python
 # 테스트 세트의 예측 결과 확인
@@ -289,7 +300,8 @@ kn.predict(test_input)
 # 테스트 세트의 실제 타깃 확인
 test_target
 ```
->> 둘 다 array([0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0])로 일치
+> 둘 다 array([0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0])로 일치
+
 - **array()** <br>
 :넘파이 배열을 의미함
 
@@ -302,16 +314,16 @@ test_target
 import numpy as np
 fish_data = np.column_stack((fish_length, fish_weight))
 ```
-- **column_stack()**
+- **column_stack()** <br>
 :전달받은 리스트를 일렬로 세운 다음 차례대로 나란히 연결
-    - 연결할 리스트는 파이썬 튜플로 전달
+    - 연결할 리스트는 파이썬 튜플로 전달 <br>
 ![image](https://github.com/user-attachments/assets/c481ca6d-befd-48db-b8f4-9f4c6f15b112)
 
 ```python
 # 타깃 데이터 만들기
 fish_target = np.concatenate((np.ones(35), np.zeros(14)))
 ```
-- **concatenate()**
+- **concatenate()** <br>
 :첫 번째 차원을 따라 배열을 연결
 ![image](https://github.com/user-attachments/assets/ac28bbb9-365c-4243-aa00-1bb0a9c478f8)
 
@@ -323,23 +335,30 @@ train_input, test_input, train_target, test_target = train_test_split(fish_data,
 ```
 - **train_test_split()**
 :훈련 데이터를 훈련 세트와 테스트 세트로 나누는 함수
+    - 알아서 데이터를 섞어줌
+    - `test_size` 매개변수: 테스트 세트로 나눌 비율 지정, 기본값은 0.25(25%)
+    - `random_state` 매개변수: 랜덤 시드 지정
+    - `stratify` 매개변수: 클래스 비율(도미:빙어)에 맞게 데이터를 나눔 -> 샘플링 편향 해결
 ![image](https://github.com/user-attachments/assets/220e938d-aeff-4ed1-aa36-f2255b5e65ad)
 
 ### 수상한 도미 한 마리
 
 ```python
-
+# kn 모델 훈련시키고 성능 평가하기
 from sklearn.neighbors import KNeighborsClassifier
 
 kn = KNeighborsClassifier()
 kn.fit(train_input, train_target)
 kn.score(test_input, test_target)
 ```
+> 정확도 1.0
 ```python
-
+# 도미 데이터 넣고 결과 확인
 print(kn.predict([[25, 150]]))
 ```
-- 도미 데이터를 넣었는데 빙어로 예측함
+> [0.]
+> 문제점: 도미 데이터를 넣었는데 빙어로 분류
+
 ```python
 import matplotlib.pyplot as plt
 plt.scatter(train_input[:,0], train_input[:,1])
@@ -350,10 +369,23 @@ plt.show()
 ```
 ![image](https://github.com/user-attachments/assets/bcadf946-efba-4fe3-a8a1-201456f6fecf)
 
+> 육안으로 확인했을 때 도미 데이터에 가까움
+
 ```python
+# 주어진 샘플에서 가까운 이웃들까지의 거리와 이웃 샘플들의 인덱스 반환
 distances, indexes = kn.kneighbors([[25, 150]])
+
+print(distances, indexes)
 ```
+> [[ 92.00086956 130.48375378 130.73859415 138.32150953 138.39320793]] [[21 33 19 30  1]]
+
+- **kneighbors()** <br>
+:입력한 데이터에 가장 가까운 이웃을 찾아 거리와 이웃 샘플의 인덱스 반환
+    - `n_neighbors` 매개변수: 이웃의 개수 지정, 기본값은 객체 생성 시 지정한 개수
+    - `return_distance` 매개변수: False로 지정 시 이웃 샘플의 인덱스만 반환하고 거리는 반환x, 기본값은 True
+
 ```python
+# 삼각형 샘플에 가장 가까운 5개 샘플 표시
 plt.scatter(train_input[:,0], train_input[:,1])
 plt.scatter(25, 150, marker='^')
 plt.scatter(train_input[indexes,0], train_input[indexes,1], marker='D')
@@ -362,6 +394,18 @@ plt.ylabel('weight')
 plt.show()
 ```
 ![image](https://github.com/user-attachments/assets/69d07e67-6de4-4bc4-a36e-0d0d106fccdb)
+
+```python
+print(train_input[indexes])
+```
+![image](https://github.com/user-attachments/assets/10aec6db-f2ff-4a75-aeaf-811d651422d9)
+
+```python
+print(print(train_target[indexes]))
+```
+![image](https://github.com/user-attachments/assets/61451340-8f18-4e48-afd0-09d146222394)
+
+> 도미 1개 빙어 4개
 
 ### 기준을 맞춰라
 

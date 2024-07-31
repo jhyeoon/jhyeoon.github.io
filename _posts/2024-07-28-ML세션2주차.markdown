@@ -492,7 +492,7 @@ plt.ylabel('weight')
 plt.show()
 ```
 
-![image](https://github.com/user-attachments/assets/dcba7717-dd14-4c27-89a4-e512f2478939){: class="left"}
+![image](https://github.com/user-attachments/assets/dcba7717-dd14-4c27-89a4-e512f2478939){: class="left"} <br>
 
 
 

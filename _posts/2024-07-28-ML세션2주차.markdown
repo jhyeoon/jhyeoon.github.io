@@ -452,6 +452,43 @@ train_scaled = (train_input - mean) / std
 
 ### 전처리 데이터로 모델 훈련하기
 
+```python
+# 주어진 샘플도 표준점수로 변환
+new = ([25, 150] - mean) / std
+```
+
+```python
+# kn 모델 훈련 시 스케일이 변환된 훈련 세트 사용
+kn.fit(train_scaled, train_target)
+```
+
+```python
+# kn 모델 성능 평가 시 스케일이 변환된 테스트 세트 사용
+test_scaled = (test_input - mean) / std
+kn.score(test_scaled, test_target)
+```
+> 정확도 1.0
+
+```python
+# 스케일이 변환된 주어진 샘플로 모델의 예측 출력하기
+print(kn.predict([new]))
+```
+> 1.0
+> 도미로 정확하게 예측함
+
+```python
+# 산점도로 가까운 이웃 확인하기
+distances, indexes = kn.kneighbors([new])
+
+plt.scatter(train_scaled[:,0], train_scaled[:,1])
+plt.scatter(new[0], new[1], marker='^')
+plt.scatter(train_scaled[indexes,0], train_scaled[indexes,1], marker='D')
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+
+![image](https://github.com/user-attachments/assets/dcba7717-dd14-4c27-89a4-e512f2478939)
 
 
 

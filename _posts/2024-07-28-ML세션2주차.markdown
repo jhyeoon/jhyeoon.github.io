@@ -46,6 +46,7 @@ categories: jekyll update
     ![image](https://github.com/user-attachments/assets/0c188f69-347e-4752-8f5a-3299b776d359){: class="left"}
     ![imgae](https://github.com/user-attachments/assets/a5404de3-6ec3-4ac1-ba57-939aeb923c55){: class="left"}
 
+<br>
 
 ## 1-3 마켓과 머신러닝
 
@@ -189,7 +190,7 @@ kn49.score(fish_data, fish_target)
 - **샘플**
 : 하나의 생선 데이터
 
-    ![image](https://github.com/user-attachments/assets/06f1c61f-e666-4d63-890b-550473ef5df5){: class="left"}
+    ![image](https://github.com/user-attachments/assets/06f1c61f-e666-4d63-890b-550473ef5df5){: class="left"} <br>
 
 - **슬라이싱**
 ```python
@@ -217,7 +218,7 @@ test_target = fish_target[35:]
 ### 넘파이
 
 : 파이썬의 대표적인 배열 라이브러리로 고차원 배열을 쉽게 만들 수 있음
-![image](https://github.com/user-attachments/assets/ab3afebe-a339-4933-ad4d-a51757c08301){: class="left"}
+![image](https://github.com/user-attachments/assets/ab3afebe-a339-4933-ad4d-a51757c08301){: class="left"} <br>
 
 ```python
 # 파이썬 리스트를 넘파이 배열로 바꾸기
@@ -234,8 +235,7 @@ print(input_arr.shape)
 - **.shape** <br>
 :(샘플 수, 특성 수) 출력
 
-    ![image](https://github.com/user-attachments/assets/2b87c264-4a1b-47fa-980f-0a69e38d9eca){: class="left"}
-
+    ![image](https://github.com/user-attachments/assets/2b87c264-4a1b-47fa-980f-0a69e38d9eca){: class="left"} <br>
 
 ```python
 # 인덱스 생성 후 무작위로 샘플 고르기
@@ -255,7 +255,7 @@ np.random.shuffle(index)
 : 주어진 배열을 랜덤하게 섞음
     - 다차원 배열일 경우 첫 번째 축에 대해서만 섞음
 
-    ![image](https://github.com/user-attachments/assets/7dbc7969-3bac-4063-b94a-2bcb6db19206){: class="left"}
+    ![image](https://github.com/user-attachments/assets/7dbc7969-3bac-4063-b94a-2bcb6db19206){: class="left"} <br>
 
 ```python
 # 훈련 세트의 입력값과 타깃값 생성
@@ -319,7 +319,7 @@ fish_data = np.column_stack((fish_length, fish_weight))
 - **.column_stack()** <br>
 : 전달받은 리스트를 일렬로 세운 다음 차례대로 나란히 연결
     - 연결할 리스트는 파이썬 튜플로 전달 <br>
-![image](https://github.com/user-attachments/assets/c481ca6d-befd-48db-b8f4-9f4c6f15b112){: class="left"}
+![image](https://github.com/user-attachments/assets/c481ca6d-befd-48db-b8f4-9f4c6f15b112){: class="left"} <br>
 
 ```python
 # 타깃 데이터 만들기
@@ -396,17 +396,17 @@ plt.xlabel('length')
 plt.ylabel('weight')
 plt.show()
 ```
-![image](https://github.com/user-attachments/assets/69d07e67-6de4-4bc4-a36e-0d0d106fccdb){: class="left"}
+![image](https://github.com/user-attachments/assets/69d07e67-6de4-4bc4-a36e-0d0d106fccdb){: class="left"} <br>
 
 ```python
 print(train_input[indexes])
 ```
-![image](https://github.com/user-attachments/assets/10aec6db-f2ff-4a75-aeaf-811d651422d9){: class="left"}
+![image](https://github.com/user-attachments/assets/10aec6db-f2ff-4a75-aeaf-811d651422d9){: class="left"} <br>
 
 ```python
 print(print(train_target[indexes]))
 ```
-![image](https://github.com/user-attachments/assets/61451340-8f18-4e48-afd0-09d146222394){: class="left"}
+![image](https://github.com/user-attachments/assets/61451340-8f18-4e48-afd0-09d146222394){: class="left"} <br>
 
 > 도미 1개 빙어 4개
 
@@ -451,6 +451,8 @@ print(mean, std)
 train_scaled = (train_input - mean) / std
 ```
 ![image](https://github.com/user-attachments/assets/775415d1-0502-41be-bc18-ef009b2a4718){: class="left"}
+
+<br>
 
 ### 전처리 데이터로 모델 훈련하기
 

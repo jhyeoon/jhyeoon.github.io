@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "ML세션 1주차"
-date:   2024-07-19 20:47:24 +0900
+date:   2024-07-21 20:47:24 +0900
 categories: jekyll update
 ---
 

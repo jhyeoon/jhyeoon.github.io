@@ -103,7 +103,8 @@ test_prediction = knr.predict(test_input)
 mae = mean_absolute_error(test_target, test_prediction)
 print(mae)
 ```
-&rarr; 
+> 19.157142857142862
+&rarr; 예측이 평균적으로 19g 정도 타깃값과 다름
 
 
 

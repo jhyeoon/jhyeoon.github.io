@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "ML세션 3주차"
-date:   2024-08-07 19:37:24 +0900
+date:   2024-08-07 19:37:24 +0800
 categories: jekyll update
 ---
 
@@ -119,9 +119,9 @@ print(mae)
 
 7. 과대적합인지 과소적합인지 확인하기
 
-> 과대적합 vs 과소적합 <br>
+> **과대적합 vs 과소적합** <br> <br>
     - 과대적합 <br>
-: 평가 시 훈련 세트를 사용했을 때의 점수 >> 평가 시 테스트 세트를 사용했을 때의 점수 <br>
+: 평가 시 훈련 세트를 사용했을 때의 점수 >> 평가 시 테스트 세트를 사용했을 때의 점수 <br> <br>
     - 과소적합 <br>
 : 평가 시 훈련 세트를 사용했을 때의 점수 < 평가 시 테스트 세트를 사용했을 때의 점수 or 두 점수 모두 낮은 경우 <br>
     &larr; 모델이 너무 단순해서 훈련 세트로 적절히 훈련되지 않아서 발생 or 훈련 세트와 테스트 세트의 크기가 매우 작은 경우 발생
@@ -191,7 +191,7 @@ print(lr.predict([[50]]))
 ```
 > [1241.83860323]
 
-3. lr 모델의 파라미터 찾기
+3. lr 모델의 파라미터 출력하기
 ```python
 print(lr.coef_, lr.intercept_)
 ```
@@ -203,15 +203,11 @@ print(lr.coef_, lr.intercept_)
 
 - **intercept_** (절편)
 
-``` 
-머신러닝에서 "훈련"의 의미
-
-- 모델 기반 학습 (선형 회귀)
-: 훈련 과정이 최적의 모델 파라미터를 찾는 것
-
-- 사례 기반 학습 (k-최근접 이웃)
+> **머신러닝에서 "훈련"의 의미** <br> <br>
+    - 모델 기반 학습 (선형 회귀) <br>
+: 훈련 과정이 최적의 모델 파라미터를 찾는 것 <br> <br>
+    - 사례 기반 학습 (k-최근접 이웃) <br>
 : 훈련 과정이 훈련 세트를 저장하는 것
-```
 
 4. 산점도와 회귀선 그리기
 ```python
@@ -235,6 +231,88 @@ print(lr.score(test_input, test_target))
 ```
 > 0.939846333997604
 > 0.8247503123313558
+
+- 문제점 <br>
+    -  훈련 세트의 점수 > 테스트 세트의 점수 <br>
+        but 훈련 세트의 점수도 그닥 높지 않기 때문에 전체적으로 과소적합
+    - 그래프의 왼쪽 아래 부분을 보면 농어의 무게가 0g 이하 <br>
+        but 현실에서는 불가능
+- 해결방안 <br>
+    - 다항 회귀
+
+### 다항 회귀
+
+$다항 회귀 \in 선형 회귀$ <br>
+$\because$ '$길이^2=왕길이$'로 바꾸면 선형 관계로 표현 가능
+
+1. 이차방정식 만들기 위해 $(농어의 길이)^2$를 열에 추가
+```python
+train_poly = np.column_stack((train_input ** 2, train_input))
+test_poly = np.column_stack((test_input ** 2, test_input))
+```
+```python
+print(train_poly.shape, test_poly.shape)
+```
+> (42, 2) (14, 2)
+
+2. 다항 회귀 모델 훈련시키기
+```python
+lr = LinearRegression()
+lr.fit(train_poly, train_target)
+```
+
+3. lr 모델의 파라미터 출력하기
+```python
+print(lr.coef_, lr.intercept_)
+```
+> [  1.01433211 -21.55792498] 116.0502107827827
+
+4. 산점도와 회귀선 그리기
+```python
+# 구간별 직선을 그리기 위해 15에서 49까지 정수 배열을 만듭니다
+point = np.arange(15, 50)
+# 훈련 세트의 산점도를 그립니다
+plt.scatter(train_input, train_target)
+# 15에서 49까지 2차 방정식 그래프를 그립니다
+plt.plot(point, 1.01*point**2 - 21.6*point + 116.05)
+# 50cm 농어 데이터
+plt.scatter([50], [1574], marker='^')
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+
+<img width="431" alt="image" src="https://github.com/user-attachments/assets/af1a42bd-6f7b-4bea-87a0-f18cd13a73c7">
+
+5. lr 모델 성능 평가하기
+```python
+print(lr.score(train_poly, train_target))
+print(lr.score(test_poly, test_target))
+```
+> 0.9706807451768623
+> 0.9775935108325122
+
+&rarr; 훈련 세트와 테스트 세트에 대한 점수가 크게 높아짐 <br>
+but 훈련 세트의 점수 < 테스트 세트의 점수 즉, 과소적합
+&rarr; 더 복잡한 모델을 만들어 과소적합 해결해야 함
+
+## 3-3 특성 공학과 규제
+
+- 회귀
+    - 선형 회귀 (3-2)
+    : 하나의 특성 사용 (길이)
+    - **다중 회귀 (3-3)**
+    : 여러 개의 특성 사용 (길이, 높이, 두께)
+
+        <img width="386" alt="image" src="https://github.com/user-attachments/assets/b250f900-08e2-4020-a56d-49b7f3399ff8">
+
+- 특성 공학 <br>
+: 기존의 특성을 사용하여 새로운 특성을 뽑아내는 작업 <br>
+ex) 
+
+
+
+
 
 
 

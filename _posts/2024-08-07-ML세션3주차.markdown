@@ -26,8 +26,7 @@ categories: jekyll update
         - 샘플의 타깃이 수치
         - 가장 가까운 샘플 k개를 선택하여 수치 확인 후, 수치들의 평균을 새로운 샘플의 수치로 예측
 
-### 데이터 준비
-
+### k-최근접 이웃 회귀
 
 **1. perch_length와 perch_weight 불러오기**
 ```python
@@ -99,6 +98,7 @@ knr.score(test_input, test_target)
     - 예측이 타깃 평균에 가까워지면 &rarr; score=0
     - 예측이 타깃에 가까워지면 &rarr; score=1
     - 1에 가까울수록 좋음
+
     $$R^2 = 1 - \frac{(타깃-예측)^2}{(타깃-타깃 평균)^2}$$
 
 </br>
@@ -117,29 +117,28 @@ print(mae)
 
 &rarr; 예측이 평균적으로 19g 정도 타깃값과 다름
 
-### 과대적합 vs 과소적합
+7. 과대적합인지 과소적합인지 확인하기
 
-- **과대적합**
-: 평가 시 훈련 세트를 사용했을 때의 점수 >> 평가 시 테스트 세트를 사용했을 때의 점수
-
-- **과소적합**
-: 평가 시 훈련 세트를 사용했을 때의 점수 < 평가 시 테스트 세트를 사용했을 때의 점수 or 두 점수 모두 낮은 경우
-
-&larr; 모델이 너무 단순해서 훈련 세트로 적절히 훈련되지 않아서 발생 or 훈련 세트와 테스트 세트의 크기가 매우 작은 경우 발생
+> 과대적합 vs 과소적합 <br>
+    - 과대적합 <br>
+: 평가 시 훈련 세트를 사용했을 때의 점수 >> 평가 시 테스트 세트를 사용했을 때의 점수 <br>
+    - 과소적합 <br>
+: 평가 시 훈련 세트를 사용했을 때의 점수 < 평가 시 테스트 세트를 사용했을 때의 점수 or 두 점수 모두 낮은 경우 <br>
+    &larr; 모델이 너무 단순해서 훈련 세트로 적절히 훈련되지 않아서 발생 or 훈련 세트와 테스트 세트의 크기가 매우 작은 경우 발생
 
 ```python
 print(knr.score(train_input, train_target))
 ```
 > 0.9698823289099254
 
-&rarr; 이 모델에서는 과소적합이 발생
-&rarr; k의 개수를 줄임으로써 모델을 더 복잡하게 만들어야 함
-    - 이웃의 개수를 줄이면 국지적 패턴에 민감해짐
+&rarr; 이 모델에서는 과소적합이 발생 <br>
+&rarr; k의 개수를 줄임으로써 모델을 더 복잡하게 만들어야 함 <br>
+    - 이웃의 개수를 줄이면 국지적 패턴에 민감해짐 <br>
     - 이웃의 개수를 늘리면 일반적인 패턴을 따름
 
 </br>
 
-**7. 과소적합 해결하기**
+**8. 과소적합 해결하기**
 ```python
 # 이웃의 갯수를 3으로 설정합니다
 knr.n_neighbors = 3
@@ -153,10 +152,93 @@ print(knr.score(test_input, test_target))
 ```
 > 0.9746459963987609
 
-&rarr; 평가 시 훈련 세트를 사용했을 때의 점수 > 평가 시 테스트 세트를 사용했을 때의 점수
+&rarr; 평가 시 훈련 세트를 사용했을 때의 점수 > 평가 시 테스트 세트를 사용했을 때의 점수 <br>
 &rarr; 과소적합 해결!
 
 ## 3-2 선형 회귀
+
+- k-means 이웃 회귀의 문제점 <br>
+: 훈련 데이터의 범위를 크게 벗어난 샘플도 그것과 가장 가까운 이웃들의 평균을 사용하기 때문에 실제 타깃과 예측값이 차이가 나게 됨
+
+    - print(knr.predict([[50]]))
+        > 1033.33333333333
+
+        <img width="431" alt="image" src="https://github.com/user-attachments/assets/9cd8de27-27ab-433a-bb95-1dbb6865bfab">
+
+    - print(knr.predict([[100]]))
+        > 1033.33333333333
+
+        <img width="431" alt="image" src="https://github.com/user-attachments/assets/38ea6886-2fde-4296-a48f-2fc5cec36312">
+
+- 해결방안 <br>
+: "선형 회귀" 사용
+
+### 선형 회귀
+: 특성이 하나인 경우 어떤 직선을 학습하는 알고리즘
+
+1. 선형 회귀 모델 훈련하기
+
+```python
+from sklearn.linear_model import LinearRegression
+lr = LinearRegression()
+
+lr.fit(train_input, train_target)
+```
+
+2. 50cm 농어의 무게 예측하기
+```python
+print(lr.predict([[50]]))
+```
+> [1241.83860323]
+
+3. lr 모델의 파라미터 찾기
+```python
+print(lr.coef_, lr.intercept_)
+```
+> [39.01714496] -709.0186449535477
+
+- **coef_** (기울기)
+    - coefficient(계수)
+    - weight(가중치)
+
+- **intercept_** (절편)
+
+``` 
+머신러닝에서 "훈련"의 의미
+
+- 모델 기반 학습 (선형 회귀)
+: 훈련 과정이 최적의 모델 파라미터를 찾는 것
+
+- 사례 기반 학습 (k-최근접 이웃)
+: 훈련 과정이 훈련 세트를 저장하는 것
+```
+
+4. 산점도와 회귀선 그리기
+```python
+# 훈련 세트의 산점도를 그립니다
+plt.scatter(train_input, train_target)
+# 15에서 50까지 1차 방정식 그래프를 그립니다
+plt.plot([15, 50], [15*lr.coef_+lr.intercept_, 50*lr.coef_+lr.intercept_])
+# 50cm 농어 데이터
+plt.scatter(50, 1241.8, marker='^')
+plt.xlabel('length')
+plt.ylabel('weight')
+plt.show()
+```
+
+<img width="433" alt="image" src="https://github.com/user-attachments/assets/94ad1714-09c8-4de1-9ae2-7b6a7b3ec399">
+
+5. 훈련 세트와 테스트 세트의 $R^2$ 확인하기
+```python
+print(lr.score(train_input, train_target))
+print(lr.score(test_input, test_target))
+```
+> 0.939846333997604
+> 0.8247503123313558
+
+
+
+
 
 
 

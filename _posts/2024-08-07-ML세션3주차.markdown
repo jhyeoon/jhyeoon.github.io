@@ -12,7 +12,7 @@ published: true
 
 ## 3-1 k-최근접 이웃 회귀
 
-### 회귀
+### **회귀**
 
 - 지도 학습 알고리즘
     - 분류 (2장) 
@@ -27,7 +27,7 @@ published: true
         - 샘플의 타깃이 수치
         - 가장 가까운 샘플 k개를 선택하여 수치 확인 후, 수치들의 평균을 새로운 샘플의 수치로 예측
 
-### k-최근접 이웃 회귀
+### **k-최근접 이웃 회귀**
 
 **1. perch_length와 perch_weight 불러오기**
 ```python
@@ -118,13 +118,12 @@ print(mae)
 
 &rarr; 예측이 평균적으로 19g 정도 타깃값과 다름
 
-7. 과대적합인지 과소적합인지 확인하기
+**7. 과대적합인지 과소적합인지 확인하기**
 
-> **과대적합 vs 과소적합** <br> <br>
-
-    - 과대적합 <br>
-: 평가 시 훈련 세트를 사용했을 때의 점수 >> 평가 시 테스트 세트를 사용했을 때의 점수 <br> <br>
-    - 과소적합 <br>
+**과대적합 vs 과소적합**
+- 과대적합 <br>
+: 평가 시 훈련 세트를 사용했을 때의 점수 >> 평가 시 테스트 세트를 사용했을 때의 점수 <br>
+- 과소적합 <br>
 : 평가 시 훈련 세트를 사용했을 때의 점수 < 평가 시 테스트 세트를 사용했을 때의 점수 or 두 점수 모두 낮은 경우 <br>
     &larr; 모델이 너무 단순해서 훈련 세트로 적절히 훈련되지 않아서 발생 or 훈련 세트와 테스트 세트의 크기가 매우 작은 경우 발생
 
@@ -149,6 +148,7 @@ knr.fit(train_input, train_target)
 print(knr.score(train_input, train_target))
 ```
 > 0.9804899950518966
+
 ```python
 print(knr.score(test_input, test_target))
 ```
@@ -157,7 +157,7 @@ print(knr.score(test_input, test_target))
 &rarr; 평가 시 훈련 세트를 사용했을 때의 점수 > 평가 시 테스트 세트를 사용했을 때의 점수 <br>
 &rarr; 과소적합 해결!
 
-## 3-2 선형 회귀
+## **3-2 선형 회귀**
 
 - k-means 이웃 회귀의 문제점 <br>
 : 훈련 데이터의 범위를 크게 벗어난 샘플도 그것과 가장 가까운 이웃들의 평균을 사용하기 때문에 실제 타깃과 예측값이 차이가 나게 됨
@@ -175,10 +175,10 @@ print(knr.score(test_input, test_target))
 - 해결방안 <br>
 : "선형 회귀" 사용
 
-### 선형 회귀
+### **선형 회귀**
 : 특성이 하나인 경우 어떤 직선을 학습하는 알고리즘
 
-1. 선형 회귀 모델 훈련하기
+**1. 선형 회귀 모델 훈련하기**
 
 ```python
 from sklearn.linear_model import LinearRegression
@@ -187,13 +187,13 @@ lr = LinearRegression()
 lr.fit(train_input, train_target)
 ```
 
-2. 50cm 농어의 무게 예측하기
+**2. 50cm 농어의 무게 예측하기**
 ```python
 print(lr.predict([[50]]))
 ```
 > [1241.83860323]
 
-3. lr 모델의 파라미터 출력하기
+**3. lr 모델의 파라미터 출력하기**
 ```python
 print(lr.coef_, lr.intercept_)
 ```
@@ -212,7 +212,7 @@ print(lr.coef_, lr.intercept_)
     - 사례 기반 학습 (k-최근접 이웃) <br>
 : 훈련 과정이 훈련 세트를 저장하는 것
 
-4. 산점도와 회귀선 그리기
+**4. 산점도와 회귀선 그리기**
 ```python
 # 훈련 세트의 산점도를 그립니다
 plt.scatter(train_input, train_target)
@@ -227,7 +227,7 @@ plt.show()
 
 <img width="433" alt="image" src="https://github.com/user-attachments/assets/94ad1714-09c8-4de1-9ae2-7b6a7b3ec399">
 
-5. 훈련 세트와 테스트 세트의 $R^2$ 확인하기
+**5. 훈련 세트와 테스트 세트의 $R^2$ 확인하기**
 ```python
 print(lr.score(train_input, train_target))
 print(lr.score(test_input, test_target))
@@ -243,12 +243,12 @@ print(lr.score(test_input, test_target))
 - 해결방안 <br>
     - 다항 회귀
 
-### 다항 회귀
+### **다항 회귀**
 
 $다항 회귀 \in 선형 회귀$ <br>
 $\because$ '$길이^2=왕길이$'로 바꾸면 선형 관계로 표현 가능
 
-1. 이차방정식 만들기 위해 $(농어의 길이)^2$를 열에 추가
+**1. 이차방정식 만들기 위해 $(농어의 길이)^2$를 열에 추가**
 ```python
 train_poly = np.column_stack((train_input ** 2, train_input))
 test_poly = np.column_stack((test_input ** 2, test_input))
@@ -258,19 +258,19 @@ print(train_poly.shape, test_poly.shape)
 ```
 > (42, 2) (14, 2)
 
-2. 다항 회귀 모델 훈련시키기
+**2. 다항 회귀 모델 훈련시키기**
 ```python
 lr = LinearRegression()
 lr.fit(train_poly, train_target)
 ```
 
-3. lr 모델의 파라미터 출력하기
+**3. lr 모델의 파라미터 출력하기**
 ```python
 print(lr.coef_, lr.intercept_)
 ```
 > [  1.01433211 -21.55792498] 116.0502107827827
 
-4. 산점도와 회귀선 그리기
+**4. 산점도와 회귀선 그리기**
 ```python
 # 구간별 직선을 그리기 위해 15에서 49까지 정수 배열을 만듭니다
 point = np.arange(15, 50)
@@ -287,7 +287,7 @@ plt.show()
 
 <img width="431" alt="image" src="https://github.com/user-attachments/assets/af1a42bd-6f7b-4bea-87a0-f18cd13a73c7">
 
-5. lr 모델 성능 평가하기
+**5. lr 모델 성능 평가하기**
 ```python
 print(lr.score(train_poly, train_target))
 print(lr.score(test_poly, test_target))
@@ -299,7 +299,7 @@ print(lr.score(test_poly, test_target))
 but 훈련 세트의 점수 < 테스트 세트의 점수 즉, 과소적합 <br>
 &rarr; 더 복잡한 모델을 만들어 과소적합 해결해야 함
 
-## 3-3 특성 공학과 규제
+## **3-3 특성 공학과 규제**
 
 - 회귀
     - 선형 회귀 (3-2)
@@ -313,7 +313,7 @@ but 훈련 세트의 점수 < 테스트 세트의 점수 즉, 과소적합 <br>
 : 기존의 특성을 사용하여 새로운 특성을 뽑아내는 작업 <br>
 ex) '농어 길이 X 농어 높이'
 
-1. 판다스로 농어 데이터 df에 저장하고, 넘파이 배열로 바꾸기
+**1. 판다스로 농어 데이터 df에 저장하고, 넘파이 배열로 바꾸기**
 
 ```python
 # 농어 입력 데이터 준비하기
@@ -346,7 +346,7 @@ perch_weight = np.array(
 - **.to_numpy**
 : 넘파이 배열로 바꾸기
 
-2. perch_full과 perch_weight를 훈련 세트와 테스트 세트로 나누기
+**2. perch_full과 perch_weight를 훈련 세트와 테스트 세트로 나누기**
 
 ```python
 from sklearn.model_selection import train_test_split
@@ -354,7 +354,7 @@ from sklearn.model_selection import train_test_split
 train_input, test_input, train_target, test_target = train_test_split(perch_full, perch_weight, random_state=42)
 ```
 
-3. 사이킷런 변환기
+**3. 사이킷런 변환기**
 
 ```python
 from sklearn.preprocessing import PolynomialFeatures

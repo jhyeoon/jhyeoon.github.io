@@ -118,7 +118,7 @@ print(mae)
 
 &rarr; 예측이 평균적으로 19g 정도 타깃값과 다름
 
-**7. 과대적합인지 과소적합인지 확인하기**
+7. **과대적합인지 과소적합인지 확인하기**
 
 **과대적합 vs 과소적합**
 - 과대적합 <br>
@@ -178,7 +178,7 @@ print(knr.score(test_input, test_target))
 ### **선형 회귀**
 : 특성이 하나인 경우 어떤 직선을 학습하는 알고리즘
 
-**1. 선형 회귀 모델 훈련하기**
+1. **선형 회귀 모델 훈련하기**
 
 ```python
 from sklearn.linear_model import LinearRegression
@@ -187,13 +187,13 @@ lr = LinearRegression()
 lr.fit(train_input, train_target)
 ```
 
-**2. 50cm 농어의 무게 예측하기**
+2. **50cm 농어의 무게 예측하기**
 ```python
 print(lr.predict([[50]]))
 ```
 > [1241.83860323]
 
-**3. lr 모델의 파라미터 출력하기**
+3. **lr 모델의 파라미터 출력하기**
 ```python
 print(lr.coef_, lr.intercept_)
 ```
@@ -212,7 +212,7 @@ print(lr.coef_, lr.intercept_)
     - 사례 기반 학습 (k-최근접 이웃) <br>
 : 훈련 과정이 훈련 세트를 저장하는 것
 
-**4. 산점도와 회귀선 그리기**
+4. **산점도와 회귀선 그리기**
 ```python
 # 훈련 세트의 산점도를 그립니다
 plt.scatter(train_input, train_target)
@@ -248,7 +248,7 @@ print(lr.score(test_input, test_target))
 $다항 회귀 \in 선형 회귀$ <br>
 $\because$ '$길이^2=왕길이$'로 바꾸면 선형 관계로 표현 가능
 
-**1. 이차방정식 만들기 위해 $(농어의 길이)^2$를 열에 추가**
+1. **이차방정식 만들기 위해 $(농어의 길이)^2$를 열에 추가**
 ```python
 train_poly = np.column_stack((train_input ** 2, train_input))
 test_poly = np.column_stack((test_input ** 2, test_input))
@@ -258,19 +258,19 @@ print(train_poly.shape, test_poly.shape)
 ```
 > (42, 2) (14, 2)
 
-**2. 다항 회귀 모델 훈련시키기**
+2. **다항 회귀 모델 훈련시키기**
 ```python
 lr = LinearRegression()
 lr.fit(train_poly, train_target)
 ```
 
-**3. lr 모델의 파라미터 출력하기**
+3. **lr 모델의 파라미터 출력하기**
 ```python
 print(lr.coef_, lr.intercept_)
 ```
 > [  1.01433211 -21.55792498] 116.0502107827827
 
-**4. 산점도와 회귀선 그리기**
+4. **산점도와 회귀선 그리기**
 ```python
 # 구간별 직선을 그리기 위해 15에서 49까지 정수 배열을 만듭니다
 point = np.arange(15, 50)
@@ -363,6 +363,8 @@ poly = PolynomialFeatures()
 poly.fit([[2, 3]])
 print(poly.transform([[2, 3]]))
 ```
+
+
 
 
 

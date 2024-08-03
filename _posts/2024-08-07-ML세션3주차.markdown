@@ -350,6 +350,15 @@ from sklearn.model_selection import train_test_split
 train_input, test_input, train_target, test_target = train_test_split(perch_full, perch_weight, random_state=42)
 ```
 
+3. 사이킷런 변환기
+```python
+from sklearn.preprocessing import PolynomialFeatures
+
+poly = PolynomialFeatures()
+poly.fit([[2, 3]])
+print(poly.transform([[2, 3]]))
+```
+
 
 
 

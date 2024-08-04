@@ -137,8 +137,6 @@ print(knr.score(train_input, train_target))
     - 이웃의 개수를 줄이면 국지적 패턴에 민감해짐 <br>
     - 이웃의 개수를 늘리면 일반적인 패턴을 따름
 
-<br>
-
 **8. 과소적합 해결하기**
 ```python
 # 이웃의 갯수를 3으로 설정합니다
@@ -365,15 +363,250 @@ from sklearn.model_selection import train_test_split
 train_input, test_input, train_target, test_target = train_test_split(perch_full, perch_weight, random_state=42)
 ```
 
-**3. 사이킷런 변환기**
+**3. 훈련 세트와 테스트 세트의 새로운 특성 만들기**
 
 ```python
 from sklearn.preprocessing import PolynomialFeatures
 
-poly = PolynomialFeatures()
-poly.fit([[2, 3]])
-print(poly.transform([[2, 3]]))
+poly = PolynomialFeatures(include_bias=False)
+
+poly.fit(train_input)
+
+train_poly = poly.transform(train_input)
+test_poly = poly.transform(test_input)
 ```
+- **PolynomialFeatures()**
+: 사이킷런의 변환기 클래스
+    - LinearRegression()은 사이킷런의 추정기 클래스
+    - `include_bias=False`: 특성에 추가된 절편 항 무시(사이킷런은 자동으로 해주지만 일단 이렇게 함)
+- **.fit()**
+: 새롭게 만들 특성 조합 찾음
+- **.transform()**
+: 실제로 데이터 변환
+
+**4. 특성 확인하기**
+```python
+print(train_poly.shape)
+poly.get_feature_names_out()
+```
+> (42, 9)
+> array(['x0', 'x1', 'x2', 'x0^2', 'x0 x1', 'x0 x2', 'x1^2', 'x1 x2','x2^2'], dtype=object)
+
+- **.get_feature_names_out()**
+: 각 특성들이 어떤 입력의 조합으로 만들어졌는지 알려줌
+
+**5. 다중 회귀 모델 훈련하기**
+
+```python
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+lr.fit(train_poly, train_target)
+```
+
+**6. lr 모델 성능 평가하기**
+
+```python
+print(lr.score(train_poly, train_target))
+print(lr.score(test_poly, test_target))
+```
+
+> 0.9903183436982125 &rarr; 훈련 세트의 점수 &uarr;
+> 0.9714559911594111 &rarr; 과소적합 해결
+
+**7. 5제곱까지 특성 만들기**
+
+```python
+poly = PolynomialFeatures(degree=5, include_bias=False)
+
+poly.fit(train_input)
+
+train_poly = poly.transform(train_input)
+test_poly = poly.transform(test_input)
+```
+
+**8. lr5 모델 훈련하기**
+
+```python
+lr5.fit(train_poly, train_target)
+```
+
+**9. lr5 모델 성능 평가하기**
+
+```python
+print(lr.score(train_poly, train_target))
+print(lr.score(test_poly, test_target))
+```
+
+> 0.9999999999996433
+> -144.40579436844948 &rarr; 과대적합 발생
+
+### 규제
+: 과대적합을 훼방하는 것
+- 선형 회귀 모델의 경우, 특성에 곱해지는 계수(기울기)를 작게 만드는 것
+- 선형 회귀 모델에 규제를 추가한 모델 (규제하는 방법에 따라)
+    - 릿지: 계수를 제곱한 값을 기준으로 규제 적용
+        - 일반적으로 릿지 선호
+    - 라쏘: 계수의 절댓값을 기준으로 규제 적용
+        - 계수의 크기를 0으로 만들 수 있음
+
+<img width="392" alt="image" src="https://github.com/user-attachments/assets/60b8e9f6-3ccd-4fe8-8c78-5254a93c0758">
+
+**10. 스케일이 맞춰진 5제곱까지의 특성 만들기**
+
+```python
+from sklearn.preprocessing import StandardScaler
+
+ss = StandardScaler()
+ss.fit(train_poly)
+
+train_scaled = ss.transform(train_poly)
+test_scaled = ss.transform(test_poly)
+```
+- **StandardScaler()**
+: 각 특성의 평균을 0으로, 표준 편차를 1로 조정하여 정규화
+    - 앞에서 했던 것처럼 직접 평균과 표준편차를 구해 특성을 표준점수로 바꿀 필요 없음
+
+### 릿지 회귀
+
+**11-1. 릿지 모델로 과대적합 해결하기**
+
+```python
+from sklearn.linear_model import Ridge
+
+ridge = Ridge()
+ridge.fit(train_scaled, train_target)
+
+print(ridge.score(train_scaled, train_target))
+print(ridge.score(test_scaled, test_target))
+```
+> 0.9896101671037343
+> 0.9790693977615387
+&rarr; 과대적합 해결!
+
+**11-2. 릿지 모델의 적합한 alpha 구하기**
+
+- **alpha**
+: 모델 객체를 만들 때 alpha 매개변수로 규제의 강도 조절해주는 매개변수
+    - alpha값 찾는 방법 &rarr; alpha값에 대한 $R^2$값의 그래프 그려보기
+    - 하이퍼파라미터
+    : 머신러닝 모델이 학습할 수 없고 사람이 알려줘야 하는 파라미터
+
+```python
+import matplotlib.pyplot as plt
+
+train_score = []
+test_score = []
+
+alpha_list = [0.001, 0.01, 0.1, 1, 10, 100]
+for alpha in alpha_list:
+    # 릿지 모델을 만듭니다
+    ridge = Ridge(alpha=alpha)
+    # 릿지 모델을 훈련합니다
+    ridge.fit(train_scaled, train_target)
+    # 훈련 점수와 테스트 점수를 저장합니다
+    train_score.append(ridge.score(train_scaled, train_target))
+    test_score.append(ridge.score(test_scaled, test_target))
+
+plt.plot(np.log10(alpha_list), train_score)
+plt.plot(np.log10(alpha_list), test_score)
+plt.xlabel('alpha')
+plt.ylabel('R^2')
+plt.show()
+```
+<img width="436" alt="image" src="https://github.com/user-attachments/assets/7d878c6a-a1b4-4771-97cd-17fe5640c202">
+
+&rarr; alpha=0.1
+
+**11-3. 찾은 alpha값 적용한 릿지 모델 성능 평가하기**
+
+```python
+ridge = Ridge(alpha=0.1)
+ridge.fit(train_scaled, train_target)
+
+print(ridge.score(train_scaled, train_target))
+print(ridge.score(test_scaled, test_target))
+```
+&rarr; 모델 훈련 great!
+
+### 라쏘 회귀
+
+**12-1. 라쏘 모델로 과대적합 해결하기**
+
+```python
+from sklearn.linear_model import Lasso
+
+lasso = Lasso()
+lasso.fit(train_scaled, train_target)
+print(lasso.score(train_scaled, train_target))
+print(lasso.score(test_scaled, test_target))
+```
+> 0.989789897208096
+> 0.9800593698421883
+
+**12-2. 라쏘 모델의 적합한 alpha 구하기**
+
+```python
+train_score = []
+test_score = []
+
+alpha_list = [0.001, 0.01, 0.1, 1, 10, 100]
+for alpha in alpha_list:
+    # 라쏘 모델을 만듭니다
+    lasso = Lasso(alpha=alpha, max_iter=10000)
+    # 라쏘 모델을 훈련합니다
+    lasso.fit(train_scaled, train_target)
+    # 훈련 점수와 테스트 점수를 저장합니다
+    train_score.append(lasso.score(train_scaled, train_target))
+    test_score.append(lasso.score(test_scaled, test_target))
+
+plt.plot(np.log10(alpha_list), train_score)
+plt.plot(np.log10(alpha_list), test_score)
+plt.xlabel('alpha')
+plt.ylabel('R^2')
+plt.show()
+```
+
+<img width="431" alt="image" src="https://github.com/user-attachments/assets/f5cdd45b-cd8e-4490-8d47-d1c14ec5f459">
+
+&rarr; alpha=10
+
+**12-3. 찾은 alpha값 적용한 라쏘 모델 성능 평가하기**
+
+```python
+lasso = Lasso(alpha=10)
+lasso.fit(train_scaled, train_target)
+
+print(lasso.score(train_scaled, train_target))
+print(lasso.score(test_scaled, test_target))
+```
+
+> 0.9888067471131867
+> 0.9824470598706695
+
+&rarr; 모델 훈련 great!
+
+**12-4. 라쏘 모델에서 계수가 0인 개수 출력하기**
+
+```python
+print(np.sum(lasso.coef_ == 0))
+```
+> 40
+
+&rarr; 계수 중 0이 40개 
+&rarr; 55개의 특성을 모델에 주입했지만 이 라쏘 모델이 사용한 특성은 15개 
+&rarr; 유용한 특성이 15개
+
+
+
+
+
+
+
+
+
+
+
 
 
 

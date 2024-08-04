@@ -118,6 +118,8 @@ print(mae)
 
 &rarr; 예측이 평균적으로 19g 정도 타깃값과 다름
 
+<br>
+
 **7. 과대적합인지 과소적합인지 확인하기**
 
 **과대적합 vs 과소적합**
@@ -136,6 +138,8 @@ print(knr.score(train_input, train_target))
 &rarr; k의 개수를 줄임으로써 모델을 더 복잡하게 만들어야 함 <br>
     - 이웃의 개수를 줄이면 국지적 패턴에 민감해짐 <br>
     - 이웃의 개수를 늘리면 일반적인 패턴을 따름
+
+<br>
 
 **8. 과소적합 해결하기**
 ```python
@@ -176,6 +180,8 @@ print(knr.score(test_input, test_target))
 ### **선형 회귀**
 : 특성이 하나인 경우 어떤 직선을 학습하는 알고리즘
 
+<br>
+
 **1. 선형 회귀 모델 훈련하기**
 
 ```python
@@ -185,12 +191,16 @@ lr = LinearRegression()
 lr.fit(train_input, train_target)
 ```
 
+<br>
+
 **2. 50cm 농어의 무게 예측하기**
 
 ```python
 print(lr.predict([[50]]))
 ```
 > [1241.83860323]
+
+<br>
 
 **3. lr 모델의 파라미터 출력하기**
 
@@ -230,13 +240,15 @@ plt.show()
 
 <img width="433" alt="image" src="https://github.com/user-attachments/assets/94ad1714-09c8-4de1-9ae2-7b6a7b3ec399">
 
+<br>
+
 **5. 훈련 세트와 테스트 세트의 $R^2$ 확인하기**
 
 ```python
 print(lr.score(train_input, train_target))
 print(lr.score(test_input, test_target))
 ```
-> 0.939846333997604
+> 0.939846333997604 <br>
 > 0.8247503123313558
 
 - 문제점 <br>
@@ -252,6 +264,8 @@ print(lr.score(test_input, test_target))
 $다항 회귀 \in 선형 회귀$ <br>
 $\because$ '$길이^2=왕길이$'로 바꾸면 선형 관계로 표현 가능
 
+<br>
+
 **1. 이차방정식 만들기 위해 $(농어의 길이)^2$를 열에 추가**
 
 ```python
@@ -263,6 +277,8 @@ print(train_poly.shape, test_poly.shape)
 ```
 > (42, 2) (14, 2)
 
+<br>
+
 **2. 다항 회귀 모델 훈련시키기**
 
 ```python
@@ -270,12 +286,16 @@ lr = LinearRegression()
 lr.fit(train_poly, train_target)
 ```
 
+<br>
+
 **3. lr 모델의 파라미터 출력하기**
 
 ```python
 print(lr.coef_, lr.intercept_)
 ```
 > [  1.01433211 -21.55792498] 116.0502107827827
+
+<br>
 
 **4. 산점도와 회귀선 그리기**
 
@@ -295,13 +315,15 @@ plt.show()
 
 <img width="431" alt="image" src="https://github.com/user-attachments/assets/af1a42bd-6f7b-4bea-87a0-f18cd13a73c7">
 
+<br>
+
 **5. lr 모델 성능 평가하기**
 
 ```python
 print(lr.score(train_poly, train_target))
 print(lr.score(test_poly, test_target))
 ```
-> 0.9706807451768623
+> 0.9706807451768623 <br>
 > 0.9775935108325122
 
 &rarr; 훈련 세트와 테스트 세트에 대한 점수가 크게 높아짐 <br>
@@ -321,6 +343,8 @@ but 훈련 세트의 점수 < 테스트 세트의 점수 즉, 과소적합 <br>
 - 특성 공학 <br>
 : 기존의 특성을 사용하여 새로운 특성을 뽑아내는 작업 <br>
 ex) '농어 길이 X 농어 높이'
+
+<br>
 
 **1. 판다스로 농어 데이터 df에 저장하고, 넘파이 배열로 바꾸기**
 
@@ -355,6 +379,8 @@ perch_weight = np.array(
 - **.to_numpy**
 : 넘파이 배열로 바꾸기
 
+<br>
+
 **2. perch_full과 perch_weight를 훈련 세트와 테스트 세트로 나누기**
 
 ```python
@@ -362,6 +388,8 @@ from sklearn.model_selection import train_test_split
 
 train_input, test_input, train_target, test_target = train_test_split(perch_full, perch_weight, random_state=42)
 ```
+
+<br>
 
 **3. 훈련 세트와 테스트 세트의 새로운 특성 만들기**
 
@@ -384,16 +412,20 @@ test_poly = poly.transform(test_input)
 - **.transform()**
 : 실제로 데이터 변환
 
+<br>
+
 **4. 특성 확인하기**
 ```python
 print(train_poly.shape)
 poly.get_feature_names_out()
 ```
-> (42, 9)
+> (42, 9) <br>
 > array(['x0', 'x1', 'x2', 'x0^2', 'x0 x1', 'x0 x2', 'x1^2', 'x1 x2','x2^2'], dtype=object)
 
 - **.get_feature_names_out()**
 : 각 특성들이 어떤 입력의 조합으로 만들어졌는지 알려줌
+
+<br>
 
 **5. 다중 회귀 모델 훈련하기**
 
@@ -404,6 +436,8 @@ lr = LinearRegression()
 lr.fit(train_poly, train_target)
 ```
 
+<br>
+
 **6. lr 모델 성능 평가하기**
 
 ```python
@@ -411,8 +445,10 @@ print(lr.score(train_poly, train_target))
 print(lr.score(test_poly, test_target))
 ```
 
-> 0.9903183436982125 &rarr; 훈련 세트의 점수 &uarr;
+> 0.9903183436982125 &rarr; 훈련 세트의 점수 &uarr; <br>
 > 0.9714559911594111 &rarr; 과소적합 해결
+
+<br>
 
 **7. 5제곱까지 특성 만들기**
 
@@ -425,11 +461,15 @@ train_poly = poly.transform(train_input)
 test_poly = poly.transform(test_input)
 ```
 
+<br>
+
 **8. lr5 모델 훈련하기**
 
 ```python
 lr5.fit(train_poly, train_target)
 ```
+
+<br>
 
 **9. lr5 모델 성능 평가하기**
 
@@ -438,7 +478,7 @@ print(lr.score(train_poly, train_target))
 print(lr.score(test_poly, test_target))
 ```
 
-> 0.9999999999996433
+> 0.9999999999996433 <br>
 > -144.40579436844948 &rarr; 과대적합 발생
 
 ### 규제
@@ -467,7 +507,7 @@ test_scaled = ss.transform(test_poly)
 : 각 특성의 평균을 0으로, 표준 편차를 1로 조정하여 정규화
     - 앞에서 했던 것처럼 직접 평균과 표준편차를 구해 특성을 표준점수로 바꿀 필요 없음
 
-### 릿지 회귀
+### **릿지 회귀**
 
 **11-1. 릿지 모델로 과대적합 해결하기**
 
@@ -480,9 +520,11 @@ ridge.fit(train_scaled, train_target)
 print(ridge.score(train_scaled, train_target))
 print(ridge.score(test_scaled, test_target))
 ```
-> 0.9896101671037343
-> 0.9790693977615387
-&rarr; 과대적합 해결!
+> 0.9896101671037343 <br>
+> 0.9790693977615387 <br>
+&rarr; 과대적합 해결! 
+
+<br>
 
 **11-2. 릿지 모델의 적합한 alpha 구하기**
 
@@ -518,6 +560,8 @@ plt.show()
 
 &rarr; alpha=0.1
 
+<br>
+
 **11-3. 찾은 alpha값 적용한 릿지 모델 성능 평가하기**
 
 ```python
@@ -529,7 +573,7 @@ print(ridge.score(test_scaled, test_target))
 ```
 &rarr; 모델 훈련 great!
 
-### 라쏘 회귀
+### **라쏘 회귀**
 
 **12-1. 라쏘 모델로 과대적합 해결하기**
 
@@ -541,8 +585,10 @@ lasso.fit(train_scaled, train_target)
 print(lasso.score(train_scaled, train_target))
 print(lasso.score(test_scaled, test_target))
 ```
-> 0.989789897208096
+> 0.989789897208096 <br>
 > 0.9800593698421883
+
+<br>
 
 **12-2. 라쏘 모델의 적합한 alpha 구하기**
 
@@ -571,6 +617,8 @@ plt.show()
 
 &rarr; alpha=10
 
+<br>
+
 **12-3. 찾은 alpha값 적용한 라쏘 모델 성능 평가하기**
 
 ```python
@@ -593,8 +641,8 @@ print(np.sum(lasso.coef_ == 0))
 ```
 > 40
 
-&rarr; 계수 중 0이 40개 
-&rarr; 55개의 특성을 모델에 주입했지만 이 라쏘 모델이 사용한 특성은 15개 
+&rarr; 계수 중 0이 40개 <br>
+&rarr; 55개의 특성을 모델에 주입했지만 이 라쏘 모델이 사용한 특성은 15개 <br>
 &rarr; 유용한 특성이 15개
 
 

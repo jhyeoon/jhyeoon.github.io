@@ -13,7 +13,7 @@ published: true
 ## **4-1 로지스틱 회귀**
 
 ### **k-최근접 이웃 분류기**
-: k-최근접 이웃으로 주변 이웃을 찾고, 이웃 클래스의 비율을 확률로 출력
+: k-최근접 이웃으로 주변 이웃을 찾고, 이웃 클래스의 비율을 확률로 출력  
 
 <img width="241" alt="image" src="https://github.com/user-attachments/assets/2919c8e7-8d1a-4572-849c-c4cce57b6db5">
 
@@ -25,6 +25,8 @@ import pandas as pd
 fish = pd.read_csv('https://bit.ly/fish_csv_data')
 fish.head()
 ```
+
+
 
 
 

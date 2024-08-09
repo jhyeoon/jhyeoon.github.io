@@ -12,6 +12,14 @@ published: true
 
 ## **4-1 로지스틱 회귀**
 
+### **로지스틱 회귀**
+: 선형 방정식을 사용한 분류 알고리즘
+- 선형 회귀와 달리 시그모이드 함수나 소프트맥스 함수를 사용하여 클래스 확률 출력 가능
+    - 시그모이드 함수
+    : 선형 방정식의 출력을 0과 1 사이의 값으로 압축하며 이진 분류를 위해 사용
+    - 소프트맥스 함수
+    : 다중 분류에서 여러 선형 방정식의 출력 결과를 정규화하여 합이 1이 되도록 만듦
+
 ### **k-최근접 이웃 분류기**
 : k-최근접 이웃으로 주변 이웃을 찾고, 이웃 클래스의 비율을 확률로 출력  
 
@@ -25,6 +33,106 @@ import pandas as pd
 fish = pd.read_csv('https://bit.ly/fish_csv_data')
 fish.head()
 ```
+<img width="311" alt="image" src="https://github.com/user-attachments/assets/5e8e960d-fe8c-414c-81a1-9a9a3a39d361">
+
+- **.read_csv**
+: csv를 df로 변환해주는 메서드
+
+**2. 타깃 데이터의 종류 개수 확인하기**
+```python
+print(pd.unique(fish['Species']))
+```
+
+> ['Bream' 'Roach' 'Whitefish' 'Parkki' 'Perch' 'Pike' 'Smelt']
+
+&rarr; 클래스가 7개
+&rarr; 다중 분류: 타깃 클래스가 2개 이상인 분류 문제
+
+**3. 생선 데이터에서 입력 데이터 뽑아내기**
+
+```python
+fish_input = fish[['Weight','Length','Diagonal','Height','Width']].to_numpy()
+```
+
+- **.to_numpy()**
+: df를 넘파이 배열로 변환해주는 메서드
+
+**4. 생선 데이터에서 타깃 데이터 뽑아내기**
+
+```python
+fish_target = fish['Species'].to_numpy()
+```
+
+**5. 훈련 세트와 테스트 세트로 나누기**
+```python
+from sklearn.model_selection import train_test_split
+
+train_input, test_input, train_target, test_target = train_test_split(
+    fish_input, fish_target, random_state=42)
+```
+
+**6. 훈련 세트와 테스트 세트 표준화 전처리하기**
+```python
+from sklearn.preprocessing import StandardScaler
+
+ss = StandardScaler()
+ss.fit(train_input)
+train_scaled = ss.transform(train_input)
+test_scaled = ss.transform(test_input)
+```
+
+**7. k-최근접 이웃 분류기 성능 평가하기**
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+kn = KNeighborsClassifier(n_neighbors=3)
+kn.fit(train_scaled, train_target)
+
+print(kn.score(train_scaled, train_target))
+print(kn.score(test_scaled, test_target))
+```
+
+> 0.8907563025210085
+> 0.85
+
+(일단 이 예제에서는 클래스 확률을 배우는 것이 목적이므로 점수는 일단 잊어라)
+
+**8. kn 모델의 클래스 개수 확인하기**
+
+```python
+print(kn.classes_)
+```
+
+> ['Bream' 'Parkki' 'Perch' 'Pike' 'Roach' 'Smelt' 'Whitefish']
+
+- .unique(fish[Species]) vs .classes_
+: 후자는 전자와 달리 알파벳순으로 나열하고, 이미 타깃이 무슨 열인지 알고 있음
+
+**9. 테스트 세트에 있는 처음 5개 샘플의 타깃값 예측해보기**
+```python
+print(kn.predict(test_scaled[:5]))
+```
+
+> ['Perch' 'Smelt' 'Pike' 'Perch' 'Perch']
+
+**10. 데스트 세트 샘플의 클래스별 확률값 출력하기**
+
+```print
+import numpy as np
+
+proba = kn.predict_proba(test_scaled[:5])
+print(np.round(proba, decimals=4))
+```
+
+[[0.     0.     1.     0.     0.     0.     0.    ]
+ [0.     0.     0.     0.     0.     1.     0.    ]
+ [0.     0.     0.     1.     0.     0.     0.    ]
+ [0.     0.     0.6667 0.     0.3333 0.     0.    ]
+ [0.     0.     0.6667 0.     0.3333 0.     0.    ]]
+
+ - **.predict_proba()
+
+
 
 
 

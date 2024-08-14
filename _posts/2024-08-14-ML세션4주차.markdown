@@ -146,13 +146,14 @@ print(train_target[indexes])
 
 ### **로지스틱 회귀**
 : 선형 방정식을 사용한 분류 알고리즘
-- 선형 회귀처럼 선형 방정식을 학습
+- 선형 회귀처럼 선형 방정식을 학습 <br>
     ex) z = a x (Weight) + b x (Length) + c x (Diagonal) + d x (Height) + e x (Width) + f
 - 선형 회귀와 달리 시그모이드 함수나 소프트맥스 함수를 사용하여 클래스 확률 출력 가능
     - 시그모이드 함수(로지스틱 함수)
     : 선형 방정식의 출력을 0과 1 사이의 값으로 압축하며 이진 분류를 위해 사용
         - 이진 분류: 입력값에 따라 모델이 분류한 카테고리가 두 가지인 분류 알고리즘
         - 출력이 0.5보다 크면 양성 클래스(1), 0.5보다 작으면 음성 클래스(0)로 판단
+
     ```python
     import numpy as np
     import matplotlib.pyplot as plt
@@ -171,7 +172,7 @@ print(train_target[indexes])
     : 다중 분류에서 여러 선형 방정식의 출력 결과를 정규화하여 합이 1이 되도록 만듦
         - 다중 분류: 입력값에 따라 모델이 분류한 카테고리가 세 가지 이상인 분류 알고리즘
         - 정규화된 지수 함수
-        - *e_sum = e^z1 + e^z2 + e^z3 + e^z4 + e^z5 + e^z6 + e^z7 
+        - *e_sum = e^z1 + e^z2 + e^z3 + e^z4 + e^z5 + e^z6 + e^z7*
         - s1 = e^z1/e_sum, s2 = e^z2/e_sum,..., s7 = e^z7/e_sum
 
     <img width="259" alt="image" src="https://github.com/user-attachments/assets/4437b56a-2751-446f-9655-eb7961d43258">
@@ -180,7 +181,8 @@ print(train_target[indexes])
 
 - 불리언 인덱싱
 : 넘파이 배열 True, False 값을 전달
-ex) ```python
+
+```python
 char_arr = np.array(['A', 'B', 'C', 'D', 'E'])
 print(char_arr[[True, False, True, False, False]])
 ```
@@ -196,7 +198,7 @@ target_bream_smelt = train_target[bream_smelt_indexes]
 ```
 - `train_target == 'Bream'`: train_target에서 도미는 True, 나머지는 False로 반환
 - `train_target == 'Smelt'`: train_target에서 빙어는 True, 나머지는 False로 반환
-- | : 비트 OR 연산자로 합치기
+- '|' : 비트 OR 연산자로 합치기
 
 **2. 로지스틱 회귀 모델 훈련하기**
 
@@ -499,7 +501,7 @@ print(sc.score(test_scaled, test_target))
 
 ### 최적의 에포크 횟수 찾기
 
-**1. **
+**1. 그래프 준비하기**
 
 ```python
 import numpy as np

@@ -1,0 +1,124 @@
+---
+layout: post
+title:  "ML세션 4주차"
+date:   2024-08-21 19:37:24 +0800
+categories: jekyll update
+published: true
+---
+
+**# 혼자 공부하는 머신러닝+딥러닝 Ch. 4**
+
+# Ch.5 트리 알고리즘
+
+## **5-1 결정 트리**
+
+### **로지스틱 회귀로 와인 분류하기**
+
+**1. 와인 데이터 불러오기**
+
+```python
+import pandas as pd
+
+wine = pd.read_csv('https://bit.ly/wine_csv_data')
+wine.head()
+```
+
+<img width="160" alt="image" src="https://github.com/user-attachments/assets/590ef23d-7e95-4dc6-95ac-d835658f8898">
+
+**2. 판다스 df를 넘파이 배열로 바꾸기**
+
+```python
+data = wine[['alcohol', 'sugar', 'pH']].to_numpy()
+target = wine['class'].to_numpy()
+```
+
+**3.훈련 세트와 테스트 세트로 나누기**
+
+```python
+from sklearn.model_selection import train_test_split
+
+train_input, test_input, train_target, test_target = train_test_split(
+    data, target, test_size=0.2, random_state=42)
+```
+
+- `test_size=0.2`: 샘플의 20%만 테스트 세트로 나눔
+    - 기본값은 25%
+
+**4. 특성 표준화해서 전처리하기**
+
+```python
+from sklearn.preprocessing import StandardScaler
+
+ss = StandardScaler()
+ss.fit(train_input)
+
+train_scaled = ss.transform(train_input)
+test_scaled = ss.transform(test_input)
+```
+
+**5-1. 로지스틱 회귀 모델 훈련하기**
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+lr = LogisticRegression()
+lr.fit(train_scaled, train_target)
+
+print(lr.score(train_scaled, train_target))
+print(lr.score(test_scaled, test_target))
+```
+
+> 0.7808350971714451
+> 0.7776923076923077
+
+&rarr; 과소적합
+
+**6-1. 결정계수와 절편 출력하기**
+
+```python
+print(lr.coef_, lr.intercept_)
+```
+
+> [[ 0.51270274  1.6733911  -0.68767781]] [1.81777902]
+
+&rarr; z = 0.51270274 x (알코올 도수) + 1.6733911 x (당도) - 0.68767781 x (pH) + 1.81777902, if z>0 &rarr; 화이트 와인, if z<0 &rarr; 레드 와인
+&rarr; 설명하기 어려움
+&rarr; 로지스틱 회귀 대신 결정 트리
+
+### 결정 트리
+: 예/아니오에 대한 질문을 이어나가면서 정답을 찾아 학습하는 알고리즘
+- 노드: 훈련 데이터의 특성에 대한 테스트 표현 
+    - 루트 노드: 맨 위의 노드
+    - 리프 노드: 맨 아래의 노드
+- 가지: 테스트의 결과 (True/False)를 나타냄
+
+**5-2. 결정 트리 훈련하기**
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+
+dt = DecisionTreeClassifier(random_state=42)
+dt.fit(train_scaled, train_target)
+
+print(dt.score(train_scaled, train_target))
+print(dt.score(test_scaled, test_target))
+```
+
+> 0.996921300750433
+> 0.8592307692307692
+
+&rarr; 과대적합
+
+**6-2. 결정 트리 그림으로 나타내기**
+
+```python
+import matplotlib.pyplot as plt
+from sklearn.tree import plot_tree
+
+plt.figure(figsize=(10,7))
+plot_tree(dt)
+plt.show()
+```
+<img width="604" alt="image" src="https://github.com/user-attachments/assets/46169ee9-9628-431b-9c89-9b9e4db7f4c8">
+
+

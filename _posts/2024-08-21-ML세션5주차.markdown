@@ -437,8 +437,289 @@ print(dt.score(train_input, train_target))
 **5. 최적의 매개변수 출력하기**
 
 ```python
+print(gs.best_params_)
+```
+
+> {'min_impurity_decrease': 0.0001}
+
+**6. 각 매개변수에서 수행한 교차 검증의 평균 점수**
+
+```python
+print(gs.cv_results_['mean_test_score'])
+```
+
+> [0.86819297 0.86453617 0.86492226 0.86780891 0.86761605]
+
+**7. argmax() 함수 사용하여 최상의 매개변수 출력하기**
+
+```python
+best_index = np.argmax(gs.cv_results_['mean_test_score'])
+print(gs.cv_results_['params'][best_index])
+```
+
+> {'min_impurity_decrease': 0.0001}
+
+**1. 3개의 매개변수의 최적 조합 찾기**
+
+```python
+params = {'min_impurity_decrease': np.arange(0.0001, 0.001, 0.0001),
+          'max_depth': range(5, 20, 1),
+          'min_samples_split': range(2, 100, 10)
+          }
+이하 동일
+```
+
+- **arrange(0.0001, 0.001, 0.0001)**
+: 0.0001, 0.0002,..., 0.0009
+
+- **range(5, 20, 1)**
+: 5, 6,..., 19
+
+### **랜덤 서치**
+: 탐색할 값을 직접 나열x, 탐색 값을 샘플링할 수 있는 확률 분포 객체 전달o
+
+- 지정된 횟수만큼 샘플링하여 교차 검증 수행하므로 시스템 자원이 허락하는 만큼 탐색량 조절 가능
+
+**1. uniform, randint 클래스 불러오기**
+
+```python
+from scipy.stats import uniform, randint
+```
+
+- **uniform 클래스**
+: 지정한 범위 사이에서 실숫값 뽑음
+
+- **randint 클래스**
+: 지정한 범위 사이에서 정숫값 뽑음
+
+**2. 탐색할 매개변수와 탐색할 값의 범위 딕셔너리로 만들기**
+
+```python
+params = {'min_impurity_decrease': uniform(0.0001, 0.001),
+          'max_depth': randint(20, 50),
+          'min_samples_split': randint(2, 25),
+          'min_samples_leaf': randint(1, 25),
+          }
+```
+
+**3. 탐색할 값의 샘플링 횟수가 지정된 랜덤 서치 객체 만들기**
+
+```python
+from sklearn.model_selection import RandomizedSearchCV
+
+gs = RandomizedSearchCV(DecisionTreeClassifier(random_state=42), params,
+                        n_iter=100, n_jobs=-1, random_state=42)
+이하 동일
+```
+
+- **RandomizedSearchCV()**
+    - `n_iter` 매개변수: 샘플링 횟수 지정
+
+## **5-3. 트리의 앙상블**
+
+- 앙상블 학습 &rarr; 정형 데이터
+- 신경망 알고리즘 &rarr; 비정형 데이터
+
+### **랜덤 포레스트**
+
+: 앙상블 학습의 대표적인 알고리즘으로 부스트트랩 샘플을 사용하여 결정 트리를 랜덤하게 만들어 결정 트리(나무)의 숲을 만들어 각 결정 트리의 예측을 사용해 최종 예측을 만듦
+<img width="356" alt="image" src="https://github.com/user-attachments/assets/02e825e6-21ab-494b-bd1c-93e1224e0f18">
+- 분류 &rarr; 각 트리의 클래스별 확률을 평균하여 가장 높은 확률을 가진 클래스를 예측으로
+- 회귀 &rarr; 각 트리의 예측 평균
+
+- 부트스트랩 샘플
+: 훈련 세트에서 중복을 허용하여 데이터를 샘플링함
+<img width="306" alt="image" src="https://github.com/user-attachments/assets/0adb7d27-6dfa-490a-bb2b-438075607a0c">
+
+- 과대적합 방지 &larr; 랜덤하게 선택한 샘플과 특성을 사용하기 때문에
+- 검증 세트와 테스트 세트에서 안정적인 성능을 얻을 수o
+
+**0. 와인 데이터 훈련 세트와 테스트 세트로 나누기**
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+wine = pd.read_csv('https://bit.ly/wine_csv_data')
+
+data = wine[['alcohol', 'sugar', 'pH']].to_numpy()
+target = wine['class'].to_numpy()
+
+train_input, test_input, train_target, test_target = train_test_split(data, target, test_size=0.2, random_state=42)
+```
+
+**1. 랜덤 포레스트 사용하여 교차 검증 수행하기**
+
+```python
+from sklearn.model_selection import cross_validate
+from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier(n_jobs=-1, random_state=42)
+scores = cross_validate(rf, train_input, train_target, return_train_score=True, n_jobs=-1)
+
+print(np.mean(scores['train_score']), np.mean(scores['test_score']))
+```
+
+> 0.9973541965122431 0.8905151032797809
+
+**2. 특성 중요도 출력하기**
+
+```python
+rf.fit(train_input, train_target)
+print(rf.feature_importances_)
+```
+
+> [0.23167441 0.50039841 0.26792718]
+
+5-1. 결정 트리에서 나온 특성 중요도는 > [0.12345626 0.86862934 0.0079144 ]
+&rarr; 랜덤 포레스트는 특성의 일부를 랜덤하게 선택하여 훈련함
+&rarr; 하나의 특성에 과도하게 집중x, 더 많은 특성이 훈련에 기여할 기회를 얻어 과대적합&darr;
+
+- **RandomForestRegressor()**
+: 랜덤 포레스트 분류 클래스
+    - `n_estimators` 매개변수: 앙상블을 구성할 트리의 개수 지정
+        - 기본값은 100
+    - `criterion` 매개변수: 불순도 지정
+        - 기본값은 'gini'
+        - 'entropy` &rarr; 엔트로피 불순도
+    - `max_depth` 매개변수: 트리가 성장할 최대 깊이 지정
+        - 기본값은 None &rarr; 리프 노드가 순수하거나 min_samlpes_split보다 샘플 개수가 적을 때까지 성장
+    - `min_samples_split` 매개변수: 노드를 나누기 위한 최소 샘플 개수
+        - 기본값은 2
+    - `max_features` 매개변수: 최적의 분할을 위해 탐색할 특성의 개수 지정
+        - 기본값은 auto로 특성 개수의 제곱근
+    - `bootstrap` 매개변수: 부트스트랩 샘플 사용 유무 지정
+        - 기본값은 True
+    - `oob_score` 매개변수: OOB 샘플을 사용하여 훈련한 모델을 평가할지 지정
+        - 기본값은 False
+    - `n_jobs` 매개변수: 병렬 실행에 사용할 CPU 코어 수 지정
+        - 기본값은 1 &rarr;하나의 코어 사용
+        - -1 &rarr; 모든 코어 사용
+
+**3. rf 모델 자체 평가하기**
+
+```python
+rf = RandomForestClassifier(oob_score=True, n_jobs=-1, random_state=42)
+
+rf.fit(train_input, train_target)
+print(rf.oob_score_)
+```
+
+- **oob_score_**
+: OOB 샘플을 사용하여 모델을 자체적으로 평가
+    - **OOB(out of bag) 샘플**
+    : 훈련 세트에서 부스트트랩 샘플에 포함되지 않고 남는 샘플
+
+> 0.8934000384837406
+&rarr; 교차검증 점수와 유사
+&rarr; OOB 점수를 교차 검증 대신 사용하여 훈련 세트에 더 많은 샘플 사용 가능
+
+### **엑스트라 트리**
+
+: 랜덤 포레스트와 비슷하게 결정 트리를 사용하여 앙상블 모델을 만들지만 부스트트랩 사용x, 대신 랜덤하게 노드를 분할하여 과대적합&darr;
+- 결정 트리를 만들 때 전체 훈련 세트 사용
+- 노드 분할 시 가장 좋은 분할 찾는 것x, 무작위로 분할o
+- 무작위로 분할해서 성능이 낮아지기는하지만 과대적합을 막고, 검증 세트의 점수를 높일 수 있음
+- 무작위성이 커서 랜덤 포레스트보다 더 많은 결정 트리 훈련해야 함
+- 랜덤하게 노드를 분할하기 때문에 계산 속도가 빠름
+
+**1. 엑스트라 트리 사용하여 교차 검증하기**
+```python
+from sklearn.ensemble import ExtraTreesClassifier
+
+et = ExtraTreesClassifier(n_jobs=-1, random_state=42)
+scores = cross_validate(et, train_input, train_target, return_train_score=True, n_jobs=-1)
+
+print(np.mean(scores['train_score']), np.mean(scores['test_score']))
+```
+
+> 0.9974503966084433 0.8887848893166506
+
+- **ExtraTreesClassifier()**
+: 엑스트라 트리 분류 클래스
+    - `n_estimators`,`criterion`,`max_depth`,`min_samples_split`,`max_features`,`oob_score`,`n_jobs` 매개변수는 랜덤 포레스트와 동일
+    - `bootstrap` 매개변수
+        - 기본값은 False
+
+**2. 특성 중요도 출력하기**
+
+```python
+et.fit(train_input, train_target)
+print(et.feature_importances_)
+```
+
+> [0.20183568 0.52242907 0.27573525]
+
+### **그레디언트 부스팅**
+
+: 랜덤 포레스트나 엑스트라 트리와 달리 결정 트리를 연속적으로 추가하여 손실 함수를 최소화하는 앙상블 방법
+- 순서대로 트리를 추가하기 때문에 훈련 속도&darr;, 성능&uarr;
+- 깊이가 얕은 결정 트리 사용 &rarr; 과대적합에 강함
+- 경사 하강법 사용하여 트리 추가
+
+**1. 그레디언트 부스팅 사용하여 교차 검증 수행하기**
+
+```python
+from sklearn.ensemble import GradientBoostingClassifier
+
+gb = GradientBoostingClassifier(random_state=42)
+scores = cross_validate(gb, train_input, train_target, return_train_score=True, n_jobs=-1)
+
+print(np.mean(scores['train_score']), np.mean(scores['test_score']))
+```
+
+> 0.8881086892152563 0.8720430147331015
+
+- **GradientBoostingClassifier()**
+: 그레디언트 부스팅 분류 클래스
+    - `loss` 매개변수: 손실 함수 지정
+        - 기본값은 'deviance'
+    - `learning_rate` 매개변수: 트리가 앙상블에 기여하는 정도 조절
+        - 기본값은 0.1
+    - `n_estimatores` 매개변수: 부스팅 단계를 수행하는 트리의 개수
+        - 기본값은 100
+    - `subsample` 매개변수: 사용할 훈련 세트의 샘플 비율 지정
+        - 기본값은 1.0
+    - `max_depth` 매개변수: 개별 회귀 트리의 최대 깊이
+        - 기본값은 3
+
+**2. 특성 중요도 출력하기**
+
+```python
+gb.fit(train_input, train_target)
+print(gb.feature_importances_)
+```
+
+> [0.15872278 0.68010884 0.16116839]
+&rarr; 랜덤 포레스트보다 일부 특성(당도)에 집중
+
+### **히스토그램 기반 그레디언트 부스팅**
+
+: 정형 데이터를 다루는 머신러닝 알고리즘 중 가장 인기가 높은 알고리즘으로 그레디언트 부스팅의 속도와 성능을 개선한 것
+
+- 먼저 입력 특성을 256개의 구간으로 나누고 그 중 하나를 떼어놓아 누락된 값을 위해 사용 &rarr; 입력에 누락된 특성이 있더라도 따로 전처리할 필요x
+
+**1. 히스토그램 기반 그레디언트 부스팅 사용하여 교차 검증하기**
+
+```python
+from sklearn.ensemble import HistGradientBoostingClassifier
+
+hgb = HistGradientBoostingClassifier(random_state=42)
+scores = cross_validate(hgb, train_input, train_target, return_train_score=True, n_jobs=-1)
+
+print(np.mean(scores['train_score']), np.mean(scores['test_score']))
+```
+
+> 0.9321723946453317 0.8801241948619236
+
+**2. 특성 중요도 출력하기**
+
+```python
+hgb.fit(train_input, train_target)
+print(rf.feature_importances_)
+```
+
+> [0.23167441 0.50039841 0.26792718]
 
 
-
-
-    

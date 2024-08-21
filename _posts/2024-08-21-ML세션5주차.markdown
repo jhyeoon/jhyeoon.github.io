@@ -56,7 +56,7 @@ train_scaled = ss.transform(train_input)
 test_scaled = ss.transform(test_input)
 ```
 
-**5. 로지스틱 회귀 모델 훈련하기**
+**5. 로지스틱 회귀 모델 훈련하고 성능 평가하기**
 
 ```python
 from sklearn.linear_model import LogisticRegression
@@ -93,7 +93,7 @@ print(lr.coef_, lr.intercept_)
 - 가지: 테스트의 결과 (True/False)를 나타냄
 - 예측 클래스: 노드에서 더 많은 샘플이 있는 클래스로 예측
 
-**1. 결정 트리 훈련하기**
+**1. 결정 트리 훈련하고 성능 평가하기**
 
 ```python
 from sklearn.tree import DecisionTreeClassifier
@@ -185,7 +185,7 @@ plt.show()
 &rarr; 과대적합 방지
 
 
-**1. 가지쳐서 결정 트리 모델 훈련하기**
+**1. 가지쳐서 결정 트리 모델 훈련하고 성능 평가하기**
 
 ```python
 dt = DecisionTreeClassifier(max_depth=3, random_state=42)
@@ -219,7 +219,7 @@ ex) sugar <= -0.239
 &rarr; 불순도는 클래스별 비율로 계산하기 때문에 특성값의 스케일과 무관
 &rarr; 표준화 전처리할 필요x
 
-**1. 전처리하지 않은 훈련/테스트 세트로 결정 트리 모델 훈련하기**
+**1. 전처리하지 않은 훈련/테스트 세트로 결정 트리 모델 훈련하고 성능 평가하기**
 
 ```python
 dt = DecisionTreeClassifier(max_depth=3, random_state=42)
@@ -258,3 +258,187 @@ print(dt.feature_importances_)
 - **중요도**
 : 결정 트리에 사용된 특성이 불순도를 감소하는데 기여한 정도
     - \sum (각 노드의 정보 이득) x (전체 샘플에 대한 비율)
+
+## **5-2 교차 검증과 그리드 서치**
+
+### **검증 세트**
+
+: 하이퍼파라미터 튜닝을 위해 모델을 평가할 떄, 테스트 세트를 사용하지 않기 위해 훈련 세트에서 떼어낸 데이터 세트
+
+결정 트리는 테스트해봐야 할 매개변수가 많음(하이퍼파라미터 튜닝)
+&rarr; 계속 테스트 세트로 모델 성능을 평가하면 점점 모델이 테스트 세트에 맞춰짐
+&rarr; 테스트 세트 사용x, 훈련 세트의 일부분을 검증 세트로 뗴어내기!
+
+<img width="275" alt="image" src="https://github.com/user-attachments/assets/cafdb7f1-294d-4a87-abe2-3f5af37f9646">
+
+**1. 검증 세트 만들기**
+
+```python
+import pandas as pd
+
+wine = pd.read_csv('https://bit.ly/wine_csv_data')
+data = wine[['alcohol', 'sugar', 'pH']].to_numpy()
+target = wine['class'].to_numpy()
+from sklearn.model_selection import train_test_split
+
+train_input, test_input, train_target, test_target = train_test_split(
+    data, target, test_size=0.2, random_state=42)
+
+sub_input, val_input, sub_target, val_target = train_test_split(
+    train_input, train_target, test_size=0.2, random_state=42)
+```
+
+**2. 훈련 세트와 검증 세트로 모델 훈련하고 성능 평가하기**
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+
+dt = DecisionTreeClassifier(random_state=42)
+dt.fit(sub_input, sub_target)
+
+print(dt.score(sub_input, sub_target))
+print(dt.score(val_input, val_target))
+```
+
+> 0.9971133028626413
+> 0.864423076923077
+
+&rarr; 과대적합
+
+### **교차검증**
+
+: 훈련 세트를 여러 폴드로 나눈 다음 한 폴드가 검증 세트의 역할을 하고 나머지 폴드에서는 모델 훈련 &rarr; 모든 폴드에 대해 검증 점수를 얻어 평균
+
+검증 세트를 만들면 훈련 세트가 줄어듦
+&rarr; 훈련 세트가 클수록 좋은 모델이지만 검증 세트가 작으면 검증 점수가 불안정해짐
+&rarr; 안정적인 검증 점수를 얻고 훈련 세트를 크게 유지하기 위해 교차검증!
+&rarr; 폴드 수가 많아질수록 훈련 세트로 사용할 수 있는 데이터의 크기&uarr;
+
+<img width="366" alt="image" src="https://github.com/user-attachments/assets/ec41b00c-38ea-4cf4-bd78-90c3c7a66be9">
+&rarr; 3-폴드 교차 검증
+
+**1. 교차 검증하여 검증 폴드 각각의 점수 출력하기**
+
+```python
+from sklearn.model_selection import cross_validate
+
+scores = cross_validate(dt, train_input, train_target)
+print(scores)
+```
+> {'fit_time': array([0.00931716, 0.00749564, 0.00773239, 0.00731683, 0.00710797]), 'score_time': array([0.00109315, 0.00111032, 0.00101209, 0.00106931, 0.00115085]), 'test_score': array([0.86923077, 0.84615385, 0.87680462, 0.84889317, 0.83541867])}
+- **cross_validate()**
+: 교차 검증 함수
+    - 첫번째 매개변수(`dt`): 평가할 모델 객체
+    - 두번째, 세번째 매개변수(`train_input, train_target`): 훈련 세트 전체
+    - `scoring` 매개변수: 검증에 사용할 평가 지표 지정
+        - 회귀에서의 기본값은 'r2'
+        - 분류에서의 기본값은 'accuracy'
+    - `cv` 매개변수: 폴드 수, 스플리터 객체 지정
+        - 기본값은 5
+        - 회귀 &rarr; KFold()
+        - 분류 &rarr; StratifiedKFold()
+    - `n_jobs` 매개변수: 교차검증을 수행할 때 사용할 CPU 코어 수 지정
+        - 기본값은 1 &rarr;하나의 코어 사용
+        - -1 &rarr; 모든 코어 사용
+    - `return_train_score` 매개변수
+        - 기본값은 False
+        - True &rarr; 훈련 세트의 점수도 반환
+    - 출력 결과
+        : `fit_time`,`score_time`,`test_score`키를 가진 딕셔너리
+        - `fit_time`,`score_time`: 모델을 훈련하는 시간과 검증하는 시간
+        - `test_score`: 검증 폴드 각각의 점수
+
+**2. 검증 폴드 각각의 점수 평균하기**
+
+```python
+import numpy as np
+
+print(np.mean(scores['test_score']))
+```
+
+> 0.855300214703487
+
+앞서 `train_test_split()으로 전체 데이터를 섞었기 떄문에 다시 섞을 필요가 x
+but 원래는 교차 검증 시 훈련 세트를 섞으려면 splitter를 지정해야 함
+
+**1. splitter 지정하여 데이터를 섞은 후 교차 검증 수행하기**
+
+```python
+from sklearn.model_selection import StratifiedKFold
+
+scores = cross_validate(dt, train_input, train_target, cv=StratifiedKFold())
+print(np.mean(scores['test_score']))
+```
+
+> 0.855300214703487
+
+`cv`의 기본값은 5인데 10-폴드 교차 검증을 수행하고 싶다면 
+
+**1. 10-폴드 교차 검증 수행하기**
+
+```python
+splitter = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+scores = cross_validate(dt, train_input, train_target, cv=splitter)
+print(np.mean(scores['test_score']))
+```
+
+> 0.8574181117533719
+
+### **하이퍼파라미터 튜닝**
+
+한 매개변수의 최적값을 찾고 다른 매개변수의 최적값을 찾는 것x
+두 매개변수를 동시에 바꿔가며 최적값 찾는 것o
+
+&rarr; Grid Search
+
+- **GridSearchCV()**
+: 하이퍼파라미터 탐색과 교차 검증을 한번에 수행
+1) 탐색할 매개변수를 나열하면 교차 검증 수행
+2) 가장 좋은 검증 점수의 매개변수 조합 선택
+3) 최상의 모델을 찾은 후 훈련 세트 전체로 최종 모델 훈련
+    - 첫번째 매개변수: 그리드 서치를 수행할 모델 객체 전달
+    - 두번째 매개변수: 탐색할 모델의 매개변수와 값 전달
+    - `scoring`,`cv`,`n_jobs`,`return_train_score` 매개변수는 `cross_validate()`와 동일
+
+**1. 탐색할 매개변수와 탐색할 값 딕셔너리로 만들기**
+
+```python
+from sklearn.model_selection import GridSearchCV
+
+params = {'min_impurity_decrease': [0.0001, 0.0002, 0.0003, 0.0004, 0.0005]}
+```
+
+**2. 그리드 서치 객체 만들기**
+
+```python
+gs = GridSearchCV(DecisionTreeClassifier(random_state=42), params, n_jobs=-1)
+```
+
+**3. gs 객체 훈련하기**
+
+```python
+gs.fit(train_input, train_target)
+```
+
+&rarr; 'min_impurity_decrease'로 시도하는 값 5개 x 기본 폴드 개수 5개 = 25개의 모델 훈련
+
+**4. 최적의 매개변수 조합이 있는 모델의 성능 평가하기**
+
+```python
+dt = gs.best_estimator_
+print(dt.score(train_input, train_target))
+```
+
+> 0.9615162593804117
+
+- **best_estimator_**
+: 25개의 모델 중 검증 점수가 가장 놓은 모델의 매개변수 조합으로 전체 훈련 세트에서 자동으로 다시 훈련된 모델
+
+**5. 최적의 매개변수 출력하기**
+
+```python
+
+
+
+
+    

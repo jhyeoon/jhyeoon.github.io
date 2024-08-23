@@ -81,8 +81,8 @@ print(lr.coef_, lr.intercept_)
 
 > [[ 0.51270274  1.6733911  -0.68767781]] [1.81777902]
 
-&rarr; z = 0.51270274 x (알코올 도수) + 1.6733911 x (당도) - 0.68767781 x (pH) + 1.81777902, if z>0 &rarr; 화이트 와인, if z<0 &rarr; 레드 와인
-&rarr; 설명하기 어려움
+&rarr; z = 0.51270274 x (알코올 도수) + 1.6733911 x (당도) - 0.68767781 x (pH) + 1.81777902, if z>0 &rarr; 화이트 와인, if z<0 &rarr; 레드 와인 <br>
+&rarr; 설명하기 어려움 <br>
 &rarr; 로지스틱 회귀 대신 결정 트리
 
 ### **결정 트리**
@@ -108,7 +108,7 @@ print(dt.score(test_scaled, test_target))
 > 0.996921300750433
 > 0.8592307692307692
 
-&rarr; 과대적합
+&rarr; 과대적합 <br>
 &rarr; 트리가 제한 없이 자라났기 때문에
 
 - **DecisionTreeClassifier()**
@@ -162,12 +162,12 @@ plt.show()
     - `feature_names=['alcohol', 'sugar', 'pH']`: 특성의 이름 전달
 
 ### **지니 불순도(gini)**
+: *지니 불순도 = 1 - (음성 클래스 비율^2 +양성 클래스 비율^2)*
 
 - DecisionTreeClassifier()의 `criterion`매개변수의 기본값이 'gini'
     - `critierion` 매개변수: 노드에서 데이터를 분할할 기준을 정하는 것
     - `criterion='entropy'`
         : 엔트로피 불순도 = - 음성 클래스 비율 x log_2(음성 클래스 비율) - 양성 클래스 비율 x log_2(양성 클래스 비율)
-: *지니 불순도 = 1 - (음성 클래스 비율^2 +양성 클래스 비율^2)*
 
 - 최악의 지니 불순도 = 0.5
     &rarr; 노드의 두 클래스의 비율이 1/2씩일 경우
@@ -265,8 +265,8 @@ print(dt.feature_importances_)
 
 : 하이퍼파라미터 튜닝을 위해 모델을 평가할 떄, 테스트 세트를 사용하지 않기 위해 훈련 세트에서 떼어낸 데이터 세트
 
-결정 트리는 테스트해봐야 할 매개변수가 많음(하이퍼파라미터 튜닝)
-&rarr; 계속 테스트 세트로 모델 성능을 평가하면 점점 모델이 테스트 세트에 맞춰짐
+결정 트리는 테스트해봐야 할 매개변수가 많음(하이퍼파라미터 튜닝) <br>
+&rarr; 계속 테스트 세트로 모델 성능을 평가하면 점점 모델이 테스트 세트에 맞춰짐 <br>
 &rarr; 테스트 세트 사용x, 훈련 세트의 일부분을 검증 세트로 뗴어내기!
 
 <img width="275" alt="image" src="https://github.com/user-attachments/assets/cafdb7f1-294d-4a87-abe2-3f5af37f9646">
@@ -309,12 +309,12 @@ print(dt.score(val_input, val_target))
 
 : 훈련 세트를 여러 폴드로 나눈 다음 한 폴드가 검증 세트의 역할을 하고 나머지 폴드에서는 모델 훈련 &rarr; 모든 폴드에 대해 검증 점수를 얻어 평균
 
-검증 세트를 만들면 훈련 세트가 줄어듦
-&rarr; 훈련 세트가 클수록 좋은 모델이지만 검증 세트가 작으면 검증 점수가 불안정해짐
-&rarr; 안정적인 검증 점수를 얻고 훈련 세트를 크게 유지하기 위해 교차검증!
+검증 세트를 만들면 훈련 세트가 줄어듦 <br>
+&rarr; 훈련 세트가 클수록 좋은 모델이지만 검증 세트가 작으면 검증 점수가 불안정해짐 <br>
+&rarr; 안정적인 검증 점수를 얻고 훈련 세트를 크게 유지하기 위해 교차검증! <br>
 &rarr; 폴드 수가 많아질수록 훈련 세트로 사용할 수 있는 데이터의 크기&uarr;
 
-<img width="366" alt="image" src="https://github.com/user-attachments/assets/ec41b00c-38ea-4cf4-bd78-90c3c7a66be9">
+<img width="366" alt="image" src="https://github.com/user-attachments/assets/ec41b00c-38ea-4cf4-bd78-90c3c7a66be9"> <br>
 &rarr; 3-폴드 교차 검증
 
 **1. 교차 검증하여 검증 폴드 각각의 점수 출력하기**
@@ -326,6 +326,7 @@ scores = cross_validate(dt, train_input, train_target)
 print(scores)
 ```
 > {'fit_time': array([0.00931716, 0.00749564, 0.00773239, 0.00731683, 0.00710797]), 'score_time': array([0.00109315, 0.00111032, 0.00101209, 0.00106931, 0.00115085]), 'test_score': array([0.86923077, 0.84615385, 0.87680462, 0.84889317, 0.83541867])}
+
 - **cross_validate()**
 : 교차 검증 함수
     - 첫번째 매개변수(`dt`): 평가할 모델 객체
@@ -358,7 +359,7 @@ print(np.mean(scores['test_score']))
 
 > 0.855300214703487
 
-앞서 `train_test_split()으로 전체 데이터를 섞었기 떄문에 다시 섞을 필요가 x
+앞서 `train_test_split()으로 전체 데이터를 섞었기 떄문에 다시 섞을 필요가 x <br>
 but 원래는 교차 검증 시 훈련 세트를 섞으려면 splitter를 지정해야 함
 
 **1. splitter 지정하여 데이터를 섞은 후 교차 검증 수행하기**
@@ -386,7 +387,7 @@ print(np.mean(scores['test_score']))
 
 ### **하이퍼파라미터 튜닝**
 
-한 매개변수의 최적값을 찾고 다른 매개변수의 최적값을 찾는 것x
+한 매개변수의 최적값을 찾고 다른 매개변수의 최적값을 찾는 것x <br>
 두 매개변수를 동시에 바꿔가며 최적값 찾는 것o
 
 &rarr; Grid Search
@@ -529,6 +530,7 @@ gs = RandomizedSearchCV(DecisionTreeClassifier(random_state=42), params,
 
 - 부트스트랩 샘플
 : 훈련 세트에서 중복을 허용하여 데이터를 샘플링함
+
 <img width="306" alt="image" src="https://github.com/user-attachments/assets/0adb7d27-6dfa-490a-bb2b-438075607a0c">
 
 - 과대적합 방지 &larr; 랜덤하게 선택한 샘플과 특성을 사용하기 때문에
@@ -612,7 +614,8 @@ print(rf.oob_score_)
     : 훈련 세트에서 부스트트랩 샘플에 포함되지 않고 남는 샘플
 
 > 0.8934000384837406
-&rarr; 교차검증 점수와 유사
+
+&rarr; 교차검증 점수와 유사 <br>
 &rarr; OOB 점수를 교차 검증 대신 사용하여 훈련 세트에 더 많은 샘플 사용 가능
 
 ### **엑스트라 트리**
@@ -692,6 +695,7 @@ print(gb.feature_importances_)
 ```
 
 > [0.15872278 0.68010884 0.16116839]
+
 &rarr; 랜덤 포레스트보다 일부 특성(당도)에 집중
 
 ### **히스토그램 기반 그레디언트 부스팅**

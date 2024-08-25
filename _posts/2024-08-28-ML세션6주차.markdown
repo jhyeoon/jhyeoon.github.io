@@ -1,0 +1,204 @@
+---
+layout: post
+title:  "ML세션 6주차"
+date:   2024-08-28 19:37:24 +0800
+categories: jekyll update
+published: true
+---
+
+**# 혼자 공부하는 머신러닝+딥러닝 Ch. 6**
+
+# Ch.6 비지도 학습
+
+## **6-1 군집 알고리즘**
+
+### **비지도 학습**
+: 머신러닝의 한 종류로 훈련 데이터에 타깃이 없음
+    - 군집: 비슷한 샘플끼리 그룹으로 모으는 작업
+    - 클러스터: 군집 알고리즘에서 만든 그룹
+
+**1. 과일 데이터 불러오기**
+
+```python
+!wget https://bit.ly/fruits_300_data -O fruits_300.npy # npy 파일
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+fruits = np.load('fruits_300.npy') # 넘파이에서 npy파일 로드하기
+```
+
+**2. 과일 데이터 확인하기**
+
+```python
+# fruits 배열 크기 확인하기
+print(fruits.shape)
+> (300, 100, 100)
+
+# 첫번째 이미지의 첫번째 행 출력하기
+print(fruits[0, 0, :])
+> [  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   2   1
+   2   2   2   2   2   2   1   1   1   1   1   1   1   1   2   3   2   1
+   2   1   1   1   1   2   1   3   2   1   3   1   4   1   2   5   5   5
+  19 148 192 117  28   1   1   2   1   4   1   1   3   1   1   1   1   1
+   2   2   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+   1   1   1   1   1   1   1   1   1   1]
+
+# 첫번째 이미지 그리기
+plt.imshow(fruits[0], cmap='gray')
+plt.show()
+
+# 첫번째 이미지 밝기 반전하여 그리기
+plt.imshow(fruits[0], cmap='gray_r')
+plt.show()
+
+# 101번째, 201번째 이미지 나란히 그리기
+fig, axs = plt.subplots(1, 2)
+axs[0].imshow(fruits[100], cmap='gray_r')
+axs[1].imshow(fruits[200], cmap='gray_r')
+plt.show()
+```
+
+- **.shape**
+: 데이터의 배열 크기 확인하기
+    - 첫번쨰 차원(300): 샘플의 개수
+    - 두번째 차원(100): 이미지 높이
+    - 세번쨰 차원(100): 이미지 너비
+    <img width="159" alt="image" src="https://github.com/user-attachments/assets/6f7b904b-14aa-479f-8fd6-fe82662d5e86">
+
+- **데이터 인덱싱**
+    : 결과값이 0에 가까울수록 검게
+
+- **plt.imshow()**
+    - `cmap` 매개변수
+        - `cmap='gray'`: 흑백 이미지
+        <img width="311" alt="image" src="https://github.com/user-attachments/assets/8ad5e46f-3c31-4c1c-a199-e2ed7127457d">
+        - `cmap='gray_r'` 매개변수: 흑백 이미지 반전
+        : 원래는 사과가 짙고 바탕이 밝게 <br>
+        &rarr; 이미지를 넘파이로 변환할 때 사과가 밝고 바탕이 짙게 자동으로 변환됨 <br>
+        (바탕이 아닌 사과가 중요한데 중요한 것의 픽셀값이 높아야 의미가 있기 때문에) <br>
+        &rarr; cmap='gray_r'로 반전시켜 우리가 보기 편하게 사과가 짙고 바탕이 밝은 상태로 만들 수 있음
+        <img width="312" alt="image" src="https://github.com/user-attachments/assets/60f839a9-b04b-4611-bab0-9def9e3eaa2a">
+
+- **fig, axs = plt.subplots(1, 2)**
+    - ** plt.subplots(1, 2)**
+    : 1행 2열 지정 <br>
+    <img width="265" alt="image" src="https://github.com/user-attachments/assets/caf4255d-d2ac-4b0f-9dc1-a3523c40d7cd">
+
+**3. 과일 데이터를 사과/파인애플/바나나 샘플로 나누기**
+
+```python
+apple = fruits[0:100].reshape(-1, 100*100) # 100*100 2차원 배열을 1*10000 1차원 배열로 바꿈
+pineapple = fruits[100:200].reshape(-1, 100*100)
+banana = fruits[200:300].reshape(-1, 100*100)
+```
+
+- **.reshape(,)**
+: 배열의 크기 변형해주는 메서드
+    - reshape에서 -1  
+    &rarr; ex) 배열 x의 크기가 1000000일 때, x.reshape(-1, 100*100)을 하면 변경할 배열의 크기는 자동으로 (1000000/10000 = 100, 10000)
+
+**4. 사과 샘플 100개의 전체 픽셀 평균값 계산하기**
+
+```python
+print(apple.mean(axis=1))
+```
+
+> [ 88.3346  97.9249  87.3709  98.3703  92.8705  82.6439  94.4244  95.5999
+  90.681   81.6226  87.0578  95.0745  93.8416  87.017   97.5078  87.2019
+  88.9827 100.9158  92.7823 100.9184 104.9854  88.674   99.5643  97.2495
+  94.1179  92.1935  95.1671  93.3322 102.8967  94.6695  90.5285  89.0744
+  97.7641  97.2938 100.7564  90.5236 100.2542  85.8452  96.4615  97.1492
+  90.711  102.3193  87.1629  89.8751  86.7327  86.3991  95.2865  89.1709
+  96.8163  91.6604  96.1065  99.6829  94.9718  87.4812  89.2596  89.5268
+  93.799   97.3983  87.151   97.825  103.22    94.4239  83.6657  83.5159
+ 102.8453  87.0379  91.2742 100.4848  93.8388  90.8568  97.4616  97.5022
+  82.446   87.1789  96.9206  90.3135  90.565   97.6538  98.0919  93.6252
+  87.3867  84.7073  89.1135  86.7646  88.7301  86.643   96.7323  97.2604
+  81.9424  87.1687  97.2066  83.4712  95.9781  91.8096  98.4086 100.7823
+ 101.556  100.7027  91.6098  88.8976]
+
+ - **.mean()**
+    - `axis` 매개변수
+        - 'axis=0': 행 방향으로 계산
+        - 'axis=1': 열 방향으로 계산
+            우리는 각 샘플의 전체 픽셀 평균을 구해야하므로 'axis=1' <br>
+            (앞서 2차원 배열을 1차원으로 변환했기에 가능)
+        <img width="236" alt="image" src="https://github.com/user-attachments/assets/fe91b802-a7df-4e1e-a8f3-0bed12a96022">
+
+**5. 사과/파인애플/바나나 샘플의 전체 픽셀 평균값 분포를 히스토그램으로 나타내기**
+
+```python
+plt.hist(np.mean(apple, axis=1), alpha=0.8) # alpha 매개변수: 투명도
+plt.hist(np.mean(pineapple, axis=1), alpha=0.8)
+plt.hist(np.mean(banana, axis=1), alpha=0.8)
+plt.legend(['apple', 'pineapple', 'banana'])
+plt.show()
+```
+
+<img width="404" alt="image" src="https://github.com/user-attachments/assets/1e68fc78-ee63-4aee-8354-3f72508b57b1">
+&rarr; 바나나 사진의 평균값은 40아래에 집중되어 있음
+&rarr; 바나나는 사과와 파인애플과 구별하기 쉬움 <br>
+(바나나는 사진에서 차지하는 영역이 작기 때문에 평균값이 작게 나옴)
+
+**6. 사과/파인애플/바나나 샘플의 픽셀별 평균값 분포를 막대그래프로 나타내기**
+
+```python
+fig, axs = plt.subplots(1, 3, figsize=(20, 5))
+axs[0].bar(range(10000), np.mean(apple, axis=0))
+axs[1].bar(range(10000), np.mean(pineapple, axis=0))
+axs[2].bar(range(10000), np.mean(banana, axis=0))
+plt.show()
+```
+
+<img width="1181" alt="image" src="https://github.com/user-attachments/assets/83c8592a-048a-464b-bc87-f8ad0b3cc7c2">
+&rarr; 사과는 사진 아래쪽으로 갈수록 값&uarr; <br>
+파인애플은 고르게 높음 <br>
+바나나는 중앙의 값&uarr;
+
+**7. 사과/파인애플/바나나 샘플의 픽셀별 평균값을 2차원 그래프로 그리기**
+
+```python
+apple_mean = np.mean(apple, axis=0).reshape(100, 100)
+pineapple_mean = np.mean(pineapple, axis=0).reshape(100, 100)
+banana_mean = np.mean(banana, axis=0).reshape(100, 100)
+
+fig, axs = plt.subplots(1, 3, figsize=(20, 5))
+axs[0].imshow(apple_mean, cmap='gray_r')
+axs[1].imshow(pineapple_mean, cmap='gray_r')
+axs[2].imshow(banana_mean, cmap='gray_r')
+plt.show()
+```
+
+<img width="1143" alt="image" src="https://github.com/user-attachments/assets/dac62721-2b0a-4f36-84af-8bf82caabfe9">
+
+**8. 사과 샘플의 픽셀별 평균값과 가까운 사진 고르기**
+
+```python
+# |과일 데이터 - 사과 샘플의 픽셀별 평균값| = 오차(3차원)
+abs_diff = np.abs(fruits - apple_mean) 
+
+# 1번 축(높이)와 2번 축(너비)에 걸친 평균값 즉, 샘플별 오차 평균(1차원)
+abs_mean = np.mean(abs_diff, axis=(1,2)) 
+```
+
+**9. 사과 샘플의 픽셀별 평균값과 오차가 가장 작은 샘플 100개 고르기**
+
+```python
+apple_index = np.argsort(abs_mean)[:100]
+fig, axs = plt.subplots(10, 10, figsize=(10,10))
+for i in range(10):
+    for j in range(10):
+        axs[i, j].imshow(fruits[apple_index[i*10 + j]], cmap='gray_r')
+        axs[i, j].axis('off') # x축과 y축의 눈금 제거
+plt.show()
+```
+
+<img width="476" alt="image" src="https://github.com/user-attachments/assets/0636357f-9ea7-4a53-b24d-e0e3ae8b3e59">
+
+- **.argsort()**
+: 작은 것에서 큰 순서대로 나열한 배열의 인덱스 반환
+
+&rarr; but 이 문제에서는 샘플이 어떤 과일인지, 즉, 타깃값을 미리 알고 있었음
+&rarr; 6-2에서는 타깃이 없는 경우를 다룸
+

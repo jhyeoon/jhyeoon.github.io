@@ -567,7 +567,7 @@ plt.plot(pca.explained_variance_ratio_)
 
 ![image](https://github.com/user-attachments/assets/a95c41dc-72df-4eea-a615-495b8252acc6)
 
-### PCA로 축소한 데이터를 지도학습에 적용하기
+### **PCA로 축소한 데이터를 지도학습에 적용하기**
 
 **1. 로지스틱 회귀 모델과 타깃 데이터 만들기**
 

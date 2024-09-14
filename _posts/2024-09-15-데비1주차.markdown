@@ -1,0 +1,656 @@
+---
+layout: post
+title:  "데이터비즈니스 1주차"
+date:   2024-09-15 19:37:24 +0800
+categories: jekyll update
+published: true
+---
+
+**#파이썬 데이터분석 실무 테크닉 100**
+
+# 1장 웹에서 주문 수를 분석하는 테크닉 10
+
+| no. | 파일 이름 | 개요 |
+| --- | --- | --- |
+| 1 | customer_master.csv | 고객 데이터 |
+| 2 | item_master.csv | 취급하는 상품 데이터 |
+| 3-1 | transaction_1.csv | 구매내역 데이터 |
+| 3-2 | transaction_2.csv | 3-1과 연결된 분할 데이터 |
+| 4-1 | transaction_detail_1.csv | 구매내역 상세 데이터 |
+| 4-2 | transaction_detail_2.csv | 4-1과 연결된 분할 데이터 |
+
+## 1. 데이터 읽어 들이기
+
+```python
+import pandas as pd
+
+customer_master = pd.read_csv('customer_master.csv')
+item_master = pd.read_csv('item_master.csv')
+transaction_1 = pd.read_csv('transaction_1.csv')
+transaction_detail_1 = pd.read_csv('transaction_detail_1.csv')
+```
+
+customer_master
+
+<img width="587" alt="image" src="https://github.com/user-attachments/assets/25453d03-034e-4b28-8edc-5fb3cc5c4ea6">
+
+
+item_master
+
+<img width="181" alt="image 1" src="https://github.com/user-attachments/assets/fa5341c4-d379-4391-bfc3-cb0f390aad4c">
+
+transaction
+
+<img width="301" alt="image 2" src="https://github.com/user-attachments/assets/e633fa86-6c2e-46a8-8f28-ce42f0afb817">
+
+transaction_detail
+
+<img width="233" alt="image 3" src="https://github.com/user-attachments/assets/7e420a26-a41d-43d0-b5f6-5db905cd3172">
+
+## 2. 데이터 결합(유니언)하기
+
+### 데이터 결합
+
+- 유니언: 행 방향으로 세로로 결합
+- 조인: 열 방향으로 가로로 결합
+
+```python
+# transaction_1과 transaction_2 유니언
+transaction_2 = pd.read_csv('transaction_2.csv')
+transaction = pd.concat([transaction_1, transaction_2], ignore_index=True)
+
+# transation_detail_1과 transaction_detail_2 유니언
+transaction_detail_2 = pd.read_csv('transaction_detail_2.csv')
+transaction_detail=pd.concat([transaction_detail_1,transaction_detail_2], ignore_index=True)
+
+# transaction_1과 transaction_2 유니언이 되었는지 확인
+print(len(transaction_1)) # 5000
+print(len(transaction_2)) # 1786
+print(len(transaction)) # 6786 = 5000 + 1786
+```
+
+`.concat()` : 데이터 유니언
+
+`ignore_index=True` : 기존의 인덱스 무시
+
+|  | A | B |
+| --- | --- | --- |
+| 0 | 1 | 5 |
+| 1 | 2 | 6 |
+| 0 | 3 | 7 |
+| 1 | 4 | 8 |
+
+|  | A | B |
+| --- | --- | --- |
+| 0 | 1 | 5 |
+| 1 | 2 | 6 |
+| 2 | 3 | 7 |
+| 3 | 4 | 8 |
+
+## 3. 데이터 결합(조인)하기
+
+- 데이터를 가공할 때는 상세하게 나와 있는 쪽에 맞추어 가공 시작 (transaction_detail)
+1. 부족한(추가하고 싶은) 데이터 칼럼이 무엇인가
+2. 공통되는 데이터 칼럼은 무엇인가
+
+```python
+# transaction_detail에 transaction의 payment_date와 customer_id 추가
+# transaction_id를 공통 칼럼으로
+join_data = pd.merge(transaction_detail, transaction[["transaction_id", "payment_date", "customer_id"]], 
+                     on="transaction_id", how="left")
+```
+
+`.merge()` : 데이터 조인
+
+`on=" "` : 공통 칼럼 지정
+
+`how="left"` : 레프트 조인
+
+```python
+# join_data에 customer_master 전체 추가
+# customer_id를 공통 칼럼으로
+join_data = pd.merge(join_data, customer_master, on="customer_id", how="left")
+
+# join_data에 item_master 전체 추가
+# item_id를 공통 칼럼으로
+join_data = pd.merge(join_data, item_master, on="item_id", how="left")
+```
+
+## 4. 필요한 데이터 칼럼 만들기
+
+```python
+# join_data의 'quantity'와 'item_price'를 곱하여 'price' 칼럼 추가하기
+join_data["price"] = join_data["quantity"] * join_data["item_price"]
+
+# join_data에서 몇 칼럼만 보여주기
+join_data[["quantity", "item_price","price"]].head()
+```
+
+`df[[" ", " "]].head()` : df에서 몇 칼럼만 보여주기
+
+## 5. 데이터 검산하기
+
+```python
+# transaction의 price와 join_data의 price가 같은지 확인
+print(join_data["price"].sum()) # 971135000
+print(transaction["price"].sum()) # 971135000
+
+join_data["price"].sum() == transaction["price"].sum() # True
+```
+
+## 6. 통계량 파악하기
+
+```python
+# 칼럼별 결측치 개수 확인
+join_data.isnull().sum()
+```
+
+`.isnull().sum()` 
+
+: `.isnull()`은 결손치를 True/False로 반환 
+→ `.sum()`하면 True의 개수를 칼럼마다 합해줌
+
+<img width="125" alt="image 4" src="https://github.com/user-attachments/assets/934357a2-254a-4198-9d0e-2eb615e1ae3f">
+
+```python
+# 칼럼별 통계량 확인
+join_data.describe()
+```
+
+`.descibe()`: 숫자 데이터를 집계
+- 데이터 개수(count), 평균값(mean), 표준편차(std), 최솟값(min), 사분위수(25%, 75%), 중앙값(50%), 최댓값(max) 출력
+
+<img width="392" alt="image 5" src="https://github.com/user-attachments/assets/ae69ad93-d28f-4d20-a027-10d042b0d360">
+
+```python
+# 데이터의 기간 확인
+print(join_data["payment_date"].min()) # 2019-02-01 01:36:57
+print(join_data["payment_date"].max()) # 2019-07-31 23:41:38
+```
+
+## 7. 월별로 데이터 집계하기
+
+```python
+# payment_date의 데이터형 확인
+join_data.dtypes
+
+# payment_date의 데이터형을 object에서 datetime으로 바꾸기
+join_data["payment_date"] = pd.to_datetime(join_data["payment_date"])
+
+# payment_data에서 연, 월만 추출
+join_data["payment_month"] = join_data["payment_date"].dt.strftime("%Y%m")
+```
+
+`.dtypes` : 데이터형 확인
+
+`to_datetime()` : 데이터형을 datetime으로 변환
+- datetime으로 변환해야 .dt 속성을 사용할 수 있음
+
+`.dt.strfttime` : 날짜와 시간을 문자열 형식으로 변환하여 추가(string format time)
+
+```python
+# 월별 총 판매액 합산
+join_data.groupby("payment_month").sum()["price"]
+```
+
+`.groupby()` : 그룹화
+
+## 8. 월별, 상품별로 데이터 집계하기
+
+```python
+# 월별 상품별 총 판매액, 수량 합산
+join_data.groupby(["payment_month","item_name"]).sum()[["price", "quantity"]]
+```
+
+<img width="167" alt="image 6" src="https://github.com/user-attachments/assets/40df63da-93e7-410b-a6d2-cac1877bede1">
+
+```python
+# 피벗 테이블로 만들기
+pd.pivot_table(join_data, index='item_name', columns='payment_month', values=['price', 'quantity'], aggfunc='sum')
+```
+
+<img width="695" alt="image 7" src="https://github.com/user-attachments/assets/a12d232b-67ad-4402-9407-36e795edabe6">
+
+`.pivot_table()` : 피벗 테이블 생성
+
+## 9. 데이터 시각화하기
+
+```python
+# 그래프로 만들 데이터 가공하기
+graph_data = pd.pivot_table(join_data, index='payment_month', columns='item_name', values='price', aggfunc='sum')
+```
+
+<img width="364" alt="image 8" src="https://github.com/user-attachments/assets/ae4384ac-b310-4c3c-8e1c-dc0824e49c86">
+
+```python
+# 상품별 시간(월)에 따른 판매액 그래프
+import matplotlib.pyplot as plt
+%matplotlib inline
+plt.plot(list(graph_data.index), graph_data["PC-A"], label='PC-A')
+plt.plot(list(graph_data.index), graph_data["PC-B"], label='PC-B')
+plt.plot(list(graph_data.index), graph_data["PC-C"], label='PC-C')
+plt.plot(list(graph_data.index), graph_data["PC-D"], label='PC-D')
+plt.plot(list(graph_data.index), graph_data["PC-E"], label='PC-E')
+plt.legend()  
+```
+
+![image.png](image%209.png)
+
+`%matplotlib inline`: plt.show()를 호출하지 않아고 그래프가 자동으로 표시됨
+
+`.plot()` : 가로축, 세로축의 순서로 지정
+
+`plt.legend()` : 범례 표시
+
+<aside>
+💡
+
+왜 graph_data.index는 list로 만들어야 해?
+
+- `graph_data.index`는 특수한 pandas의 ****Index ****객체
+→ list()로 변환하여 plot() 함수에서 사용할 수 있는 형태로 바꿔야 함
+- `graph_data["PC-A"]`는 pandas Series 객체
+→ 이미 plot()에서 바로 사용할 수 있는 형태이기 때문에 리스트로 변환할 필요x
+</aside>
+
+# 2장 대리점 데이터를 가공하는 테크닉 10
+
+| no. | 파일 이름 | 개요 |
+| --- | --- | --- |
+| 1 | uriage.csv | 매출 이력 (201901-201907) |
+| 2 | kokyaku_daicho.xlsx | 고객 정보 |
+
+## 1. 데이터 읽어 들이기
+
+```python
+import pandas as pd
+uriage_data = pd.read_csv("uriage.csv")
+kokyaku_data = pd.read_excel("kokyaku_daicho.xlsx")
+```
+
+uriage_data
+
+<img width="206" alt="image" src="https://github.com/user-attachments/assets/4ed60d51-69a5-4f42-a264-35d4c3fc734b">
+
+kokyaku_data
+
+<img width="132" alt="image 1" src="https://github.com/user-attachments/assets/660c3aac-5741-4dc8-b2d3-248aa2e547d5">
+
+## 2. 데이터 오류 살피기
+
+- 데이터의 정합성: 입력 오류나 표기 방법의 차이가 부정합을 일으키면 정합성에 문제가 있는 것
+
+```python
+uriage_data["item_name"].head()
+uriage_data["item_price"].head()
+kokyaku_data["등록일"].head()
+```
+
+<img width="113" alt="image 2" src="https://github.com/user-attachments/assets/0e9417e8-22cd-447a-81a9-99248d0f803e">
+
+<img width="119" alt="image 3" src="https://github.com/user-attachments/assets/de29859b-b938-4a79-86a1-97d0e3537010">
+
+<img width="119" alt="image 4" src="https://github.com/user-attachments/assets/d7d3a738-a2b8-4d03-aec5-345ccc09bd1c">
+
+## 3. 데이터 오류가 있는 상태로 집계해보기
+
+```python
+# purchase_date에서 연월 추출
+uriage_data["purchase_date"] = pd.to_datetime(uriage_data["purchase_date"])
+uriage_data["purchase_month"] = uriage_data["purchase_date"].dt.strftime("%Y%m")
+
+# 월별 상품별 총 건수
+res = uriage_data.pivot_table(index="purchase_month", columns="item_name", aggfunc="size", fill_value=0)
+res
+```
+
+<img width="377" alt="image 5" src="https://github.com/user-attachments/assets/5d24fcc7-822e-46b2-ba31-382dd37758e4">
+
+`.pivot_table()`
+
+`aggfunc=` : **aggregation function**(집계 함수)을 지정하는 매개변수
+
+`"size"`: 해당 그룹에 있는 행 수 반환
+
+## 4. 상품명 오류 수정하기
+
+```python
+# 상품명 개수 확인
+print(len(pd.unique(uriage_data["item_name"]))) # 99
+```
+
+→ 상품의 종류는 원래 26가지인데 중복되지 않는 상품명의 개수가 99개임
+
+`pd.unique()` : 중복된 값을 제외하고 유일한 값들만 반환
+
+### 대/소문자 통일 및 공백 제거
+
+```python
+# 대문자로 변경
+uriage_data["item_name"] = uriage_data["item_name"].str.upper()
+
+# 공백 제거
+uriage_data["item_name"] = uriage_data["item_name"].str.replace("　", "")
+uriage_data["item_name"] = uriage_data["item_name"].str.replace(" ", "")
+
+# item_name 오름차순으로 데이터 정렬
+uriage_data.sort_values(by=["item_name"], ascending=True)
+```
+
+`.sort_values()` : 데이터 정렬
+
+`by=[ ]` : 어떤 열을 기준으로 정렬할지 지정하는 매개변수
+
+```python
+# 상품명 및 상품명 개수 확인 
+print(pd.unique(uriage_data["item_name"]))
+print(len(pd.unique(uriage_data["item_name"]))) # 26
+```
+
+→ 중복되지 않는 상품명이 상품의 종류와 일치!
+
+## 5. 금액 결측치 수정하기
+
+```python
+# 칼럼별 결측치 유무 확인
+uriage_data.isnull().any(axis=0)
+```
+
+`.isnull()` : True면 결측치 존재
+
+<aside>
+💡
+
+`.isnull()` vs `.isnull.any()` 
+
+- 각 셀의 결측값 여부를 확인하여 True/False의 DataFrame 반환
+- 각 열에 하나라도 결측값이 있는지 여부를 확인하여 True/False의 Series 반환
+</aside>
+
+<img width="87" alt="image 6" src="https://github.com/user-attachments/assets/47c8882e-4a08-4e72-a8eb-c06709a70b3f">
+
+### 결측치를 같은 상품 내 최대 가격으로 대체
+
+```python
+# item_price가 null인 행 추출
+flg_is_null = uriage_data["item_price"].isnull()
+
+# 결측치를 같은 상품 내 최대 가격으로 대체
+# flg_is_null이 True인 행의 item_name 열 추출하여 리스트로
+for trg in list(uriage_data.loc[flg_is_null, "item_name"].unique()): 
+        # price -> flg_is_null이 False이며 item_name이 trg인 item_price값의 최댓값
+    price = uriage_data.loc[(~flg_is_null) & (uriage_data["item_name"] == trg), "item_price"].max()
+    # flg_is_null이 True이며 item_name이 trg인 item_price -> price
+    uriage_data["item_price"].loc[(flg_is_null) & (uriage_data["item_name"]==trg)] = price
+```
+
+```python
+# 칼럼별 결측치 유무 확인
+uriage_data.isnull().any(axis=0)
+```
+
+<img width="91" alt="image 7" src="https://github.com/user-attachments/assets/4318620e-9a22-474a-a518-5453b7e7767f">
+
+```python
+# 중복되지 않는 item_name을 오름차순으로 정렬해서 리스트로
+for trg in list(uriage_data["item_name"].sort_values().unique()):
+        # 특정 item_name의 최고가와 최저가 출력
+    print(trg + "의최고가：" + str(uriage_data.loc[uriage_data["item_name"]==trg]["item_price"].max()) 
+          + "의최저가：" + str(uriage_data.loc[uriage_data["item_name"]==trg]["item_price"].min(skipna=False)))
+```
+
+→ 모든 상품명에 대한 최고가 = 최저가
+
+→ 결측치가 잘 처리됨!
+
+`.min()` 
+
+`skipna=False` : NaN이 존재할 경우 최솟값이 NaN으로 표시됨
+
+## 6. 고객 이름 오류 수정하기
+
+```python
+# kokyaku_data에서의 고객 이름
+kokyaku_data["고객이름"].head()
+```
+
+<img width="125" alt="image 8" src="https://github.com/user-attachments/assets/a982d08e-1ba0-4580-892a-381148296ac0">
+
+```python
+# uriage_data에서의 고객 이름
+uriage_data["customer_name"].head()
+```
+
+<img width="123" alt="image 9" src="https://github.com/user-attachments/assets/93f0abb5-b189-4c14-a6bd-9d249568823d">
+
+```python
+# kokyaku_data의 고객 이름에서 공백 제거
+kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace("　", "")
+kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace(" ", "")
+```
+
+## 7. 날짜 오류 수정하기
+
+```python
+kokyaku_data["등록일"]
+```
+
+<img width="149" alt="image 10" src="https://github.com/user-attachments/assets/baee7ad8-3b48-4525-bd01-12844a7ace5f">
+
+```python
+# 숫자로만 이루어진 오류 데이터 추출
+flg_is_serial = kokyaku_data["등록일"].astype("str").str.isdigit()
+
+# 숫자로만 이루어진 오류 데이터 개수 확인
+flg_is_serial.sum() # 22
+```
+
+`.astype()` : 특정 데이터형으로 변환
+
+`.str.isdigit()` : 각 값이 숫자로만 이루어져 있으면 True, 아니면 False 반환
+
+```python
+# 오류 데이터의 등록일의 데이터형을 float로 변환
+# 단위는 일(Day)
+# 기준 날짜로부터 오류 데이터 일수만큼을 더하여 실제 날짜 구하기
+fromSerial = pd.to_timedelta(kokyaku_data.loc[flg_is_serial, "등록일"].astype("float"), unit="D") + pd.to_datetime("1900/01/01")
+```
+
+`.to_timedelta()` : 시간 차이를 나타내는 timedelta 객체로 변환
+
+`unit="D"` : 단위가 일(Day)
+
+`.to_datetime("1900/01/01")`: 1900/01/01일을 datetime 객체로 변환
+
+```python
+# 오류가 아닌 데이터의 등록일의 데이터형을 datetime으로 변환
+fromString = pd.to_datetime(kokyaku_data.loc[~flg_is_serial, "등록일"])
+
+# 수정한 오류 데이터와 오류가 아닌 데이터 합하기
+kokyaku_data["등록일"] = pd.concat([fromSerial, fromString])
+```
+
+## 8. 두 개의 데이터 결합(조인)하기
+
+### 고객 이름을 키로 두 개의 데이터 조인
+
+```python
+# uriage_data의 customer_name과 kokyaku_data의 고객 이름을 키로 데이터 레프트 조인
+join_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_on="고객이름", how="left")
+# uriage_data의 customer_name 칼럼은 삭제
+join_data = join_data.drop("customer_name", axis=1)
+```
+
+## 9. 정제한 데이터 덤프하기
+
+```python
+# 데이터 칼럼 정렬하기
+dump_data = join_data[["purchase_date", "purchase_month", "item_name", "item_price", "고객이름", "지역", "등록일"]]
+
+# 데이터 덤프하기
+dump_data.to_csv("dump_data.csv", index=False)
+```
+
+## 10. 데이터 집계하기
+
+```python
+# 월별 상품별 판매 개수
+byItem = import_data.pivot_table(index="purchase_month", columns="item_name", aggfunc="size", fill_value=0)
+
+# 월별 상품별 총 판매액
+byPrice = import_data.pivot_table(index="purchase_month", columns="item_name", values="item_price", aggfunc="sum", fill_value=0)
+```
+
+<img width="443" alt="image 11" src="https://github.com/user-attachments/assets/61b8651f-bbc6-4bcf-a3c1-e0f9b0874abc">
+
+<img width="452" alt="image 12" src="https://github.com/user-attachments/assets/148e0a9f-fec0-48bd-99fe-05c39dd03ea3">
+
+```python
+# 구매이력이 없는 사용자 확인
+away_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_on="고객이름", how="right")
+away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]]
+```
+
+**#통계101 데이터분석**
+
+# 1장. 통계학이란?
+
+### 데이터 분석의 목적
+
+1. 데이터 요약
+2. 데이터 설명
+    1. 인과관계
+    2. 상관관계
+3. 데이터 예측
+    - 예측값과 실제값의 차이(오차)가 작은 관계성
+
+### 통계학의 역할
+
+: 데이터의 산포나 불확실성에 대처 
+
+- 확률론: 산포나 불확실성을 확률로 나타내는 것
+
+### 통계학
+
+1. 기술통계: 수집한 데이터를 정리하고 요약하는 방법
+2. 추론통계: 수집한 데이터로부터 데이터의 발생원을 추정하는 방법
+    1. 통계적 추론: 데이터에서 가정한 확률 모형의 성질을 추정하는 방법
+    2. 가설검정: 세운 가설과 얻은 데이터가 얼마나 들어맞는지를 평가하여, 가설을 채택할 것인가를 판단하는 방법
+
+# 2장. 모집단과 표본
+
+### 모집단
+
+: 알고자 하는 대상 전체
+
+### 모집단의 크기
+
+: 모집단에 포함된 요소의 수
+
+1. 유한모집단: 모집단 중 한정된 요소만 포함한 것
+2. 무한모집단: 모집단 중 포함된 요소의 개수가 무한한 것
+
+### 모집단의 성질
+
+1. 전수조사: 모집단에 포함된 모든 요소를 조사하는 기술통계
+2. 표본조사: 모집단의 일부를 분석하여 모집단 전체의 성질을 추정하는 추론통계
+
+# 3장. 통계분석의 기초
+
+### 변수
+
+: 공통의 측정 방법으로 얻은 같은 성질의 값
+
+- 차원
+: 변수의 개수
+1. 양적 변수 (수치형 변수)
+: 숫자로 나타낼 수 있는 변수
+    1. 이산형 양적 변수 (이산 변수)
+    2. 연속형 양적 변수 (연속변수)
+2. 질적 변수 (범주형 변수)
+: 범주로 변수를 나타내는 변수
+
+### 도수분포도 (히스토그램)
+
+1. 이산형 양적 변수의 히스토그램
+2. 연속형 양적 변수의 히스토그램
+    1. 구간폭
+    : 범위의 넓이
+3. 범주형 변수의 히스토그램
+
+### 통계량
+
+1. 기술통계량 (요약통계량)
+: 데이터 그 자체의 성질을 기술하고 요약하는 통계량
+    1. 대푯값
+        1. 평균값
+        2. 중앙값
+        3. 최빈값
+    2. 산포
+        1. 분산
+        $표본분산 s^2=\frac{1}{n}\sum_{i=1}^{n}(x_{i}-\bar{x})^2$
+        2. 표준편차 (s)
+
+### 상자 수염 그림
+
+<img width="404" alt="image" src="https://github.com/user-attachments/assets/99c4cda8-9cc8-4706-ab91-73888c80434c">
+
+### 여러 가지 시각화 그림
+
+<img width="407" alt="image 1" src="https://github.com/user-attachments/assets/b5ab6ff1-2426-4401-888e-687f652ca00c">
+
+### 확률
+
+- 확률변수
+ex) P(X=흰 구슬)=1/5에서 ‘X’
+- 실현값
+ex) P(X=흰 구슬)=1/5에서 ‘흰 구슬’
+
+### 확률 분포
+
+: 가로축에 확률변수, 세로축에 그 확률변수의 발생 가능성을 표시한 분포
+
+- 이산형 확률분포
+- 연속형 확률분포
+    - 확률밀도함수
+        
+        <img width="401" alt="image 2" src="https://github.com/user-attachments/assets/b2839a78-895c-49eb-bad3-597324af2074">
+        
+- 기댓값 E(X)
+    - 이산형
+    $E(X)=\sum_{i=1}^{k}P(X=x_{i})$
+    - 연속형
+    $E(X)=\int xf(x)dx$
+- 분산
+    - 이산형
+    $V(X)=\sum_{i=1}^{k}(x_{i}-E(X))^2P(X=x_{i})$
+    - 연속형
+    $V(X)=\int(x-E(X))^2f(x))dx$
+- 왜도
+: 좌우 대칭에서 어느 정도 벗어났는지
+- 첨도
+: 분포가 얼마나 뾰족한지, 그래프의 꼬리가 차지하는 비율이 얼마인지
+- 동시 확률분포 P(X, Y)
+    - 독립
+    P(X, Y)=P(X)*P(Y)
+    - 조건부확률
+    P(X|Y)
+
+### 파라미터 (모수)
+
+: 분포의 형태를 정하는 숫자
+
+### 정규분포 (가우스 분포)
+
+$N(\mu, \sigma^2)$
+
+$f(x)=\frac{1}{\sqrt{2\pi\sigma^2}}exp(-\frac{(x-\mu)^2}{2\sigma^2})$
+
+<img width="201" alt="image 3" src="https://github.com/user-attachments/assets/932cf263-e040-4cad-9d8f-f2ae6d36ef52">
+
+### 표준정규분포
+
+$N(0, 1)$
+
+- 표준화
+$z=\frac{x-\mu}{\sigma}$

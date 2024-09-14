@@ -308,7 +308,7 @@ res
 
 `.pivot_table()`
 
-`aggfunc=` : **aggregation function**(집계 함수)을 지정하는 매개변수
+`aggfunc=` : aggregation function(집계 함수)을 지정하는 매개변수
 
 `"size"`: 해당 그룹에 있는 행 수 반환
 
@@ -358,14 +358,10 @@ uriage_data.isnull().any(axis=0)
 
 `.isnull()` : True면 결측치 존재
 
-<aside>
-💡
 
-`.isnull()` vs `.isnull.any()` 
-
-- 각 셀의 결측값 여부를 확인하여 True/False의 DataFrame 반환
-- 각 열에 하나라도 결측값이 있는지 여부를 확인하여 True/False의 Series 반환
-</aside>
+- `.isnull()` vs `.isnull.any()`
+    - 각 셀의 결측값 여부를 확인하여 True/False의 DataFrame 반환
+    - 각 열에 하나라도 결측값이 있는지 여부를 확인하여 True/False의 Series 반환
 
 <img width="87" alt="image 6" src="https://github.com/user-attachments/assets/47c8882e-4a08-4e72-a8eb-c06709a70b3f">
 
@@ -510,6 +506,7 @@ byPrice = import_data.pivot_table(index="purchase_month", columns="item_name", v
 away_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_on="고객이름", how="right")
 away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]]
 ```
+
 
 **#통계101 데이터분석**
 

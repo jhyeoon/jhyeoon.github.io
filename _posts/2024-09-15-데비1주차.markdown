@@ -3,7 +3,6 @@ layout: post
 title:  "데이터비즈니스 1주차"
 date:   2024-09-15 00:00:01 +0800
 categories: jekyll update
-published: true
 ---
 
 **#파이썬 데이터분석 실무 테크닉 100**

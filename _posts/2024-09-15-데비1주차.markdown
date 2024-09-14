@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "데이터비즈니스 1주차"
-date:   2024-09-15 19:37:24 +0800
+date:   2024-09-15 00:00:01 +0800
 categories: jekyll update
 published: true
 ---

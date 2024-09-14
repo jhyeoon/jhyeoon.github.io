@@ -8,7 +8,7 @@ published: true
 
 **#파이썬 데이터분석 실무 테크닉 100**
 
-# 1장 웹에서 주문 수를 분석하는 테크닉 10
+## 1장 웹에서 주문 수를 분석하는 테크닉 10
 
 | no. | 파일 이름 | 개요 |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ published: true
 | 4-1 | transaction_detail_1.csv | 구매내역 상세 데이터 |
 | 4-2 | transaction_detail_2.csv | 4-1과 연결된 분할 데이터 |
 
-## 1. 데이터 읽어 들이기
+### 1. 데이터 읽어 들이기
 
 ```python
 import pandas as pd
@@ -47,9 +47,9 @@ transaction_detail
 
 <img width="233" alt="image 3" src="https://github.com/user-attachments/assets/7e420a26-a41d-43d0-b5f6-5db905cd3172">
 
-## 2. 데이터 결합(유니언)하기
+### 2. 데이터 결합(유니언)하기
 
-### 데이터 결합
+**데이터 결합**
 
 - 유니언: 행 방향으로 세로로 결합
 - 조인: 열 방향으로 가로로 결합
@@ -87,7 +87,7 @@ print(len(transaction)) # 6786 = 5000 + 1786
 | 2 | 3 | 7 |
 | 3 | 4 | 8 |
 
-## 3. 데이터 결합(조인)하기
+### 3. 데이터 결합(조인)하기
 
 - 데이터를 가공할 때는 상세하게 나와 있는 쪽에 맞추어 가공 시작 (transaction_detail)
 1. 부족한(추가하고 싶은) 데이터 칼럼이 무엇인가
@@ -116,7 +116,7 @@ join_data = pd.merge(join_data, customer_master, on="customer_id", how="left")
 join_data = pd.merge(join_data, item_master, on="item_id", how="left")
 ```
 
-## 4. 필요한 데이터 칼럼 만들기
+### 4. 필요한 데이터 칼럼 만들기
 
 ```python
 # join_data의 'quantity'와 'item_price'를 곱하여 'price' 칼럼 추가하기
@@ -128,7 +128,7 @@ join_data[["quantity", "item_price","price"]].head()
 
 `df[[" ", " "]].head()` : df에서 몇 칼럼만 보여주기
 
-## 5. 데이터 검산하기
+### 5. 데이터 검산하기
 
 ```python
 # transaction의 price와 join_data의 price가 같은지 확인
@@ -138,7 +138,7 @@ print(transaction["price"].sum()) # 971135000
 join_data["price"].sum() == transaction["price"].sum() # True
 ```
 
-## 6. 통계량 파악하기
+### 6. 통계량 파악하기
 
 ```python
 # 칼럼별 결측치 개수 확인
@@ -168,7 +168,7 @@ print(join_data["payment_date"].min()) # 2019-02-01 01:36:57
 print(join_data["payment_date"].max()) # 2019-07-31 23:41:38
 ```
 
-## 7. 월별로 데이터 집계하기
+### 7. 월별로 데이터 집계하기
 
 ```python
 # payment_date의 데이터형 확인
@@ -195,7 +195,7 @@ join_data.groupby("payment_month").sum()["price"]
 
 `.groupby()` : 그룹화
 
-## 8. 월별, 상품별로 데이터 집계하기
+### 8. 월별, 상품별로 데이터 집계하기
 
 ```python
 # 월별 상품별 총 판매액, 수량 합산
@@ -213,7 +213,7 @@ pd.pivot_table(join_data, index='item_name', columns='payment_month', values=['p
 
 `.pivot_table()` : 피벗 테이블 생성
 
-## 9. 데이터 시각화하기
+### 9. 데이터 시각화하기
 
 ```python
 # 그래프로 만들 데이터 가공하기
@@ -242,25 +242,20 @@ plt.legend()
 
 `plt.legend()` : 범례 표시
 
-<aside>
-💡
+- 왜 graph_data.index는 list로 만들어야 해?
+    - `graph_data.index`는 특수한 pandas의 Index 객체 <br>
+    → list()로 변환하여 plot() 함수에서 사용할 수 있는 형태로 바꿔야 함
+    - `graph_data["PC-A"]`는 pandas의 Series 객체 <br>
+    → 이미 plot()에서 바로 사용할 수 있는 형태이기 때문에 리스트로 변환할 필요x
 
-왜 graph_data.index는 list로 만들어야 해?
-
-- `graph_data.index`는 특수한 pandas의 ****Index ****객체
-→ list()로 변환하여 plot() 함수에서 사용할 수 있는 형태로 바꿔야 함
-- `graph_data["PC-A"]`는 pandas Series 객체
-→ 이미 plot()에서 바로 사용할 수 있는 형태이기 때문에 리스트로 변환할 필요x
-</aside>
-
-# 2장 대리점 데이터를 가공하는 테크닉 10
+## 2장 대리점 데이터를 가공하는 테크닉 10
 
 | no. | 파일 이름 | 개요 |
 | --- | --- | --- |
 | 1 | uriage.csv | 매출 이력 (201901-201907) |
 | 2 | kokyaku_daicho.xlsx | 고객 정보 |
 
-## 1. 데이터 읽어 들이기
+### 1. 데이터 읽어 들이기
 
 ```python
 import pandas as pd
@@ -276,7 +271,7 @@ kokyaku_data
 
 <img width="132" alt="image 1" src="https://github.com/user-attachments/assets/660c3aac-5741-4dc8-b2d3-248aa2e547d5">
 
-## 2. 데이터 오류 살피기
+### 2. 데이터 오류 살피기
 
 - 데이터의 정합성: 입력 오류나 표기 방법의 차이가 부정합을 일으키면 정합성에 문제가 있는 것
 
@@ -292,7 +287,7 @@ kokyaku_data["등록일"].head()
 
 <img width="119" alt="image 4" src="https://github.com/user-attachments/assets/d7d3a738-a2b8-4d03-aec5-345ccc09bd1c">
 
-## 3. 데이터 오류가 있는 상태로 집계해보기
+### 3. 데이터 오류가 있는 상태로 집계해보기
 
 ```python
 # purchase_date에서 연월 추출
@@ -312,7 +307,7 @@ res
 
 `"size"`: 해당 그룹에 있는 행 수 반환
 
-## 4. 상품명 오류 수정하기
+### 4. 상품명 오류 수정하기
 
 ```python
 # 상품명 개수 확인
@@ -323,7 +318,7 @@ print(len(pd.unique(uriage_data["item_name"]))) # 99
 
 `pd.unique()` : 중복된 값을 제외하고 유일한 값들만 반환
 
-### 대/소문자 통일 및 공백 제거
+**대/소문자 통일 및 공백 제거**
 
 ```python
 # 대문자로 변경
@@ -349,7 +344,7 @@ print(len(pd.unique(uriage_data["item_name"]))) # 26
 
 → 중복되지 않는 상품명이 상품의 종류와 일치!
 
-## 5. 금액 결측치 수정하기
+### 5. 금액 결측치 수정하기
 
 ```python
 # 칼럼별 결측치 유무 확인
@@ -365,7 +360,7 @@ uriage_data.isnull().any(axis=0)
 
 <img width="87" alt="image 6" src="https://github.com/user-attachments/assets/47c8882e-4a08-4e72-a8eb-c06709a70b3f">
 
-### 결측치를 같은 상품 내 최대 가격으로 대체
+**결측치를 같은 상품 내 최대 가격으로 대체**
 
 ```python
 # item_price가 null인 행 추출
@@ -403,7 +398,7 @@ for trg in list(uriage_data["item_name"].sort_values().unique()):
 
 `skipna=False` : NaN이 존재할 경우 최솟값이 NaN으로 표시됨
 
-## 6. 고객 이름 오류 수정하기
+### 6. 고객 이름 오류 수정하기
 
 ```python
 # kokyaku_data에서의 고객 이름
@@ -425,7 +420,7 @@ kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace("　", "
 kokyaku_data["고객이름"] = kokyaku_data["고객이름"].str.replace(" ", "")
 ```
 
-## 7. 날짜 오류 수정하기
+### 7. 날짜 오류 수정하기
 
 ```python
 kokyaku_data["등록일"]
@@ -466,9 +461,9 @@ fromString = pd.to_datetime(kokyaku_data.loc[~flg_is_serial, "등록일"])
 kokyaku_data["등록일"] = pd.concat([fromSerial, fromString])
 ```
 
-## 8. 두 개의 데이터 결합(조인)하기
+### 8. 두 개의 데이터 결합(조인)하기
 
-### 고객 이름을 키로 두 개의 데이터 조인
+**고객 이름을 키로 두 개의 데이터 조인**
 
 ```python
 # uriage_data의 customer_name과 kokyaku_data의 고객 이름을 키로 데이터 레프트 조인
@@ -477,7 +472,7 @@ join_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_o
 join_data = join_data.drop("customer_name", axis=1)
 ```
 
-## 9. 정제한 데이터 덤프하기
+### 9. 정제한 데이터 덤프하기
 
 ```python
 # 데이터 칼럼 정렬하기
@@ -487,7 +482,7 @@ dump_data = join_data[["purchase_date", "purchase_month", "item_name", "item_pri
 dump_data.to_csv("dump_data.csv", index=False)
 ```
 
-## 10. 데이터 집계하기
+### 10. 데이터 집계하기
 
 ```python
 # 월별 상품별 판매 개수
@@ -507,10 +502,11 @@ away_data = pd.merge(uriage_data, kokyaku_data, left_on="customer_name", right_o
 away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]]
 ```
 
+<br>
 
 **#통계101 데이터분석**
 
-# 1장. 통계학이란?
+## 1장. 통계학이란?
 
 ### 데이터 분석의 목적
 
@@ -534,7 +530,7 @@ away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]]
     1. 통계적 추론: 데이터에서 가정한 확률 모형의 성질을 추정하는 방법
     2. 가설검정: 세운 가설과 얻은 데이터가 얼마나 들어맞는지를 평가하여, 가설을 채택할 것인가를 판단하는 방법
 
-# 2장. 모집단과 표본
+## 2장. 모집단과 표본
 
 ### 모집단
 
@@ -552,7 +548,7 @@ away_data[away_data["purchase_date"].isnull()][["고객이름", "등록일"]]
 1. 전수조사: 모집단에 포함된 모든 요소를 조사하는 기술통계
 2. 표본조사: 모집단의 일부를 분석하여 모집단 전체의 성질을 추정하는 추론통계
 
-# 3장. 통계분석의 기초
+## 3장. 통계분석의 기초
 
 ### 변수
 

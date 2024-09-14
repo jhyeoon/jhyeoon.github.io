@@ -234,7 +234,7 @@ plt.plot(list(graph_data.index), graph_data["PC-E"], label='PC-E')
 plt.legend()  
 ```
 
-![image.png](image%209.png)
+<img width="284" alt="image 9" src="https://github.com/user-attachments/assets/d99bc601-152e-4e1b-b3fa-b3e5ee46ef4a">
 
 `%matplotlib inline`: plt.show()를 호출하지 않아고 그래프가 자동으로 표시됨
 

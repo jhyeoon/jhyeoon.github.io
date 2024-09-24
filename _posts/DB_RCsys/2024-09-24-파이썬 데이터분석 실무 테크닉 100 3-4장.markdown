@@ -1,0 +1,374 @@
+---
+layout: post
+title:  "파이썬 데이터분석 실무 테크닉 100 1-2장"
+date:   2024-09-15 00:00:01 +0800
+categories: jekyll update
+---
+
+**#파이썬 데이터분석 실무 테크닉 100**
+
+## 3장 고객의 전체 모습을 파악하는 테크닉 10
+
+| no. | 파일 이름 | 개요 |
+| --- | --- | --- |
+| 1 | use_log.csv | 센터의 이용 이력 데이터, 기간은 201804-201903 |
+| 2 | customer_master.csv | 201903 말 시점의 회원 데이터 |
+| 3 | class_master.csv | 회원 구분 데이터 (종일, 주간, 야간) |
+| 4 | campaign_master.csv | 행사 구분 데이터 (입회비 유무 등) |
+
+### 1. 데이터 읽고 확인하기
+
+```python
+import pandas as pd
+uselog = pd.read_csv('use_log.csv')
+customer = pd.read_csv('customer_master.csv')
+class_master = pd.read_csv('class_master.csv')
+campaign_master = pd.read_csv('campaign_master.csv')
+```
+
+`len(df)`: 데이터 개수 파악
+
+`.head()`: 처음 몇 행 나타냄
+
+### 2. 고객 데이터 가공하기
+
+```python
+# customer과 class_master 레프트 조인
+customer_join = pd.merge(customer, class_master, on="class", how="left")
+# customer_join과 campaign_master 레프트 조인
+customer_join = pd.merge(customer_join, campaign_master, on="campaign_id", how="left")
+```
+
+```python
+# 조인 전과 후 데이터 개수 비교
+print(len(customer))
+print(len(customer_join))
+```
+
+```python
+# customer_join의 결측치 확인
+customer_join.isnull().sum()
+```
+
+### 3. 고객 데이터 집계하기
+
+```python
+# class_name별 customer_id 수
+customer_join.groupby("class_name").count()["customer_id"]
+# campaign_name별 customer_id 수
+customer_join.groupby("campaign_name").count()["customer_id"]
+# gender별 customer_id 수
+customer_join.groupby("gender").count()["customer_id"]
+# is_deleted별 customer_id 수
+customer_join.groupby("is_deleted").count()["customer_id"]
+```
+
+```python
+# start_date를 datetime형으로 변환
+customer_join["start_date"] = pd.to_datetime(customer_join["start_date"])
+# start_date가 20180401 이후부터인 인원 
+customer_start = customer_join.loc[customer_join["start_date"]>pd.to_datetime("20180401")]
+print(len(customer_start))
+```
+
+`.loc[행_레이블, 열_레이블]`
+
+1. 조건 맞는 행 선택
+ex) `df.loc[df['column_name'] > 5]` → `column_name` 열의 값이 5보다 큰 모든 행을 선택
+2. 특정 행, 특정 열 선택
+ex) `df.loc[2, 'column_name']` → 2번 행의 `column_name` 열 값을 선택
+3. 불리언 배열을 사용한 선택
+ex) `df.loc[df['age'] > 30, ['name', 'age']]` → `age` 열의 값이 30보다 큰 행에서 `name`과 `age` 열만 선택
+4. 슬라이싱
+ex) `df.loc[0:5]` → 첫 번째부터 다섯 번째 행까지 선택
+
+### 4. 최근 고객 데이터 집계하기
+
+```python
+# end_date를 datetime형으로 변환
+customer_join["end_date"] = pd.to_datetime(customer_join["end_date"])
+# 2019년 3월 31일 이후까지 탈퇴하지 않은 고객과 아직 탈퇴하지 않은 고객 추출
+customer_newer = customer_join.loc[(customer_join["end_date"]>=pd.to_datetime("20190331"))|(customer_join["end_date"].isna())]
+print(len(customer_newer))
+# 중복되지 않는 종료 날짜들의 리스트를 출력했을 때 2019-03-31만 표시되는지 확인
+customer_newer["end_date"].unique()
+```
+
+```python
+# class_name별 customer_id 수
+customer_newer.groupby("class_name").count()["customer_id"]
+# campaign_name별 customer_id 수
+customer_newer.groupby("campaign_name").count()["customer_id"]
+# gender별 customer_id 수
+customer_newer.groupby("gender").count()["customer_id"]
+```
+
+### 5. 이용이력 데이터 집계하기
+
+```python
+uselog["usedate"] = pd.to_datetime(uselog["usedate"])
+uselog["연월"] = uselog["usedate"].dt.strftime("%Y%m")
+uselog_months = uselog.groupby(["연월","customer_id"],as_index=False).count()
+uselog_months.rename(columns={"log_id":"count"}, inplace=True)
+del uselog_months["usedate"]
+```
+
+```python
+uselog_customer = uselog_months.groupby("customer_id").agg(["mean", "median", "max", "min" ])["count"]
+uselog_customer = uselog_customer.reset_index(drop=False)
+```
+
+### 6. **이용이력 데이터로 정기이용 여부 플래그 작성하기**
+
+```python
+uselog["weekday"] = uselog["usedate"].dt.weekday
+uselog_weekday = uselog.groupby(["customer_id","연월","weekday"], 
+                                as_index=False).count()[["customer_id","연월", "weekday","log_id"]]
+uselog_weekday.rename(columns={"log_id":"count"}, inplace=True)
+```
+
+`.weekday` : 특정 날짜가 무슨 요일인지 숫자로 반환
+
+- 0~6 → 월요일~일요일
+
+```python
+uselog_weekday = uselog_weekday.groupby("customer_id",as_index=False).max()[["customer_id", "count"]]
+uselog_weekday["routine_flg"] = 0
+uselog_weekday["routine_flg"] = uselog_weekday["routine_flg"].where(uselog_weekday["count"]<4, 1)
+```
+
+`.where()`: 조건에 맞는 값만 남기고, 조건에 맞지 않는 값은 **NaN**으로 변환
+
+### 7. 고객 데이터와 이용이력 데이터 결합하기
+
+```python
+
+customer_join = pd.merge(customer_join, uselog_customer, on="customer_id", how="left")
+customer_join = pd.merge(customer_join, uselog_weekday[["customer_id", "routine_flg"]], on="customer_id", how="left")
+```
+
+```python
+customer_join.isnull().sum()
+```
+
+### 8. 회원기간 계산하기
+
+```python
+from dateutil.relativedelta import relativedelta
+customer_join["calc_date"] = customer_join["end_date"]
+customer_join["calc_date"] = customer_join["calc_date"].fillna(pd.to_datetime("20190430"))
+customer_join["membership_period"] = 0
+for i in range(len(customer_join)):
+    delta = relativedelta(customer_join["calc_date"].iloc[i], customer_join["start_date"].iloc[i])
+    customer_join["membership_period"].iloc[i] = delta.years*12 + delta.months
+```
+
+`.iloc[행_인덱스, 열_인덱스]` 
+
+1. **단일 값 선택
+ex)** `df.iloc[0, 1]` → 첫 번째 행의 두 번째 열 값 선택
+2. **행 선택
+ex)** `df.iloc[0]` → 첫 번째 행 전체 선택
+3. **열 선택
+ex)** `df.iloc[:, 2]` → 세 번째 열 전체 선택
+4. **여러 행, 여러 열 선택(슬라이싱)
+ex)** `df.iloc[0:3, 1:4]` → 첫 번째부터 세 번째 행까지, 두 번째부터 네 번째 열까지 선택
+
+## 9. 고객행동의 각종 통계량 파악하기
+
+```python
+customer_join[["mean", "median", "max", "min"]].describe()
+```
+
+```python
+customer_join.groupby("routine_flg").count()["customer_id"]
+```
+
+```python
+
+import matplotlib.pyplot as plt
+%matplotlib inline
+plt.hist(customer_join["membership_period"])
+```
+
+### **10. 탈퇴회원과 지속회원의 차이 파악하기**
+
+```python
+customer_end = customer_join.loc[customer_join["is_deleted"]==1]
+customer_end.describe()
+```
+
+```python
+customer_stay = customer_join.loc[customer_join["is_deleted"]==0]
+customer_stay.describe()
+```
+
+```python
+customer_join.to_csv("customer_join.csv", index=False)
+```
+
+## 4장 고객의 행동을 예측하는 테크닉 10
+
+| no. | 파일 이름 | 개요 |
+| --- | --- | --- |
+| 1 | use_log.csv | 센터의 이용 이력 데이터, 기간은 201804-201903 |
+| 2 | customer_master.csv | 201903 말 시점의 회원 데이터 |
+| 3 | class_master.csv | 회원 구분 데이터 (종일, 주간, 야간) |
+| 4 | campaign_master.csv | 행사 구분 데이터 (입회비 유무 등) |
+| 5 | customer_join.csv | 3장에서 작성한 이용 이력을 포함한 고객 데이터 |
+
+### 1. 데이터 읽고 확인하기
+
+```python
+import pandas as pd
+uselog = pd.read_csv('use_log.csv')
+uselog.isnull().sum()
+```
+
+```python
+customer = pd.read_csv('customer_join.csv')
+customer.isnull().sum()
+```
+
+### 2. 클러스터링으로 회원 그룹화하기
+
+```python
+customer_clustering = customer[["mean", "median","max", "min", "membership_period"]]
+```
+
+```python
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+customer_clustering_sc = sc.fit_transform(customer_clustering)
+
+kmeans = KMeans(n_clusters=4, random_state=0)
+clusters = kmeans.fit(customer_clustering_sc)
+customer_clustering["cluster"] = clusters.labels_
+print(customer_clustering["cluster"].unique())
+```
+
+### 3. 클러스터링 결과 분석하기
+
+```python
+customer_clustering.columns = ["월평균값","월중앙값", "월최댓값", "월최솟값","회원기간", "cluster"]
+customer_clustering.groupby("cluster").count()
+```
+
+```python
+customer_clustering.groupby("cluster").mean()
+```
+
+### 4. 클러스터링 결과 가시화하기
+
+```python
+from sklearn.decomposition import PCA
+X = customer_clustering_sc
+pca = PCA(n_components=2)
+pca.fit(X)
+x_pca = pca.transform(X)
+pca_df = pd.DataFrame(x_pca)
+pca_df["cluster"] = customer_clustering["cluster"]
+```
+
+```python
+import matplotlib.pyplot as plt
+%matplotlib inline
+for i in customer_clustering["cluster"].unique():
+    tmp = pca_df.loc[pca_df["cluster"]==i]
+    plt.scatter(tmp[0], tmp[1])
+```
+
+### 5. 클러스터링 결과로 탈퇴회원 경향 파악하기
+
+```python
+customer_clustering = pd.concat([customer_clustering, customer], axis=1)
+customer_clustering.groupby(["cluster","is_deleted"],as_index=False).count()[["cluster","is_deleted","customer_id"]]
+```
+
+```python
+customer_clustering.groupby(["cluster","routine_flg"],as_index=False).count()[["cluster","routine_flg","customer_id"]]
+```
+
+### 6. 다음달 이용횟수 예측을 위한 데이터 준비하기
+
+```python
+uselog["usedate"] = pd.to_datetime(uselog["usedate"])
+uselog["연월"] = uselog["usedate"].dt.strftime("%Y%m")
+uselog_months = uselog.groupby(["연월","customer_id"],as_index=False).count()
+uselog_months.rename(columns={"log_id":"count"}, inplace=True)
+del uselog_months["usedate"]
+```
+
+```python
+year_months = list(uselog_months["연월"].unique())
+predict_data = pd.DataFrame()
+for i in range(6, len(year_months)):
+    tmp = uselog_months.loc[uselog_months["연월"]==year_months[i]]
+    tmp.rename(columns={"count":"count_pred"}, inplace=True)
+    for j in range(1, 7):
+        tmp_before = uselog_months.loc[uselog_months["연월"]==year_months[i-j]]
+        del tmp_before["연월"]
+        tmp_before.rename(columns={"count":"count_{}".format(j-1)}, inplace=True)
+        tmp = pd.merge(tmp, tmp_before, on="customer_id", how="left")
+    predict_data = pd.concat([predict_data, tmp], ignore_index=True)
+```
+
+```python
+predict_data = predict_data.dropna()
+predict_data = predict_data.reset_index(drop=True)
+```
+
+### 7. 특징이 되는 변수 추가하기
+
+```python
+predict_data = pd.merge(predict_data, customer[["customer_id","start_date"]], on="customer_id", how="left")
+```
+
+```python
+predict_data["now_date"] = pd.to_datetime(predict_data["연월"], format="%Y%m")
+predict_data["start_date"] = pd.to_datetime(predict_data["start_date"])
+from dateutil.relativedelta import relativedelta
+predict_data["period"] = None
+for i in range(len(predict_data)):
+    delta = relativedelta(predict_data["now_date"][i], predict_data["start_date"][i])
+    predict_data["period"][i] = delta.years*12 + delta.months
+```
+
+### 8. 다음달 이용횟수 예측 모델 만들기
+
+```python
+predict_data = predict_data.loc[predict_data["start_date"]>=pd.to_datetime("20180401")]
+from sklearn import linear_model
+import sklearn.model_selection
+model = linear_model.LinearRegression()
+X = predict_data[["count_0","count_1","count_2","count_3","count_4","count_5","period"]]
+y = predict_data["count_pred"]
+X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X,y)
+model.fit(X_train, y_train)
+```
+
+```python
+print(model.score(X_train, y_train))
+print(model.score(X_test, y_test))
+```
+
+### 9. 모델에 기여하는 변수 확인하기
+
+```python
+coef = pd.DataFrame({"feature_names":X.columns, "coefficient":model.coef_})
+```
+
+### 10. 다음달 이용횟수 예측하기
+
+```python
+x1 = [3, 4, 4, 6, 8, 7, 8]
+x2 = [2, 2, 3, 3, 4, 6, 8]
+x_pred = [x1, x2]
+
+model.predict(x_pred)
+```
+
+```python
+uselog_months.to_csv("use_log_months.csv",index=False)
+```

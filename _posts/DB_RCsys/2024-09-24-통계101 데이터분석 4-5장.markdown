@@ -20,13 +20,13 @@ categories: jekyll update
 
 : 기술통계를 통해 모집단의 모든 요소를 조사하여 알고자 하는 성질을 계산하고 평가함으로써 모집단을 파악하는 방법
 
-![image.png](image.png)
+=
 
 ### 표본조사
 
 : 추론통계를 통해 모집단의 일부인 표본으로 모집단의 성질을 추정
 
-![image.png](image%201.png)
+=
 
 ## 모집단 vs 표본
 
@@ -100,7 +100,7 @@ categories: jekyll update
 2. 비편향추정량
 : 추정량의 평균값(기댓값)이 모집단의 성질과 일치할 때의 추정량
     
-    ![image.png](image%202.png)
+    =
     
     - 표본평균 $\bar{x}$ = 모집단평균 $\mu$의 비편향추정량 = 비편향평균
     - 표본표준편차 s = 모집단표준편차 $\sigma$의 비편향추정량 = 비편향표준편차
@@ -140,13 +140,13 @@ $\bar{X}$~$N(\mu, \frac{\sigma}{\sqrt{n}})$
 
 ## 신뢰구간
 
-![image.png](image%203.png)
+=
 
 $0 - 1.96 \times \frac{s}{\sqrt{n}} \leq \bar{x} - \mu \leq 0 + 1.96 \times \frac{s}{\sqrt{n}}$ ← 표본오차의 95%
 
 $\bar{x} - 1.96 \times \frac{s}{\sqrt{n}} \leq \mu \leq \bar{x} + 1.96 \times \frac{s}{\sqrt{n}}$ ← 이 범위에 모집단평균 $\mu$가 있을 확률이 95%
 
-![image.png](image%204.png)
+=
 
 ### t분포
 
@@ -184,7 +184,7 @@ ex) 신약에 효과가 있다
 ex) 약에 아무 효과가 없더라도 $\bar{x}_A-\bar{x}_B\neq0$가 될 수도 있음
 → 표본평균의 차이가 단순한 데이터 퍼짐 때문인지, 약의 효과 때문인지 구별할 필요가 있음
     
-    ![image.png](image.png)
+    =
     
 
 ### p값
@@ -203,7 +203,7 @@ $(\bar{x}_A-\bar{x}_B)-(\mu_A-\mu_B)$
     - 비편향표준편차 $s = \sqrt{\frac{(n_A - 1)s_A^2 + (n_B - 1)s_B^2}{n_A + n_B - 2}}$
 - 기각역: 주어진 유의 수준에서 통계량이 들어가면 귀무 가설을 기각하게 되는 구간
 
-![image.png](image%201.png)
+=
 
 ### 가설검정
 
@@ -213,7 +213,7 @@ $(\bar{x}_A-\bar{x}_B)-(\mu_A-\mu_B)$
     - 신뢰구간은 표본평균으로 모집단평균을 추정하는 것
     - 가설 검정은 모집단평균을 $\mu_A-\mu_B=0$으로 고정했을 때 표본평균이 어떤 값이 될지를 구하는 것
     
-    ![image.png](image%202.png)
+    =
     
 
 ## 가설검정 관련 그래프
@@ -224,11 +224,11 @@ $(\bar{x}_A-\bar{x}_B)-(\mu_A-\mu_B)$
 
 1. 막대그래프의 오차 막대
 
-![image.png](image%203.png)
+=
 
 1. 산점도의 오차 막대
 
-![image.png](image%204.png)
+=
 
 (여기서 예1은 귀무가설 기각, 예2는 귀무가설 기각하지 않음)
 
@@ -236,7 +236,7 @@ $(\bar{x}_A-\bar{x}_B)-(\mu_A-\mu_B)$
 
 ※ 표본크기 n이 클수록 차이가 작아도 통계적으로 유의미할 가능성이 커짐
 
-![image.png](image%205.png)
+=
 
 ## 제1종 오류와 제2종 오류
 
@@ -256,12 +256,12 @@ $(\bar{x}_A-\bar{x}_B)-(\mu_A-\mu_B)$
 
 ### $\alpha, \beta, n, d$
 
-![image.png](image%206.png)
+=
 
 - 상충관계: $\alpha\uparrow$ → $\beta\downarrow$
 - $\alpha$를 고정했을 때, 표본크기 n$\uparrow$ → $\beta\downarrow$→ $(1-\beta)\uparrow$
 
-![image.png](image%207.png)
+=
 
 - $\alpha, \beta, n, d$는 네 개 중 세 개가 정해지면 나머지 하나는 자동으로 정해짐
 - 효과크기(d): 일반적으로 얼마나 큰 효과가 있는지를 나타내는 지표

@@ -106,12 +106,25 @@ customer_newer.groupby("gender").count()["customer_id"]
 ### 5. 이용이력 데이터 집계하기
 
 ```python
+# usedate를 datetime형으로 변환
 uselog["usedate"] = pd.to_datetime(uselog["usedate"])
+# usedate에서 연, 월만 추출
 uselog["연월"] = uselog["usedate"].dt.strftime("%Y%m")
 uselog_months = uselog.groupby(["연월","customer_id"],as_index=False).count()
 uselog_months.rename(columns={"log_id":"count"}, inplace=True)
 del uselog_months["usedate"]
 ```
+
+`.dt.strfttime` : 날짜와 시간을 문자열 형식으로 변환하여 추가(string format time)
+
+`as_index=False`: 그룹으로 묶인 열이 인덱스로 설정되지 않고 일반 열로 유지
+
+`.rename()`: 행/열 이름 변경
+
+- `columns={ : }`: 열 이름 변경
+- `inplace=True`: 기존 DataFrame에 바로 적용
+
+`del`: DataFrame의 특정 열 삭제
 
 ```python
 uselog_customer = uselog_months.groupby("customer_id").agg(["mean", "median", "max", "min" ])["count"]

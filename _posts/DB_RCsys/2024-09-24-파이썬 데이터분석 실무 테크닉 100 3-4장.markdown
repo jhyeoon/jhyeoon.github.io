@@ -309,10 +309,6 @@ customer_clustering.groupby("cluster").mean()
 
 `.columns`: 열 이름 지정
 
-![image.png](image.png)
-
-![image.png](image%201.png)
-
 ## 4. 클러스터링 결과 가시화하기
 
 ```python

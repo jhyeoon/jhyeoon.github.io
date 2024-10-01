@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "통계101 데이터분석 6-7장"
-date:   2024-10-02 00:00:01 +0800
+date:   2024-10-01 00:00:01 +0800
 categories: jekyll update
 ---
 

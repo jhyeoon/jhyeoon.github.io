@@ -1,0 +1,665 @@
+---
+layout: post
+title:  "파이썬 데이터분석 실무 테크닉 100 5-6장"
+date:   2024-10-02 00:00:01 +0800
+categories: jekyll update
+---
+
+**#파이썬 데이터분석 실무 테크닉 100**
+
+# 5장 회원 탈퇴를 예측하는 테크닉 10
+
+| no. | 파일 이름 | 개요 |
+| --- | --- | --- |
+| 1 | use_log.csv | 센터의 이용 이력 데이터, 기간은 201804-201903 |
+| 2 | customer_master.csv | 201903 말 시점의 회원 데이터 |
+| 3 | class_master.csv | 회원 구분 데이터 (종일, 주간, 야간) |
+| 4 | campaign_master.csv | 행사 구분 데이터 (입회비 유무 등) |
+| 5 | customer_join.csv | 3장에서 작성한 이용 이력을 포함한 고객 데이터 |
+| 6 | use_log_months.csv | 4장에서 작성한 이용 이력을 연월/고객별로 집계한 데이터 |
+
+## 1. 데이터 읽고 이용 데이터 6→1개월분으로 수정하기
+
+```python
+import pandas as pd
+customer = pd.read_csv('customer_join.csv')
+uselog_months = pd.read_csv('use_log_months.csv')
+```
+
+```python
+# 연월을 리스트로
+year_months = list(uselog_months["연월"].unique())
+# 결과를 저장할 빈 프레임 생성
+uselog = pd.DataFrame()
+# 정답 데이터 추출
+for i in range(1, len(year_months)):
+    tmp = uselog_months.loc[uselog_months["연월"]==year_months[i]]
+    tmp.rename(columns={"count":"count_0"}, inplace=True)
+    # 각 정답 데이터별 이전 1개월분 데이터 추출
+        tmp_before = uselog_months.loc[uselog_months["연월"]==year_months[i-1]]
+    del tmp_before["연월"]
+    tmp_before.rename(columns={"count":"count_1"}, inplace=True)
+    # 정답 데이터와 이전 6개월 데이터 조인
+        tmp = pd.merge(tmp, tmp_before, on="customer_id", how="left")
+    # 반복
+        uselog = pd.concat([uselog, tmp], ignore_index=True)
+```
+
+## **2. 탈퇴전월의 탈퇴고객데이터 작성하기**
+
+```python
+from dateutil.relativedelta import relativedelta
+# 탈퇴한 회원 추출
+exit_customer = customer.loc[customer["is_deleted"]==1]
+# exit_date(탈퇴 시점) 칼럼 생성
+exit_customer["exit_date"] = None
+# end_date(종료 시점)을 datetime형으로 변환
+exit_customer["end_date"] = pd.to_datetime(exit_customer["end_date"])
+# exit_date = end_date -1
+for i in range(len(exit_customer)):
+    exit_customer["exit_date"].iloc[i] = exit_customer["end_date"].iloc[i] - relativedelta(months=1)
+# exit_date에서 연월만 추출
+exit_customer["연월"] = pd.to_datetime(exit_customer["exit_date"]).dt.strftime("%Y%m")
+uselog["연월"] = uselog["연월"].astype(str)
+# uselog와 exit_customer 조인
+exit_uselog = pd.merge(uselog, exit_customer, on=["customer_id", "연월"], how="left")
+print(len(uselog))
+```
+
+```python
+# name 칼럼이 결측치인 행 제거
+exit_uselog = exit_uselog.dropna(subset=["name"])
+print(len(exit_uselog))
+print(len(exit_uselog["customer_id"].unique()))
+```
+
+## **3. 지속회원의 데이터 작성하기**
+
+```python
+# 지속 회원 추출
+conti_customer = customer.loc[customer["is_deleted"]==0]
+# uselog와 conti_customer 조인
+conti_uselog = pd.merge(uselog, conti_customer, on=["customer_id"], how="left")
+print(len(conti_uselog))
+# name 칼럼이 결측치인 행 제거
+conti_uselog = conti_uselog.dropna(subset=["name"])
+print(len(conti_uselog))
+```
+
+```python
+# 탈퇴회원과 지속회원의 데이터 비율 맞추기 (언더샘플링)
+# 지속회원 데이터 섞기
+conti_uselog = conti_uselog.sample(frac=1).reset_index(drop=True)
+# 이미 해당 회원의 다른 연월 데이터가 앞에 있었다면 뒤의 데이터 삭제
+conti_uselog = conti_uselog.drop_duplicates(subset="customer_id")
+print(len(conti_uselog))
+```
+
+```python
+# conti_uselog과 exit_uselog 유니언
+predict_data = pd.concat([conti_uselog, exit_uselog],ignore_index=True)
+print(len(predict_data))
+```
+
+## **4. 예측할 달의 재적기간 작성하기**
+
+```python
+# 설명변의 연월 기준 해당 회원의 이용 기간 구하기
+predict_data["period"] = 0
+predict_data["now_date"] = pd.to_datetime(predict_data["연월"], format="%Y%m")
+predict_data["start_date"] = pd.to_datetime(predict_data["start_date"])
+for i in range(len(predict_data)):
+    delta = relativedelta(predict_data["now_date"][i], predict_data["start_date"][i])
+    predict_data["period"][i] = int(delta.years*12 + delta.months)
+```
+
+## **5. 결측치 제거하기**
+
+```python
+# 결측치가 있는 칼럼 확인
+predict_data.isna().sum()
+# count_1 칼럼에 결측치가 있는 행 삭제
+predict_data = predict_data.dropna(subset=["count_1"])
+predict_data.isna().sum()
+```
+
+## **6. 문자열 변수 가공하기**
+
+```python
+# 설명변수
+target_col = ["campaign_name", "class_name", "gender", "count_1", "routine_flg", "period", "is_deleted"]
+# 목적변수
+predict_data = predict_data[target_col]
+```
+
+```python
+predict_data = pd.get_dummies(predict_data)
+```
+
+`.get_dummies()` : 더미 변수 생성
+
+```python
+# 설명변수별 한 특성씩 삭제
+# 어차피 하나가 1이면 나머지는 0이라
+del predict_data["campaign_name_일반"]
+del predict_data["class_name_야간"]
+del predict_data["gender_M"]
+```
+
+## **7. 의사결정나무로 탈퇴예측모델 작성하기**
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+import sklearn.model_selection
+
+exit = predict_data.loc[predict_data["is_deleted"]==1]
+# exit의 길이와 동일한 수의 유지 고객을 무작위 추출
+conti = predict_data.loc[predict_data["is_deleted"]==0].sample(len(exit))
+
+X = pd.concat([exit, conti], ignore_index=True)
+# 목적변수
+y = X["is_deleted"]
+# 설명변수
+del X["is_deleted"]
+X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X,y)
+
+model = DecisionTreeClassifier(random_state=0)
+model.fit(X_train, y_train)
+# 예측값 생성
+y_test_pred = model.predict(X_test)
+print(y_test_pred)
+```
+
+`.sample()`: 특정 수만큼 무작위 추출
+
+```python
+# 실제값과 예측값 비교
+results_test = pd.DataFrame({"y_test":y_test ,"y_pred":y_test_pred })
+```
+
+## **8. 예측 모델 평가하고, 모델 튜닝하기**
+
+```python
+# 모델 성능 평가 (test set)
+correct = len(results_test.loc[results_test["y_test"]==results_test["y_pred"]])
+data_count = len(results_test)
+score_test = correct / data_count
+print(score_test) # 0.8821292775665399
+```
+
+```python
+# 모델 성능 평가
+print(model.score(X_test, y_test)) # 0.8821292775665399
+print(model.score(X_train, y_train)) # 0.9784537389100126 -> 과적
+```
+
+```python
+# 트리의 깊이가 5단계에서 멈추도록
+X = pd.concat([exit, conti], ignore_index=True)
+y = X["is_deleted"]
+del X["is_deleted"]
+X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X,y)
+
+model = DecisionTreeClassifier(random_state=0, max_depth=5)
+model.fit(X_train, y_train)
+print(model.score(X_test, y_test)) # 0.9144486692015209
+print(model.score(X_train, y_train)) # 0.9233206590621039
+```
+
+`max_depth=''` : 트리의 깊이를 얕게 하면 모델을 단순화할 수 있음 → 미지의 데이터에 대응하기 좋음
+
+## **9. 변수의 중요도 확인하기**
+
+```python
+# 설명변수의 중요도
+importance = pd.DataFrame({"feature_names":X.columns, "coefficient":model.feature_importances_})
+```
+
+`"coefficient":model.feature_importances_` : 변수의 중요도
+
+## **10. 새로운 데이터의 탈퇴 가능성 예측하기**
+
+```python
+count_1 = 3
+routing_flg = 1
+period = 10
+campaign_name = "입회비무료"
+class_name = "종일"
+gender = "M"
+```
+
+```python
+if campaign_name == "입회비반값할인":
+    campaign_name_list = [1, 0]
+elif campaign_name == "입회비무료":
+    campaign_name_list = [0, 1]
+elif campaign_name == "일반":
+    campaign_name_list = [0, 0]
+if class_name == "종일":
+    class_name_list = [1, 0]
+elif class_name == "주간":
+    class_name_list = [0, 1]
+elif class_name == "야간":
+    class_name_list = [0, 0]
+if gender == "F":
+    gender_list = [1]
+elif gender == "M":
+    gender_list = [0]
+input_data = [count_1, routing_flg, period]
+input_data.extend(campaign_name_list)
+input_data.extend(class_name_list)
+input_data.extend(gender_list)
+```
+
+```python
+# 클래스 예측
+print(model.predict([input_data])) # [1.]
+# 클래스별 확률 확인
+print(model.predict_proba([input_data])) # [[0.06185567 0.93814433]]
+```
+
+`predict_proba`: 클래스별 확률 확인
+
+# 6장 물류의 최적경로를 컨설팅하는 테크닉 10
+
+| no | 파일 이름 | 개요 |
+| --- | --- | --- |
+| 1 | tbl_factory.csv | 생산 공장 데이터 |
+| 2 | tbl_warehouse.csv | 창고 데이터 |
+| 3 | rel_cost.csv | 창고와 공장 간의 운송 비용 |
+| 4 | tbl_transaction.csv | 2019년의 공장으로의 부품 운송 실적 |
+
+집계기간: 20190101-20191231
+
+## **물류데이터를 불러오자**
+
+```python
+import pandas as pd
+
+# 공장데이터 불러오기
+factories = pd.read_csv("tbl_factory.csv", index_col=0)
+
+# 창고데이터 불러오기
+warehouses = pd.read_csv("tbl_warehouse.csv", index_col=0)
+
+# 비용 테이블
+cost = pd.read_csv("rel_cost.csv", index_col=0)
+
+# 운송 실적 테이블
+trans = pd.read_csv("tbl_transaction.csv", index_col=0)
+```
+
+`index_col=0`: 첫 번째 열을 데이터프레임의 인덱스로 사용
+
+```python
+# 운송실적 테이블에 각 테이블을 조인
+# 비용 데이터추가
+join_data = pd.merge(trans, cost, left_on=["ToFC","FromWH"], right_on=["FCID","WHID"], how="left")
+
+# 공장정보 추가
+join_data = pd.merge(join_data, factories, left_on="ToFC", right_on="FCID", how="left")
+
+# 창고정보 추가
+join_data = pd.merge(join_data, warehouses, left_on="FromWH", right_on="WHID", how="left")
+
+# 컬럼 정리
+join_data = join_data[["TransactionDate","Quantity","Cost","ToFC","FCName","FCDemand","FromWH","WHName","WHSupply","WHRegion"]]
+```
+
+```python
+# 북부 데이터 추출
+north = join_data.loc[join_data["WHRegion"]=="북부"]
+
+# 남부데이터 추출
+south = join_data.loc[join_data["WHRegion"]=="남부"]
+```
+
+## **현재 운송량, 비용을 확인해보자**
+
+```python
+# 지사의 비용합계 계산
+print("북부지사 총비용: " + str(north["Cost"].sum()) + "만원")
+print("남부지사 총비용: " + str(south["Cost"].sum()) + "만원")
+
+# 지사의 총운송개수
+print("북부지사의 총부품 운송개수: " + str(north["Quantity"].sum()) + "개")
+print("남부지사의 총부품 운송개수: " + str(south["Quantity"].sum()) + "개")
+
+# 부품 1개당 운송비용
+tmp = (north["Cost"].sum() / north["Quantity"].sum()) * 10000
+print("북부지사의 부품 1개당 운송 비용: " + str(int(tmp)) + "원")
+tmp = (south["Cost"].sum() / south["Quantity"].sum()) * 10000
+print("남부지사의 부품 1개당 운송 비용: " + str(int(tmp)) + "원")
+
+# 비용을 지사별로 집계
+cost_chk = pd.merge(cost, factories, on="FCID", how="left")
+# 평균
+print("북부지사의 평균 운송 비용：" + str(cost_chk["Cost"].loc[cost_chk["FCRegion"]=="북부"].mean()) + "원")
+print("남부지사의 평균 운송 비용：" + str(cost_chk["Cost"].loc[cost_chk["FCRegion"]=="남부"].mean()) + "원")
+```
+
+## **네트워크를 가시화해보자**
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# 그래프 객체생성
+G=nx.Graph()
+
+# 노드 설정
+G.add_node("nodeA")
+G.add_node("nodeB")
+G.add_node("nodeC")
+
+# 엣지 설정
+G.add_edge("nodeA","nodeB")
+G.add_edge("nodeA","nodeC")
+G.add_edge("nodeB","nodeC")
+
+# 좌표 설정
+pos={}
+pos["nodeA"]=(0,0)
+pos["nodeB"]=(1,1)
+pos["nodeC"]=(0,1)
+
+# 그리기
+nx.draw(G,pos)
+
+# 표시
+plt.show()
+```
+
+`import networkx as nx`: 그래프(네트워크)를 생성하고 분석하는 라이브러리
+
+`.Graph()`: 그래프 생성
+
+`.add_node()`: 노드 추가
+
+`.add_edge`: 엣지 추가
+
+`pos["노드"]=( , )`: 노드 위치 설정
+
+`.draw()`: pos로 지정된 위치에 노드를 배치시켜 그래프 그리기
+
+- `with_labels=True`: 노드 라벨 표시
+
+## **네트워크에 노드를 추가해보자**
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# 그래프 객체 생성．
+G=nx.Graph()
+
+# 노드 설정
+G.add_node("nodeA")
+G.add_node("nodeB")
+G.add_node("nodeC")
+G.add_node("nodeD")
+
+# 엣지 설정
+G.add_edge("nodeA","nodeB")
+G.add_edge("nodeA","nodeC")
+G.add_edge("nodeB","nodeC")
+G.add_edge("nodeA","nodeD")
+
+# 좌표 설정
+pos={}
+pos["nodeA"]=(0,0)
+pos["nodeB"]=(1,1)
+pos["nodeC"]=(0,1)
+pos["nodeD"]=(1,0)
+
+# 그리기
+nx.draw(G,pos, with_labels=True)
+
+# 표시
+plt.show()
+```
+
+## **경로에 가중치를 부여하자**
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import networkx as nx
+
+# 데이터 불러오기
+df_w = pd.read_csv('network_weight.csv')
+df_p = pd.read_csv('network_pos.csv')
+
+# 그래프 객체 생성
+G = nx.Graph()
+
+# 노드 설정
+for i in range(len(df_w.columns)):
+    G.add_node(df_w.columns[i])
+
+# 엣지 설정 & 가중치 리스트화
+size = 10
+edge_weights = []
+num_pre = 0
+# 엣지 가중치 확인용 번역자 추가 코드
+name = ['A','B','C','D','E']
+
+for i in range(len(df_w.columns)):
+    for j in range(len(df_w.columns)):
+        if not (i==j):
+            # 엣지 추가
+            G.add_edge(df_w.columns[i],df_w.columns[j])
+            if num_pre<len(G.edges):
+                num_pre = len(G.edges)
+                # 엣지 가중치 추가
+                edge_weights.append(df_w.iloc[i][j]*size)
+               
+                # 엣지 가중치 확인용 번역자 추가 코드
+                print(f'({name[i]}, {name[j]}) = {np.round(edge_weights[-1],5)}')
+               
+
+# 좌표 설정
+pos = {}
+for i in range(len(df_w.columns)):
+    node = df_w.columns[i]
+    pos[node] = (df_p[node][0],df_p[node][1])
+
+# 그리기
+nx.draw(G, pos, with_labels=True,font_size=16, node_size = 1000, node_color='k', font_color='w', width=edge_weights)
+
+# 표시
+plt.show()
+```
+
+```python
+(A, B) = 1.43353
+(A, C) = 9.44669
+(A, D) = 5.21848
+(A, E) = 0.0
+(B, C) = 4.5615
+(B, D) = 5.68434
+(B, E) = 0.0
+(C, D) = 9.43748
+(C, E) = 0.0
+(D, E) = 6.66767
+```
+
+## **운송경로 정보를 불러오자**
+
+```python
+import pandas as pd
+
+df_tr = pd.read_csv('trans_route.csv', index_col="공장")
+```
+
+## **운송경로정보로 네트워크를 가시화해보자**
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import networkx as nx
+
+df_tr = pd.read_csv('trans_route.csv', index_col="공장")
+df_pos = pd.read_csv('trans_route_pos.csv')
+
+# 그래프 객체 생성
+G = nx.Graph()
+
+# 노드 설정
+for i in range(len(df_pos.columns)):
+    G.add_node(df_pos.columns[i])
+
+# 엣지 설정 및 가중치 리스트화
+num_pre = 0
+edge_weights = []
+size = 0.1
+for i in range(len(df_pos.columns)):
+    for j in range(len(df_pos.columns)):
+        if not (i==j):
+            # 엣지 추가
+            G.add_edge(df_pos.columns[i],df_pos.columns[j])
+            # 엣지 가중치 추가
+            if num_pre<len(G.edges):
+                num_pre = len(G.edges)
+                weight = 0
+                if (df_pos.columns[i] in df_tr.columns)and(df_pos.columns[j] in df_tr.index):
+                    if df_tr[df_pos.columns[i]][df_pos.columns[j]]:
+                        weight = df_tr[df_pos.columns[i]][df_pos.columns[j]]*size
+                elif(df_pos.columns[j] in df_tr.columns)and(df_pos.columns[i] in df_tr.index):
+                    if df_tr[df_pos.columns[j]][df_pos.columns[i]]:
+                        weight = df_tr[df_pos.columns[j]][df_pos.columns[i]]*size
+                edge_weights.append(weight)
+                
+
+# 좌표 설정
+pos = {}
+for i in range(len(df_pos.columns)):
+    node = df_pos.columns[i]
+    pos[node] = (df_pos[node][0],df_pos[node][1])
+    
+# 그리기
+nx.draw(G, pos, with_labels=True,font_size=16, node_size = 1000, node_color='k', font_color='w', width=edge_weights)
+
+# 표시
+plt.show()
+```
+
+## **운송비용함수를 작성하자**
+
+```python
+import pandas as pd
+
+# 데이터 불러오기
+df_tr = pd.read_csv('trans_route.csv', index_col="공장")
+df_tc = pd.read_csv('trans_cost.csv', index_col="공장")
+
+# 운송 비용 함수
+def trans_cost(df_tr,df_tc):
+    cost = 0
+    for i in range(len(df_tc.index)):
+        for j in range(len(df_tr.columns)):
+            cost += df_tr.iloc[i][j]*df_tc.iloc[i][j]
+    return cost
+
+print("총 운송 비용:"+str(trans_cost(df_tr,df_tc)))
+```
+
+```python
+총 운송 비용:1493
+```
+
+## **제약조건을 만들어보자**
+
+```python
+import pandas as pd
+
+# 데이터 불러오기
+df_tr = pd.read_csv('trans_route.csv', index_col="공장")
+df_demand = pd.read_csv('demand.csv')
+df_supply = pd.read_csv('supply.csv')
+
+# 수요측 제약조건
+for i in range(len(df_demand.columns)):
+    temp_sum = sum(df_tr[df_demand.columns[i]])
+    print(str(df_demand.columns[i])+"으로 운송량:"+str(temp_sum)+" (수요량:"+str(df_demand.iloc[0][i])+")")
+    if temp_sum>=df_demand.iloc[0][i]:
+        print("수요량을 만족시키고있음")
+    else:
+        print("수요량을 만족시키지 못하고 있음. 운송경로 재계산 필요")
+
+# 공급측 제약조건
+for i in range(len(df_supply.columns)):
+    temp_sum = sum(df_tr.loc[df_supply.columns[i]])
+    print(str(df_supply.columns[i])+"부터의 운송량:"+str(temp_sum)+" (공급한계:"+str(df_supply.iloc[0][i])+")")
+    if temp_sum<=df_supply.iloc[0][i]:
+        print("공급한계 범위내")
+    else:
+        print("공급한계 초과. 운송경로 재계산 필요")
+```
+
+```
+F1으로 운송량:30 (수요량:28)
+수요량을 만족시키고있음
+F2으로 운송량:30 (수요량:29)
+수요량을 만족시키고있음
+F3으로 운송량:32 (수요량:31)
+수요량을 만족시키고있음
+F4으로 운송량:25 (수요량:25)
+수요량을 만족시키고있음
+W1부터의 운송량:35 (공급한계:35)
+공급한계 범위내
+W2부터의 운송량:40 (공급한계:41)
+공급한계 범위내
+W3부터의 운송량:42 (공급한계:42)
+공급한계 범위내
+```
+
+## **운송경로를 변경해서, 운송비용함수의 변화를 확인하자**
+
+```python
+import pandas as pd
+import numpy as np
+
+# 데이터 불러오기
+df_tr_new = pd.read_csv('trans_route_new.csv', index_col="공장")
+print(df_tr_new)
+
+# 총 운송비용 재계산 
+print("총 운송 비용(변경 후):"+str(trans_cost(df_tr_new,df_tc)))
+
+# 제약조건 계산함수
+# 수요측
+def condition_demand(df_tr,df_demand):
+    flag = np.zeros(len(df_demand.columns))
+    for i in range(len(df_demand.columns)):
+        temp_sum = sum(df_tr[df_demand.columns[i]])
+        if (temp_sum>=df_demand.iloc[0][i]):
+            flag[i] = 1
+    return flag
+            
+# 공급측
+def condition_supply(df_tr,df_supply):
+    flag = np.zeros(len(df_supply.columns))
+    for i in range(len(df_supply.columns)):
+        temp_sum = sum(df_tr.loc[df_supply.columns[i]])
+        if temp_sum<=df_supply.iloc[0][i]:
+            flag[i] = 1
+    return flag
+
+print("수요조건 계산결과:"+str(condition_demand(df_tr_new,df_demand)))
+print("공급조건 계산결과:"+str(condition_supply(df_tr_new,df_supply)))
+```
+
+`.zeros()`: 특정 배열의 모든 요소를 0으로
+
+```
+    F1  F2  F3  F4
+공장
+W1  15  15   0   0
+W2   5   0  30  10
+W3  10  15   2  15
+총 운송비용(변경 후):1428
+수요조건 계산결과:[1. 1. 1. 1.]
+공급조건 계산결과:[1. 0. 1.]
+```
